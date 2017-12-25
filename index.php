@@ -7,7 +7,7 @@
     <script src="jquery/jquery-3.2.1.min.js"></script>
     <script src="popper.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="style3.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
     <style>
     	#bigtable {     background-color:#106288;   }    
     	@media only screen and (max-device-width: 480px) {  
