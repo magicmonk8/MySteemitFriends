@@ -1,0 +1,184 @@
+/* css for filter box row */
+
+.nounderline {
+
+text-decoration:none;
+
+}
+
+.popover {
+
+    background: #2E456D;
+
+}
+
+
+
+.frow {
+
+margin:1rem;        
+
+}
+
+
+
+/* css for gaps between filter boxes */
+
+.fbox {
+
+padding:0.5rem;
+
+}
+
+
+
+.fbox2 {
+
+padding:0.5rem;
+
+}
+
+
+
+.card {
+
+background-color:#008080;
+
+border: 5px solid black;
+
+border-collapse:collapse;
+
+}
+
+
+
+ body {
+
+	background-color:#106288;
+
+	color: white;
+
+	}
+
+
+
+.bg-1 {
+
+	background-color:#106288;
+
+	color: white;
+
+	}
+
+  
+
+
+
+.container-fluid {
+
+	padding-top: 70px;
+
+	padding-bottom: 70px;
+
+	}
+
+	
+
+table { 
+
+	margin: 0 auto;
+
+
+
+}
+
+
+
+td {
+
+	color:white;
+
+  font-family: Tahoma, Geneva, sans-serif;
+
+    padding: 1rem;
+
+}
+
+
+
+a {
+
+color:  #00ffff;
+
+text-decoration: underline;
+
+}
+
+
+
+a:visited {
+
+color:#00ffff;
+
+    text-decoration: underline;
+
+}
+
+
+
+a:hover {
+
+color:#ffd700;
+
+    text-decoration: underline;
+
+}
+
+
+
+th.upvote::after {content: "Upvotes";}
+
+th.totalweight::after {content: "Total Weight";}
+
+th.sptotalweight::after {content: "SP X Total Weight";}
+
+
+
+      
+
+@media screen and (max-width: 769px)  {
+
+    .fbox2 .card {
+
+
+
+    }
+
+    
+
+   
+
+}
+
+
+
+@media screen and (max-width: 480px)  {
+
+    th.upvote::after {content: "V";}
+
+    th.totalweight::after {content: "TW";}
+
+    th.sptotalweight::after {content: "SP X TW";}
+
+    td.mobile, th.mobile {font-size: 14px;}
+
+    
+
+   
+
+}
+
+
+
+
+
