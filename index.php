@@ -20,20 +20,23 @@
     	<table style="background-color:#2E456D;border-collapse:collapse;border: 5px solid black;">
     	  <tr>
     	   <td class="text-center" style="padding:10px;">
-    	    <h3>My Steemit Friends</h3>
+    	    <h3>My Steemit Friends</h3><br>
             <form method="get" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
               <div class="form-group">
-                <label for="User">Enter your Steemit UserName:</label><br>
+                <label for="User">1. Type your Steemit UserName:</label><br>
                 <input id="User" type="text" name="User" value="<? if ($_GET["User"]) { echo $_GET["User"];} ?>" autofocus>
               </div>
-             <button class="btn btn-primary" type="submit">Click to See Friends</button>
+              2. Click the following buttons to see:<br><br>
+             <button class="btn btn-primary" type="submit">Upvote Stats</button><br>            
             </form>
+            <button class="btn btn-info" onclick="loadDoc()">Follower Ranking</button><br><br>
             <p>Created by <a href="http://steemit.com/@magicmonk"><img src="magicmonkhead.png" width="50" height="50">@magicmonk</a></p>
             <p><a href="https://steemit.com/steemit/@magicmonk/mysteemitfriend-s-new-edition-has-more-features-mysteemitfriends">Instructions</a></p>
            </td>
           </tr>
         </table>
       
+		<div id="ranking"></div>
       
 <?php
 $my_file = fopen("global.txt",'r');
@@ -429,7 +432,45 @@ $(function(){
     
 });
 
+function loadDoc() {
+	
+  document.getElementById("ranking").style.margin="auto";
+	document.getElementById("ranking").style.marginTop="1.5rem";
+	document.getElementById("ranking").style.marginBottom="1.5rem";
+	document.getElementById("ranking").style.border="thick solid white";
+	document.getElementById("ranking").style.maxWidth = "300px";
+	document.getElementById("ranking").style.padding = "1rem";
+	
+	
 
+	
+  document.getElementById("ranking").innerHTML = "Loading..";
+
+  var username;
+
+  username =  document.getElementById("User").value;
+
+  username = username.replace("@","");
+
+  var xhttp = new XMLHttpRequest();
+
+  xhttp.onreadystatechange = function() {
+
+    if (this.readyState == 4 && this.status == 200) {
+		
+		
+
+      document.getElementById("ranking").innerHTML = this.responseText;
+
+    }
+
+  };
+
+  xhttp.open("GET", "get_follower_rank.php?SteemitUser=" + username, true);
+
+  xhttp.send();
+
+}
 
     </script>
   </body>
