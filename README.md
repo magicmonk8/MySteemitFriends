@@ -8,9 +8,7 @@ A tool to analyse your upvote statistics for Steemit. Go to live website at http
 
   Alternatively, you may click another button to find out your ranking in terms of number of followers.
 
-- [**upvotelist.php**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/master/upvotelist.php): A page opened up from index.php. It will show all articles voted on by a particular user, with the date and percentage of each vote, and a show ranking button that displays this user's contributation as a ranking against all other users who voted.
-
-- [**getdollars.php**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/master/getdollars.php): PHP file that queries SteemJS to find out the rshares contributed by each user, the payout value of the article hence calculate each user's dollar contribution to the payout.
+- [**upvotelist.php**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/master/upvotelist.php): A page opened up from index.php. It will show all articles voted on by a particular user, with the date and percentage of each vote, and a show ranking button that displays this user's contributation as a ranking against all other users who voted. It also includes a built in calculator for you to add up contributions by a specific user.
 
 - [**style.css**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/master/style.css): CSS Stylesheet for the whole website.
 
