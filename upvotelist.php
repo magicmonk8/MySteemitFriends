@@ -13,6 +13,23 @@
 
 <body>
 
+
+<nav class="navbar navbar-expand-sm navbar-dark">
+  <span class="navbar-brand mb-0 h1">Tools by <a href="http://steemit.com/@magicmonk">@magicmonk</a></span>
+  <ul class="navbar-nav">
+    <li class="nav-item">
+      <a class="nav-link" href="index.php">Upvote Statistics</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="followers.php">Followers Ranking</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="effectiveSP.php">Effective SP Ranking</a>
+    </li>
+    </li>
+  </ul>
+</nav>     
+
 <div class="container-fluid bg-1 text-center">
 
 <div id="total_con" style="padding-top:1rem;padding-left:1rem;padding-right:1rem;border: 5px solid white; max-width:400px;margin:auto;display:none;margin-bottom:1rem;"></div>
