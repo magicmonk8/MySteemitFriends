@@ -16,6 +16,13 @@ A tool to analyse your upvote statistics for Steemit. Go to live website at http
 
 - [**get_follower_rank.php**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/master/followers.php): PHP file that queries SteemSQL to find out the ranking of a paritcular user in terms of number of followers, and then allows the user to jump to that particular page on followers.php.
 
+- [**effectiveSP.php**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/effective_SP_rank/effectiveSP.php): A list of Steemit Users ranked by the amount of effective SP. 50 users per page - any page can be selected and retrieved. A search box can also be used to locate a particular user.
+
+- [**get_esp_rank.php**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/effective_SP_rank/get_esp_rank.php): PHP file that queries SteemSQL to find out the ranking of a paritcular user in terms of the amount of effective SP, and then allows the user to jump to that particular page on effectiveSP.php.
+
+- [**updateglobal.php**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/effective_SP_rank/updateglobal.php): Retrieve total_vesting_fund_steem and total_vesting_shares using the SteemJS API, and then update values in global.txt for calculation of SP.
+
+- [**global.txt**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/effective_SP_rank/global.txt): Text file containing the total_vesting_fund_steem and total_vesting_shares values needed to calculate a user's steem power from vesting shares. Updated periodically using updateglobal.php.
 
 
 ## Folders

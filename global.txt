@@ -1,0 +1,2 @@
+total_vesting_fund_steem: 198808433
+total_vesting_shares: 407187408237

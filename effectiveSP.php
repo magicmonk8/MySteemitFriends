@@ -2,7 +2,7 @@
 
   <head>
 
-    <title>Followers ranking - My Steemit Friends</title>
+    <title>Effective SP Ranking - My Steemit Friends</title>
 
     <meta charset="utf-8">
 
@@ -42,7 +42,7 @@
 
     }
 		
-    ul.navbar-nav {
+		ul.navbar-nav {
 
     margin:0px;
 
@@ -82,7 +82,8 @@
 
   </head>
 
-  <body>  
+  <body class="bg-3">   
+
     
 	<nav class="navbar navbar-expand-sm navbar-dark">
 
@@ -101,10 +102,9 @@
     </li>
   </ul>
 </nav>     
-       
-         
-
-    <div class="container-fluid bg-1 text-center" style="max-width:1000px;">
+   
+   
+    <div class="container-fluid bg-3 text-center" style="max-width:1000px;">
 
     <div class="row">
 
@@ -112,7 +112,7 @@
 
      
 
-<h1>Steemit Followers Ranking</h1>       
+<h1>Steemit Effective SP Ranking</h1>       
 
 <br>
 
@@ -141,6 +141,13 @@
 
 
 <?php
+	
+	$my_file = fopen("global.txt",'r');
+$total_vesting_fund_steem=fgets($my_file);
+$total_vesting_fund_steem = preg_replace('/[^0-9.]+/', '', $total_vesting_fund_steem);
+$total_vesting_shares=fgets($my_file);
+$total_vesting_shares = preg_replace('/[^0-9.]+/', '', $total_vesting_shares);
+fclose($my_file);
 
 $servername = "sql.steemsql.com:1433";
 
@@ -196,11 +203,11 @@ for ($x=$page-3;$x<=$page+3;$x++) {
 
       if ($x==$page) {
 
-        echo '<li class="page-item active"><a class="page-link" href="followers.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item active"><a class="page-link" href="effectiveSP.php?page='.$x.'">'.$x.'</a></li>';
 
       } else {
 
-        echo '<li class="page-item"><a class="page-link" href="followers.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item"><a class="page-link" href="effectiveSP.php?page='.$x.'">'.$x.'</a></li>';
 
       }  
 
@@ -212,11 +219,11 @@ for ($x=$page-3;$x<=$page+3;$x++) {
 
       if ($x==$page) {
 
-        echo '<li class="page-item active"><a class="page-link" href="followers.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item active"><a class="page-link" href="effectiveSP.php?page='.$x.'">'.$x.'</a></li>';
 
       } else {
 
-        echo '<li class="page-item"><a class="page-link" href="followers.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item"><a class="page-link" href="effectiveSP.php?page='.$x.'">'.$x.'</a></li>';
 
       }  
 
@@ -228,15 +235,15 @@ echo '</ul></nav><br>';
 
 if ($page>1) {
 
-echo '<a href="followers.php?page='.($page-1).'" class="btn btn-light" role="button">Previous Page</a> ';
+echo '<a href="effectiveSP.php?page='.($page-1).'" class="btn btn-light" role="button">Previous Page</a> ';
 
 }
 
-echo '<a href="followers.php?page='.($page+1).'" class="btn btn-light" role="button">Next Page</a><br><br>'; 
+echo '<a href="effectiveSP.php?page='.($page+1).'" class="btn btn-light" role="button">Next Page</a><br><br>'; 
 
 
 
-echo '<form action="followers.php" method="get">Go To Page Number <input type="text" name="page" size="5"> <input type="submit" value="Go"></form><br></div>';
+echo '<form action="effectiveSP.php" method="get">Go To Page Number <input type="text" name="page" size="5"> <input type="submit" value="Go"></form><br></div>';
 
 // Use try catch exception handling. Details: https://www.w3schools.com/PhP/php_exception.asp
 
@@ -266,17 +273,15 @@ try {
 
     // test query. Select the name column from the Accounts table where the Id is 29666. Result should be magicmonk.
 
-    $sql = "select count(*), Following
-
-from Followers
-
-group by following
-
-Order by count(*) DESC
-
+    $sql = "
+SELECT convert(float, a.vesting_shares)-convert(float,a.delegated_vesting_shares)+convert(float,a.received_vesting_shares) AS effective_vests, a.name
+FROM
+(SELECT name, Substring(vesting_shares,0,PATINDEX('%VESTS%',vesting_shares)) AS vesting_shares, Substring(delegated_vesting_shares,0,PATINDEX('%VESTS%',delegated_vesting_shares)) AS delegated_vesting_shares, Substring(received_vesting_shares,0,PATINDEX('%VESTS%',received_vesting_shares)) AS received_vesting_shares
+FROM Accounts (NOLOCK)) a
+Order by effective_vests DESC
 OFFSET ".$offset." ROWS
-
-FETCH NEXT ".$pagesize." ROWS ONLY;";
+FETCH NEXT ".$pagesize." ROWS ONLY;
+	";
 
     
 
@@ -292,13 +297,18 @@ echo '<table id="bigtable" class="table table-sm" style="background-color:#0f488
 
     
 
-echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th>User Name</th><th>Followers</th></tr></thead>';
+echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th>User Name</th><th>Effective SP</th></tr></thead>';
 
     // print the results. If successful, magicmonk will be printed on page.
 
     $rank=$pagesize*($page-1)+1;
 
     while ($row = $sth->fetch(PDO::FETCH_NUM)) { 
+		
+		$vests=$row[0];
+		$sp = $total_vesting_fund_steem * $vests / $total_vesting_shares;
+
+		
 
       echo '<tr><td style="text-align: center;">';
 
@@ -326,7 +336,7 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ra
 
           echo "</td><td>";
 
-          echo $row[0];
+          echo number_format(round($sp));
 
           echo "</td></tr>";
 
@@ -432,7 +442,7 @@ function loadDoc() {
 
   };
 
-  xhttp.open("GET", "get_follower_rank.php?SteemitUser=" + username, true);
+  xhttp.open("GET", "get_esp_rank.php?SteemitUser=" + username, true);
 
   xhttp.send();
 
