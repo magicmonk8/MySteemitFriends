@@ -2,7 +2,7 @@
 
   <head>
 
-    <title>My Steemit Friends</title>
+    <title>Followers ranking - My Steemit Friends</title>
 
     <meta charset="utf-8">
 
@@ -16,7 +16,7 @@
 
     <script src="bootstrap/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="style.css?1">
 
     <style>
 
@@ -26,19 +26,25 @@
 
  
 
-    color:blue;
+    color:blue !important;
 
     }
 
     a.page-link:visited {
 
-      color:blue;
+      color:blue !important;
 
     }
 
     ul {
 
     margin:0.5rem;
+
+    }
+		
+    ul.navbar-nav {
+
+    margin:0px;
 
     }
 
@@ -54,19 +60,19 @@
 
     a.btn-info, a.btn-info:visited, a.btn-primary, a.btn-primary:visited {
 
-    color:white;
+    color:white !important;
 
     } 
 
     a.btn-light {
 
-      color:blue;
+      color:blue !important;
 
     }
 
     a.btn-light:visited {
 
-      color:blue;
+      color:blue !important;
 
     }
 
@@ -76,7 +82,27 @@
 
   </head>
 
-  <body>   
+  <body>  
+    
+	<nav class="navbar navbar-expand-sm navbar-dark">
+
+  <span class="navbar-brand mb-0 h1">Tools by <a href="http://steemit.com/@magicmonk">@magicmonk</a></span>
+
+  <ul class="navbar-nav">
+    <li class="nav-item">
+      <a class="nav-link" href="index.php">Upvote Statistics</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="followers.php">Followers Ranking</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="effectiveSP.php">Effective SP Ranking</a>
+    </li>
+    </li>
+  </ul>
+</nav>     
+       
+         
 
     <div class="container-fluid bg-1 text-center" style="max-width:1000px;">
 
@@ -140,7 +166,7 @@ $page = $_GET["page"];
 
 if ($_GET["highlight"]) {
 
-$highlight = $_GET["highlight"];
+$highlight = strtolower($_GET["highlight"]);
 
 }
 
