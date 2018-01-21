@@ -1,41 +1,26 @@
 /* css for filter box row */
 
 .nounderline {
-
 text-decoration:none;
-
 }
 
 .popover {
-
     background: #2E456D;
-
 }
-
-
 
 .frow {
-
 margin:1rem;        
-
 }
-
-
 
 /* css for gaps between filter boxes */
 
 .fbox {
-
 padding:0.5rem;
-
 }
 
 
-
 .fbox2 {
-
 padding:0.5rem;
-
 }
 
 
@@ -70,13 +55,19 @@ border-collapse:collapse;
 
 	}
 
+.bg-3 {
+	
+	background-color:#5A173B;
+	color: white;
+}
+
   
 
 
 
 .container-fluid {
 
-	padding-top: 70px;
+	padding-top: 30px;
 
 	padding-bottom: 70px;
 
@@ -108,7 +99,7 @@ td {
 
 a {
 
-color:  #00ffff;
+color:  #00ffff !important;
 
 text-decoration: underline;
 
@@ -144,20 +135,41 @@ th.sptotalweight::after {content: "SP X Total Weight";}
 
 
 
-      
+#bigtable {     background-color:#106288;   }    
+
+.nav-item a {
+	font-size:1.5rem;
+	color:#00ffff !important;
+}
+
+li.nav-item, span.navbar-brand {
+	margin-right:2rem;
+}
+
+
+
+li.nav-item:hover {
+	background-color:purple;
+
+}
+
+
+.navbar {	
+	padding-top:0px;
+	padding-bottom:0px;
+	background-color: #16315D;
+}
+
+
+@media only screen and (max-device-width: 480px) {  
+    		#bigtable {     background-color:#106288;   } 
+    	} 
+
 
 @media screen and (max-width: 769px)  {
-
+	
     .fbox2 .card {
-
-
-
     }
-
-    
-
-   
-
 }
 
 
@@ -171,11 +183,6 @@ th.sptotalweight::after {content: "SP X Total Weight";}
     th.sptotalweight::after {content: "SP X TW";}
 
     td.mobile, th.mobile {font-size: 14px;}
-
-    
-
-   
-
 }
 
 
