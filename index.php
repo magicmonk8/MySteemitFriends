@@ -59,8 +59,10 @@
 	</table>
 
 <div id="ranking"></div>
-      
-<?
+   
+<?php
+include 'steemSQLconnect2.php';		
+
 $my_file = fopen("global.txt",'r');
 $total_vesting_fund_steem=fgets($my_file);
 $total_vesting_fund_steem = preg_replace('/[^0-9.]+/', '', $total_vesting_fund_steem);
@@ -68,9 +70,8 @@ $total_vesting_shares=fgets($my_file);
 $total_vesting_shares = preg_replace('/[^0-9.]+/', '', $total_vesting_shares);
 fclose($my_file);
 
-$servername = "sql.steemsql.com:1433";
-$username = "steemit";
-$password = "steemit";
+
+	
     if ($_GET["User"]) {
 	// hide other buttons while upvotes data is loading.
 		echo '<script>
@@ -106,13 +107,6 @@ $password = "steemit";
     }                                  
     
      
-    
-try {
-  $conn = new PDO("dblib:host=$servername;dbname=DBSteem", $username, $password);
-    // set the PDO error mode to exception
-  $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    // cast(body as text) needed to avoid error Connection failed: SQLSTATE[HY000]: General error: 20018 Unicode data in a Unicode-only collation or ntext data cannot be sent to clients using DB-Library (such as ISQL) or ODBC version 3.7 or earlier. [20018] (severity 16) [(null)]
-
 if ($rankmethod==1) {    
   $sql = "SELECT voter, count(ID) FROM TxVotes (NOLOCK) WHERE (Author='$steemitUserName')"; 
   
@@ -442,13 +436,7 @@ if ($rankmethod==1) {
 		  document.getElementById("ESPrankbtn").style.display = "inline";
 		  </script>';
 		
-		
-}
-    
-catch(PDOException $e)
-    {
-    echo "Connection failed: " . $e->getMessage();
-    }
+
      unset($conn); unset($sth);
     }
       ?>  
