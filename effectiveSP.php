@@ -138,9 +138,10 @@
 
 
 
-
-
 <?php
+include 'steemSQLconnect2.php';		
+
+	
 	
 	$my_file = fopen("global.txt",'r');
 $total_vesting_fund_steem=fgets($my_file);
@@ -149,11 +150,7 @@ $total_vesting_shares=fgets($my_file);
 $total_vesting_shares = preg_replace('/[^0-9.]+/', '', $total_vesting_shares);
 fclose($my_file);
 
-$servername = "sql.steemsql.com:1433";
 
-$username = "steemit";
-
-$password = "steemit";
 
 $numberofpages=7;
 
@@ -245,33 +242,6 @@ echo '<a href="effectiveSP.php?page='.($page+1).'" class="btn btn-light" role="b
 
 echo '<form action="effectiveSP.php" method="get">Go To Page Number <input type="text" name="page" size="5"> <input type="submit" value="Go"></form><br></div>';
 
-// Use try catch exception handling. Details: https://www.w3schools.com/PhP/php_exception.asp
-
-try {
-
-    // connect to SteemSQL via PDO. Make sure pdo and pdo_dblib extensions are enabled.
-
-    $conn = new PDO("dblib:host=$servername;dbname=DBSteem", $username, $password);
-
-    
-
-    // set the PDO error mode to exception
-
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    
-
-    // print connection successful message if connection successful.
-
-/*    if ($conn) {
-
-        echo "Connection to database established.<br>";
-
-    }
-
-    */
-
-    // test query. Select the name column from the Accounts table where the Id is 29666. Result should be magicmonk.
 
     $sql = "
 SELECT convert(float, a.vesting_shares)-convert(float,a.delegated_vesting_shares)+convert(float,a.received_vesting_shares) AS effective_vests, a.name
@@ -346,15 +316,7 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ra
 
         echo "</table>";
 
-}
 
-// if cannot connect to database, print error message    
-
-catch(PDOException $e)  {
-
-    echo "Connection failed: " . $e->getMessage();
-
-}
 
 // terminate connectiion
 
