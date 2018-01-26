@@ -8,7 +8,7 @@ A tool to analyse your upvote statistics for Steemit. Go to live website at http
 
   Alternatively, you may click another button to find out your ranking in terms of number of followers.
 
-- [**upvotelist.php**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/master/upvotelist.php): A page opened up from index.php. It will show all articles voted on by a particular user, with the date and percentage of each vote, and a show ranking button that displays this user's contributation as a ranking against all other users who voted. It also includes a built in calculator for you to add up contributions by a specific user.
+- [**upvotelist.php**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/master/upvotelist.php): A page opened up from index.php. It will show all articles voted on by a particular user, with the date and percentage of each vote, and a show ranking button that displays this user's contributation as a ranking against all other users who voted. You will also see how much in total the voter has contributed towards all of your articles during this time period in $ amount.
 
 - [**style.css**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/master/style.css): CSS Stylesheet for the whole website.
 
@@ -23,6 +23,8 @@ A tool to analyse your upvote statistics for Steemit. Go to live website at http
 - [**updateglobal.php**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/effective_SP_rank/updateglobal.php): Retrieve total_vesting_fund_steem and total_vesting_shares using the SteemJS API, and then update values in global.txt for calculation of SP.
 
 - [**global.txt**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/effective_SP_rank/global.txt): Text file containing the total_vesting_fund_steem and total_vesting_shares values needed to calculate a user's steem power from vesting shares. Updated periodically using updateglobal.php.
+
+- [**steemSQLconnect2.php**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/automate_contribution_calculation/steemSQLconnect2.php): Connection to SteemSQL database in a separate php file, to be included in other pages that required SteemSQL connection..
 
 
 ## Folders
