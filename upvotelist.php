@@ -35,54 +35,61 @@
 <div id="total_con" style="padding-top:1rem;padding-left:1rem;padding-right:1rem;border: 5px solid white; max-width:400px;margin:auto;display:none;margin-bottom:1rem;"></div>
 
 <?php
+
+// connection to SteemSQL database. See https://github.com/Bulletproofmonk/PHPSteemSQL/blob/master/connectv7.php
+include 'steemSQLconnect2.php';		
+	
+// list of article addresses for contribution calculator later.	
+$articleList=array();
+
+// start putting addresses in the list at 0 element
+$articleIndex=0;
+
+// author and voter details stripped from URL
 $author = rtrim($_GET["author"]);
 $voter = rtrim($_GET["voter"]);
+
+// title at the top of page to state the voter and who is the author	
 echo '<p><a href="http://steemit.com/@'.$voter.'"<b>'.$voter.'</b></a> upvoted <a href="http://steemit.com/@'.$author.'"><b>'.$author.'</b></a> on the following:</p>';
-$servername = "sql.steemsql.com:1433";
-$username = "steemit";
-$password = "steemit";
 
-   if ($_GET["Months"]) {
-    $months = $_GET["Months"];
-    } else {
-    $months = 3;
-    }
 
-    if ($_GET["Articlesonly"]) {
-    $articlesonly = $_GET["Articlesonly"];
-    } else {
-    $articlesonly = 1;
-    }
+// if number of months not given, choose 3 as default
+if ($_GET["Months"]) {
+	$months = $_GET["Months"];
+} else {
+	$months = 3;
+}
 
-try {
-    $conn = new PDO("dblib:host=$servername;dbname=DBSteem", $username, $password);
-    // set the PDO error mode to exception
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+// retrieve choice for whether to include articles only or to include comments as well
+if ($_GET["Articlesonly"]) {
+	$articlesonly = $_GET["Articlesonly"];
+} else {
+	$articlesonly = 1;
+}
 
-    // cast(body as text) needed to avoid error Connection failed: SQLSTATE[HY000]: General error: 20018 Unicode data in a Unicode-only collation or ntext data cannot be sent to clients using DB-Library (such as ISQL) or ODBC version 3.7 or earlier. [20018] (severity 16) [(null)]
-    // if articles and comments are included
+// SQL executed if articles and comments are included
 if ($articlesonly==1) {
- if ($months!="all") {
-    $newdate = date("Y-m-d", strtotime("-".$months." months"));
-    $sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') AND (timestamp>=Convert(datetime, '".$newdate."')) ORDER BY timestamp DESC";
+	if ($months!="all") {
+		$newdate = date("Y-m-d", strtotime("-".$months." months"));
+    	$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') AND (timestamp>=Convert(datetime, '".$newdate."')) ORDER BY timestamp DESC";
     } else {
-    $sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') ORDER BY timestamp DESC";
+		$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') ORDER BY timestamp DESC";
     }
-    }
-    
-    else {
+} else {
     // if articles only, no comments
-   if ($months!="all") {
-    $newdate = date("Y-m-d", strtotime("-".$months." months"));
-    $sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') AND (timestamp>=Convert(datetime, '".$newdate."')) AND (permlink IN (SELECT permlink FROM Comments WHERE author='".$author."' AND depth=0)) ORDER BY timestamp DESC";
+	if ($months!="all") {
+		$newdate = date("Y-m-d", strtotime("-".$months." months"));
+		$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') AND (timestamp>=Convert(datetime, '".$newdate."')) AND (permlink IN (SELECT permlink FROM Comments WHERE author='".$author."' AND depth=0)) ORDER BY timestamp DESC";
     } else {
-    $sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') AND (permlink IN (SELECT permlink FROM Comments WHERE author='".$author."' AND depth=0)) ORDER BY timestamp DESC";
+    	$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') AND (permlink IN (SELECT permlink FROM Comments WHERE author='".$author."' AND depth=0)) ORDER BY timestamp DESC";
     }
-   }
+}
     
-    
-    $sth = $conn->prepare($sql);
-    $sth->execute();    
+// prepares the SQL statement to be executed.    
+$sth = $conn->prepare($sql);
+
+// execute SQL statement.	
+$sth->execute();    
      echo '<table class="table table-sm"><thead class="thead-inverse"><tr><th>Timestamp</th><th>%</th><th>Link</th></tr></thead><tbody>';
      
      // row number of $ button
@@ -94,7 +101,10 @@ if ($articlesonly==1) {
       echo "</td><td>";
       echo $row[3]/100;
       echo "</td><td>";
-      echo '<p><a href="https://steemit.com/cn/@'.$author.'/'.$row[1].'" target="_top">'.$row[1].'</a></p>';      
+      echo '<p><a href="https://steemit.com/cn/@'.$author.'/'.$row[1].'" target="_top">'.$row[1].'</a></p>';  
+// store URL of articles in articleList array
+	  $articleList[$articleIndex]=$row[1];
+	  $articleIndex++;
       echo '<div id='.$rownum.'><button type="button" class="btn btn-info" onClick="showContribution('.$rownum.',\''.$row[1].'\')">Show Contribution Ranking & Add to Calculator</button></div><br>';
       $rownum++;
       echo "</td></tr>";
@@ -102,13 +112,7 @@ if ($articlesonly==1) {
     }
       
   echo "</tbody></table>";
-}
-    
-catch(PDOException $e)
-    {
-    echo "Connection failed: " . $e->getMessage();
-    }
-    
+
     unset($conn); unset($sth);
     
 ?>
@@ -121,11 +125,13 @@ catch(PDOException $e)
 
 <script>
 
+steem.api.setOptions({ url: 'https://api.steemit.com'});	
+
+// contribution calculator starts at 0. number of articles start at 0
 totalconnum=0;
 totalcon=0;
 
-// this function hides or shows the full ranking list
-	
+// this function hides or shows the full ranking list	
 function showRanking(x,fulllist)	{
 	var id = x;
 	if (fulllist==true) {	
@@ -140,18 +146,17 @@ function showRanking(x,fulllist)	{
 	
 }
 	
-// this function shows the contribution of a specific user plus loads the table of full contributors
-	
-function showContribution(x,y) {
+// this function shows the contribution of a specific user plus loads the table of full contributors	
+const showContribution = async(x,y) => {
 
-	// where the information will be printed.
-var id=x;
+// where the information will be printed.
+	var id=x;
 	document.getElementById(id).innerHTML="loading..";
-	// update to new endpoint
-steem.api.setOptions({ url: 'https://api.steemit.com'});	
+// update to new endpoint
+	steem.api.setOptions({ url: 'https://api.steemit.com'});	
 
 // retrieve article information
-steem.api.getContent('<?=$author?>', y ,function(err, result) {
+	const result = await steem.api.getContentAsync('<?=$author?>', y); 
 	
 
 // store pending payout value
@@ -218,16 +223,17 @@ steem.api.getContent('<?=$author?>', y ,function(err, result) {
 	} else {calculatorString+=' article.</p>';}
 	document.getElementById("total_con").innerHTML=calculatorString;
 	
-// print button to get full ranking list
-	
+// print button to get full ranking list	
 	document.getElementById(id.toString()).innerHTML+='<button class="btn btn-light" id="btn'+id+'show" onClick="showRanking('+id+',true)">Show Full Ranking List</button> ';
 	
 	document.getElementById(id.toString()).innerHTML+='<button class="btn btn-light" id="btn'+id+'hide" style="display:none" onClick="showRanking('+id+',false)">Hide Full Ranking List</button>';
 	
 	document.getElementById(id.toString()).innerHTML+="<br><br>";
-	
+
+// the ranktable is generated in string variable
 	var rankTable ='<table id="table'+id+'" style="margin-left:0;display:none;"><tr><td>Rank</td><td>Username</td><td align="right">Amount Contributed</td><td align="right">Voting percentage</td></tr>';
-	
+
+// populate the ranktable
 	for (x=0;x<length;x++) {
 		rankTable+="<tr><td>";
 		rank=x+1;
@@ -242,36 +248,29 @@ steem.api.getContent('<?=$author?>', y ,function(err, result) {
 		rankTable+="</td></tr>";		
 	}
 	rankTable+="</table>";
+// print the rank table
 	document.getElementById(id.toString()).innerHTML+=rankTable;
-
-
-	
 	
 
-});
+};
 
+// automate contribution calculation with async await function.
 	
+const outputData = async () => {
 	
-/*
-	var id=x;
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-    if (this.readyState==1) {
-     document.getElementById(id).innerHTML="loading..";
-    }     
-		if (this.readyState==4 && this.status==200) {
-		document.getElementById(id).innerHTML=this.responseText;
-		}	
-	};
-	xhttp.open("GET", "getdollars.php?author=<?php echo $author ?>&primevoter=<?php echo $voter ?>&permlink="+y, true);
-	xhttp.send();	
-*/
+<?
+for ($x=0;$x<sizeof($articleList);$x++) {
+	echo "await showContribution($x, '".$articleList[$x]."');";	
+}
+	
+?>	
+
 }
 
+// run contribution calculation function to automatically press all calculate contribution buttons.
 
+outputData();
 
-	
-	
 	
 </script>
 

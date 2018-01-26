@@ -1,38 +1,17 @@
 
-
 <?php
 
+
+include 'steemSQLconnect2.php';		
+
+	
 
 
 $SteemitUser = $_GET["SteemitUser"];
 
-$servername = "sql.steemsql.com:1433";
-
-$username = "steemit";
-
-$password = "steemit";
 
 // Use try catch exception handling. Details: https://www.w3schools.com/PhP/php_exception.asp
 
-try {
-
-    // connect to SteemSQL via PDO. Make sure pdo and pdo_dblib extensions are enabled.
-
-    $conn = new PDO("dblib:host=$servername;dbname=DBSteem", $username, $password);
-
-    
-
-    // set the PDO error mode to exception
-
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    
-
-    // print connection successful message if connection successful.
-
-
-
-    // test query. Select the name column from the Accounts table where the Id is 29666. Result should be magicmonk.
 
     $sql = "
 
@@ -96,19 +75,7 @@ $page = ceil($rank/50);
 
 echo "<p><a href=followers.php?page=".$page."&highlight=".$SteemitUser.">".$SteemitUser." is on page ".$page.". Click to see this page</a>.</p>";
 
-
-
-        
-
-}
-
-// if cannot connect to database, print error message    
-
-catch(PDOException $e)  {
-
-    echo "Connection failed: " . $e->getMessage();
-
-}
+    
 
 // terminate connectiion
 
