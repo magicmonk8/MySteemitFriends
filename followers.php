@@ -233,21 +233,40 @@ echo '<form action="followers.php" method="get">Go To Page Number <input type="t
 
 
 
-    // test query. Select the name column from the Accounts table where the Id is 29666. Result should be magicmonk.
-
-    $sql = "select count(*), Following
-
-from Followers
-
-group by following
-
-Order by count(*) DESC
-
-OFFSET ".$offset." ROWS
-
-FETCH NEXT ".$pagesize." ROWS ONLY;";
-
     
+    $sql = "
+	
+	;With q1 as
+(
+select Following as Steemian, count(*) AS Followers 
+from Followers (NOLOCK)
+group by following
+Order by Followers DESC
+OFFSET ".$offset." ROWS
+FETCH NEXT ".$pagesize." ROWS ONLY
+), 
+
+q2 as
+(
+select follower as Steemian, count(*) AS Following 
+from Followers (NOLOCK)
+group by follower
+), 
+
+q3 as 
+(
+SELECT name, id, 
+    (sign(reputation))*(log(abs(reputation), 10)-9)*9+25 as rep, 
+    reputation, created, vesting_shares
+FROM Accounts
+)
+
+select q1.Steemian AS UserName, q1.Followers, q2.Following, ROUND(q3.rep,1) as Reputation
+from q1 
+LEFT JOIN q2 ON q1.Steemian=q2.Steemian
+LEFT JOIN q3 ON q1.Steemian=q3.name
+order by q1.Followers DESC";
+ 
 
     // execute the query. Store the results in sth variable.
 
@@ -261,7 +280,7 @@ echo '<table id="bigtable" class="table table-sm" style="background-color:#0f488
 
     
 
-echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th>User Name</th><th>Followers</th></tr></thead>';
+echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Rank</th><th>UserName</th><th>Followers</th><th>Following</th><th>Reputation</th></tr></thead>';
 
     // print the results. If successful, magicmonk will be printed on page.
 
@@ -269,6 +288,11 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ra
 
     while ($row = $sth->fetch(PDO::FETCH_NUM)) { 
 
+	$steemitUser=$row[0];
+	$followers=$row[1];
+	$following=$row[2];
+	$reputation=$row[3];
+		
       echo '<tr><td style="text-align: center;">';
 
       echo $rank;
@@ -277,15 +301,16 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ra
 
       echo "</td><td>";
 
-      if ($row[1]==$highlight) {
+	  	
+      if ($steemitUser==$highlight) {
 
       echo '<span style="background-color:red">';
 
       } 
 
-      echo '<a tabindex="0" data-trigger="click" data-toggle="popover" data-content="<p><a class=\'nounderline btn btn-primary\' href=\'http://steemit.com/@'.$row[1].'/\'>Steemit Profile</p><a class=\'nounderline btn btn-info\' href=\'index.php?User='.$row[1].'\'>MSF Profile</a>">'.$row[1].'</a>';
+      echo '<a tabindex="0" data-trigger="click" data-toggle="popover" data-content="<p><a class=\'nounderline btn btn-primary\' href=\'http://steemit.com/@'.$steemitUser.'/\'>Steemit Profile</p><a class=\'nounderline btn btn-info\' href=\'index.php?User='.$steemitUser.'\'>MSF Profile</a>">'.$steemitUser.'</a>';
 
-      if ($row[1]==$highlight) {
+      if ($steemitUser==$highlight) {
 
       echo '</span>';
 
@@ -295,7 +320,15 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ra
 
           echo "</td><td>";
 
-          echo $row[0];
+          echo $followers;
+		
+		 echo "</td><td>";
+
+        if ($following) {echo $following;} else {echo "0";}
+		
+		echo "</td><td>";
+
+          echo $reputation;
 
           echo "</td></tr>";
 
