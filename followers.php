@@ -20,7 +20,9 @@
 
     <style>
 
-
+	.alignright {
+   		text-align: right;
+	}
 
     a.page-link{
 
@@ -280,7 +282,7 @@ echo '<table id="bigtable" class="table table-sm" style="background-color:#0f488
 
     
 
-echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Rank</th><th>UserName</th><th>Followers</th><th>Following</th><th>Reputation</th></tr></thead>';
+echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Rank</th><th>UserName</th><th>Followers</th><th class="alignright">Following</th><th class="alignright">Reputation</th></tr></thead>';
 
     // print the results. If successful, magicmonk will be printed on page.
 
@@ -318,17 +320,17 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ra
 
           
 
-          echo "</td><td>";
+          echo "</td><td class='alignright'>";
 
           echo $followers;
 		
-		 echo "</td><td>";
+		 echo "</td><td class='alignright'>";
 
         if ($following) {echo $following;} else {echo "0";}
 		
-		echo "</td><td>";
+		echo "</td><td class='alignright'>";
 
-          echo $reputation;
+          echo number_format($reputation,1);
 
           echo "</td></tr>";
 
