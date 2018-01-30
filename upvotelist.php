@@ -49,10 +49,7 @@ $articleIndex=0;
 $author = rtrim($_GET["author"]);
 $voter = rtrim($_GET["voter"]);
 
-// title at the top of page to state the voter and who is the author	
-echo '<p><a href="http://steemit.com/@'.$voter.'"<b>'.$voter.'</b></a> upvoted <a href="http://steemit.com/@'.$author.'"><b>'.$author.'</b></a> on the following:</p>';
-
-
+	
 // if number of months not given, choose 3 as default
 if ($_GET["Months"]) {
 	$months = $_GET["Months"];
@@ -66,7 +63,19 @@ if ($_GET["Articlesonly"]) {
 } else {
 	$articlesonly = 1;
 }
+	
+// look up how much the author contributed to the voter	
+echo '<p><a href="upvotelist.php?author='.$voter.'&voter='.$author.'&Months='.$months.'&Articlesonly='.$articlesonly.'"><b>Reverse Lookup</b>: how much has <b>@'.$author.'</b> contributed to <b>@'.$voter.'?</b></a></p>';	
 
+	
+// title at the top of page to state the voter and who is the author	
+echo '<p><a href="http://steemit.com/@'.$voter.'"><b>@'.$voter.'</b></a> upvoted <a href="http://steemit.com/@'.$author.'"><b>@'.$author.'</b></a> on the following:</p>';	
+	
+
+
+
+		
+	
 // SQL executed if articles and comments are included
 if ($articlesonly==1) {
 	if ($months!="all") {
@@ -208,6 +217,12 @@ const showContribution = async(x,y) => {
 
 // round contribution by user to 2d.p.
 	var contribution = Math.round(parseFloat(activeVotes[rank-1]['rshares'])/total*payout*100)/100;
+	
+// fix NaN error in case total rshares = 0 
+	
+	if (isNaN(contribution)) {		
+		contribution = 0;
+	}
 
 // print contribution to screen.
  	document.getElementById(id.toString()).innerHTML+="<p><?=$voter?> has contributed $"+contribution+" and is ranked at number "+rank+".</p>";
@@ -217,10 +232,10 @@ const showContribution = async(x,y) => {
 	totalconnum++;
 // show contribution on top of screen calculator.	
 	document.getElementById("total_con").style.display="block";
-	calculatorString='<h3>Calculator</h3> <p><a href="http://steemit.com/@<?=$voter?>"><b><?=$voter?></b></a> contributed a running total of<br>$'+Math.round(totalcon*100)/100+' from '+totalconnum;
+	calculatorString='<h3>Calculator</h3> <p><a href="http://steemit.com/@<?=$voter?>"><b>@<?=$voter?></b></a> contributed a running total of<br>$'+Math.round(totalcon*100)/100+' from '+totalconnum;
 	if (totalconnum>1) {
-		calculatorString += ' articles.</p>';
-	} else {calculatorString+=' article.</p>';}
+		calculatorString += ' articles to <a href="http://steemit.com/@<?=$author?>"><b>@<?=$author?></b></a>.</p>';
+	} else {calculatorString+=' article to <a href="http://steemit.com/@<?=$author?>"><b>@<?=$author?></b></a>.</p>';}
 	document.getElementById("total_con").innerHTML=calculatorString;
 	
 // print button to get full ranking list	
