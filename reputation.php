@@ -84,31 +84,29 @@
 
   </head>
 
-  <body>  
+  <body class="bg-4">  
     
-   
-<nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
+	<nav class="navbar navbar-expand-sm navbar-dark">
+
   <span class="navbar-brand mb-0 h1">Tools by <a href="http://steemit.com/@magicmonk">@magicmonk</a></span>
+
   <ul class="navbar-nav">
     <li class="nav-item">
       <a class="nav-link" href="index.php">Upvote Statistics</a>
     </li>
-    
-    <!-- Dropdown menu for ranking -->
-    <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Ranking tables</a>
-    <div class="dropdown-menu">
-    	<a class="dropdown-item" href="followers.php">Followers Ranking</a>
-    	<a class="dropdown-item" href="effectiveSP.php">Effective SP Ranking</a>
-    	<a class="dropdown-item" href="reputation.php">Reputation Ranking</a>     	
-    </div>    
+    <li class="nav-item">
+      <a class="nav-link" href="followers.php">Followers Ranking</a>
     </li>
-  
+    <li class="nav-item">
+      <a class="nav-link" href="effectiveSP.php">Effective SP Ranking</a>
+    </li>
+    </li>
   </ul>
-</nav>  
+</nav>     
+       
          
 
-    <div class="container-fluid bg-1 text-center" style="max-width:1000px;">
+    <div class="container-fluid bg-4 text-center" style="max-width:1000px;">
 
     <div class="row">
 
@@ -116,14 +114,13 @@
 
      
 
-<h1>Steemit Followers Ranking</h1>       
+<h1>Steemit Reputation Ranking</h1>       
 
 <br>
 
 <div style="border:5px solid white;padding:10px;">
 
 <h3>Search Username for Ranking</h3>
-
 
 
 <form>Steemit UserName: <input id="username" type="text" size="15"></form>
@@ -193,11 +190,11 @@ for ($x=$page-3;$x<=$page+3;$x++) {
 
       if ($x==$page) {
 
-        echo '<li class="page-item active"><a class="page-link" href="followers.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item active"><a class="page-link" href="reputation.php?page='.$x.'">'.$x.'</a></li>';
 
       } else {
 
-        echo '<li class="page-item"><a class="page-link" href="followers.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item"><a class="page-link" href="reputation.php?page='.$x.'">'.$x.'</a></li>';
 
       }  
 
@@ -209,11 +206,11 @@ for ($x=$page-3;$x<=$page+3;$x++) {
 
       if ($x==$page) {
 
-        echo '<li class="page-item active"><a class="page-link" href="followers.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item active"><a class="page-link" href="reputation.php?page='.$x.'">'.$x.'</a></li>';
 
       } else {
 
-        echo '<li class="page-item"><a class="page-link" href="followers.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item"><a class="page-link" href="reputation.php?page='.$x.'">'.$x.'</a></li>';
 
       }  
 
@@ -225,15 +222,15 @@ echo '</ul></nav><br>';
 
 if ($page>1) {
 
-echo '<a href="followers.php?page='.($page-1).'" class="btn btn-light" role="button">Previous Page</a> ';
+echo '<a href="reputation.php?page='.($page-1).'" class="btn btn-light" role="button">Previous Page</a> ';
 
 }
 
-echo '<a href="followers.php?page='.($page+1).'" class="btn btn-light" role="button">Next Page</a><br><br>'; 
+echo '<a href="reputation.php?page='.($page+1).'" class="btn btn-light" role="button">Next Page</a><br><br>'; 
 
 
 
-echo '<form action="followers.php" method="get">Go To Page Number <input type="text" name="page" size="5"> <input type="submit" value="Go"></form><br></div>';
+echo '<form action="reputation.php" method="get">Go To Page Number <input type="text" name="page" size="5"> <input type="submit" value="Go"></form><br></div>';
 
 
 
@@ -242,34 +239,32 @@ echo '<form action="followers.php" method="get">Go To Page Number <input type="t
 	
 	;With q1 as
 (
-select Following as Steemian, count(*) AS Followers 
-from Followers (NOLOCK)
-group by following
-Order by Followers DESC
+SELECT name, cast(log10(reputation)*9 - 56 as decimal(4,2)) as rep
+FROM Accounts
+ORDER BY rep DESC
 OFFSET ".$offset." ROWS
 FETCH NEXT ".$pagesize." ROWS ONLY
 ), 
 
 q2 as
 (
-select follower as Steemian, count(*) AS Following 
+select follower as name, count(*) AS Following 
 from Followers (NOLOCK)
 group by follower
 ), 
 
 q3 as 
 (
-SELECT name, id, 
-    (sign(reputation))*(log(abs(reputation), 10)-9)*9+25 as rep, 
-    reputation, created, vesting_shares
-FROM Accounts
+select Following as name, count(*) AS Followers 
+from Followers (NOLOCK)
+group by following
 )
 
-select q1.Steemian AS UserName, q1.Followers, q2.Following, ROUND(q3.rep,1) as Reputation
+select q1.name AS UserName, q1.rep as Reputation, q3.Followers, q2.Following
 from q1 
-LEFT JOIN q2 ON q1.Steemian=q2.Steemian
-LEFT JOIN q3 ON q1.Steemian=q3.name
-order by q1.Followers DESC";
+LEFT JOIN q2 ON q1.name=q2.name
+LEFT JOIN q3 ON q1.name=q3.name
+order by q1.rep DESC";
  
 
     // execute the query. Store the results in sth variable.
@@ -284,7 +279,7 @@ echo '<table id="bigtable" class="table table-sm" style="background-color:#0f488
 
     
 
-echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Rank</th><th>UserName</th><th>Followers</th><th class="alignright">Following</th><th class="alignright">Reputation</th></tr></thead>';
+echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Rank</th><th>UserName</th><th class="alignright">Reputation</th><th class="alignright">Followers</th><th class="alignright">Following</th></tr></thead>';
 
     // print the results. If successful, magicmonk will be printed on page.
 
@@ -293,9 +288,9 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ra
     while ($row = $sth->fetch(PDO::FETCH_NUM)) { 
 
 	$steemitUser=$row[0];
-	$followers=$row[1];
-	$following=$row[2];
-	$reputation=$row[3];
+	$followers=$row[2];
+	$following=$row[3];
+	$reputation=$row[1];
 		
       echo '<tr><td style="text-align: center;">';
 
@@ -320,7 +315,9 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ra
 
       } 
 
-          
+          	echo "</td><td class='alignright'>";
+
+          echo number_format($reputation,2);
 
           echo "</td><td class='alignright'>";
 
@@ -330,9 +327,7 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ra
 
         if ($following) {echo $following;} else {echo "0";}
 		
-		echo "</td><td class='alignright'>";
-
-          echo number_format($reputation,1);
+	
 
           echo "</td></tr>";
 
@@ -406,8 +401,6 @@ $(function(){
 
 
 
-
-
 function loadDoc() {
 
   document.getElementById("ranking").innerHTML = "Loading..";
@@ -430,7 +423,7 @@ function loadDoc() {
 
   };
 
-  xhttp.open("GET", "get_follower_rank.php?SteemitUser=" + username, true);
+  xhttp.open("GET", "get_reputation_rank.php?SteemitUser=" + username, true);
 
   xhttp.send();
 

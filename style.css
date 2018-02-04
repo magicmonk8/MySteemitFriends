@@ -1,12 +1,30 @@
-/* css for filter box row */
+
+/* CSS for drop downs */
+.dropdown-menu a:hover {
+background-color: #FFFF00 !important;
+color: #FF0000 !important;
+}
+
+.dropdown-menu {
+	background-color:#0B22AD;
+}
+
+#mynav.navbar li a:hover { 
+background-color: #FFFF00 !important;
+color: #FF0000 !important;
+}
+
 
 .nounderline {
 text-decoration:none;
 }
 
+
 .popover {
     background: #2E456D;
 }
+
+/* css for filter box row */
 
 .frow {
 margin:1rem;        
@@ -61,6 +79,13 @@ border-collapse:collapse;
 	color: white;
 }
 
+.bg-4 {
+
+	background-color:#8E8215;
+
+	color: white;
+
+	}
   
 
 
