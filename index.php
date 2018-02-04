@@ -7,29 +7,34 @@
     <script src="jquery/jquery-3.2.1.min.js"></script>
     <script src="popper.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css?1">
+    <link rel="stylesheet" type="text/css" href="style.css?2">
     <style>
     	#bigtable {     background-color:#106288;   }    
     	@media only screen and (max-device-width: 480px) {  
     		#bigtable {     background-color:#106288;   } 
     	} 
+
     </style>
   </head>
   <body> 
    
-<nav class="navbar navbar-expand-sm navbar-dark">
+<nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
   <span class="navbar-brand mb-0 h1">Tools by <a href="http://steemit.com/@magicmonk">@magicmonk</a></span>
   <ul class="navbar-nav">
     <li class="nav-item">
       <a class="nav-link" href="index.php">Upvote Statistics</a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link" href="followers.php">Followers Ranking</a>
+    
+    <!-- Dropdown menu for ranking -->
+    <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Ranking tables</a>
+    <div class="dropdown-menu">
+    	<a class="dropdown-item" href="followers.php">Followers Ranking</a>
+    	<a class="dropdown-item" href="effectiveSP.php">Effective SP Ranking</a>
+    	<a class="dropdown-item" href="reputation.php">Reputation Ranking</a>     	
+    </div>    
     </li>
-    <li class="nav-item">
-      <a class="nav-link" href="effectiveSP.php">Effective SP Ranking</a>
-    </li>
-    </li>
+  
   </ul>
 </nav>     
 
@@ -49,10 +54,18 @@
 
 		 <button id="upvotebtn" class="btn btn-primary" onclick="upBtnTxt()" type="submit">Upvote Stats</button><br>            
 		</form>
-		<button id="followrankbtn" class="btn btn-info" onclick="loadDoc()">Followers Rank</button><br><br>
-		<button id="ESPrankbtn" class="btn btn-danger" onclick="loadESP()">Effective SP Rank</button><br><br>              
+		
+		<div class="dropdown" id="rankingbtn">
+		<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">Ranking</button>
+		<div class="dropdown-menu">
+			<a class="dropdown-item" href="#" onclick="loadRank('get_follower_rank')">Followers</a>
+			<a class="dropdown-item" href="#" onclick="loadRank('get_esp_rank')">Effective SP</a>
+			<a class="dropdown-item" href="#" onclick="loadRank('get_reputation_rank')">Reputation</a>			
+		</div>	
+		</div>
+		<br>		          
 
-		<p>Created by <a href="http://steemit.com/@magicmonk"><img src="magicmonkhead.png" width="50" height="50">@magicmonk</a></p>
+		<p>Created by <a href="http://steemit.com/@magicmonk"><img id="logo" src="images/magicmonkhead.png" width="64px">@magicmonk</a></p>
 		<p><a href="https://steemit.com/steemit/@magicmonk/mysteemitfriend-s-new-edition-has-more-features-mysteemitfriends">Instructions</a></p>
 	   </td>
 	  </tr>
@@ -61,8 +74,10 @@
 <div id="ranking"></div>
    
 <?php
+// connect to SteemSQL database.
 include 'steemSQLconnect2.php';		
 
+// retrieve latest total vesting fund steem and total vesting shares for steem power calculations
 $my_file = fopen("global.txt",'r');
 $total_vesting_fund_steem=fgets($my_file);
 $total_vesting_fund_steem = preg_replace('/[^0-9.]+/', '', $total_vesting_fund_steem);
@@ -70,26 +85,29 @@ $total_vesting_shares=fgets($my_file);
 $total_vesting_shares = preg_replace('/[^0-9.]+/', '', $total_vesting_shares);
 fclose($my_file);
 
-
-	
-    if ($_GET["User"]) {
-	// hide other buttons while upvotes data is loading.
-		echo '<script>
-	      document.getElementById("upvotebtn").innerHTML = "Loading..";
-			document.getElementById("followrankbtn").style.display = "none";
-			document.getElementById("ESPrankbtn").style.display = "none";
-		</script>';
+// if a user name was provided in the URL, do the following	
+if ($_GET["User"]) {
+// hide other buttons while upvotes data is loading.
+	echo '<script>
+      document.getElementById("rankingbtn").style.display = "none";
+	  document.getElementById("upvotebtn").innerHTML = "Loading..";
+	  document.getElementById("logo").src="images/mmloading.gif";
 		
+	</script>';		
 		
     $steemitUserName = rtrim(strtolower($_GET["User"]));
     $steemitUserName= str_replace("@", "", $steemitUserName);
 
+// obtaining the following strings from the URL if they are available. If they are not available, set the defaults.	
+
+// the default for the number of months is 3.
     if ($_GET["Months"]) {
     $months = $_GET["Months"];
     } else {
     $months = 3;
     }
-    
+
+// the default for included upvotes is 1: including comments. Other option - 2: articles only and no comments.
     if ($_GET["ArticlesOnly"]) {
     $articlesonly = $_GET["ArticlesOnly"];
     } else {
@@ -99,7 +117,8 @@ fclose($my_file);
     if ($_GET["Userfilter"]) {
     $userfilter = rtrim(strtolower($_GET["Userfilter"]));
     }
-    
+
+// the default for rank method is 1: number of votes only. Other options- 2: total weight. 3: SP*total weight.
     if ($_GET["RankMethod"]) {
     $rankmethod = $_GET["RankMethod"];
     } else {
@@ -432,8 +451,8 @@ if ($rankmethod==1) {
     echo '<script>
 	      document.getElementById("pleasescroll").innerHTML = "<b><font color=yellow>Please <a href=\"#filterbox\">scroll down</a> to see the results.</font></b><br><br>";
 		  document.getElementById("upvotebtn").innerHTML = "Upvote Stats";
-		  document.getElementById("followrankbtn").style.display = "inline";
-		  document.getElementById("ESPrankbtn").style.display = "inline";
+		  document.getElementById("rankingbtn").style.display = "block";
+		  document.getElementById("logo").src="images/magicmonkhead.png";	
 		  </script>';
 		
 
@@ -468,17 +487,28 @@ $(function(){
 	  // function to hide other buttons while upvote button is fetching data.
 	  function upBtnTxt() {
 		 document.getElementById("upvotebtn").innerHTML = "Loading.."; 
-		  document.getElementById("followrankbtn").style.display = "none";
-		  document.getElementById("ESPrankbtn").style.display = "none";
+         document.getElementById("rankingbtn").style.display = "none";
+		 document.getElementById("logo").src="images/mmloading.gif";
+
 		  
 		  
 	  }
 
 // function to retrieve follower ranking	  
-function loadDoc() {
-	document.getElementById("followrankbtn").innerHTML = "Loading..";
+function loadRank(filename) {
+	
+	 var username;
+  username =  document.getElementById("User").value;
+  if (username=="") {alert ('Please enter a Steemit User Name!');return;}
+  username = username.replace("@","");
+
+
+  rankType = filename;
+
+	document.getElementById("pleasescroll").innerHTML = "Loading..";
+	document.getElementById("logo").src="images/mmloading.gif";
+	document.getElementById("rankingbtn").style.display = "none";
 	document.getElementById("upvotebtn").style.display = "none"; 
-	document.getElementById("ESPrankbtn").style.display = "none"; 	
   	document.getElementById("ranking").style.margin="auto";
 	document.getElementById("ranking").style.marginTop="1.5rem";
 	document.getElementById("ranking").style.marginBottom="1.5rem";
@@ -488,68 +518,30 @@ function loadDoc() {
   	document.getElementById("ranking").innerHTML = "Loading..";
 	
 
-  var username;
-  username =  document.getElementById("User").value;
-  username = username.replace("@","");
-
+ 
+  
   var xhttp = new XMLHttpRequest();
 	
   xhttp.onreadystatechange = function() {
 
     if (this.readyState == 4 && this.status == 200) {		
-
+		
+		document.getElementById("logo").src="images/magicmonkhead.png";		
 		document.getElementById("ranking").innerHTML = this.responseText;
 		document.getElementById("pleasescroll").innerHTML = "<b><font color=#78EF15>Please <a href=\"#ranking\">scroll down</a> to see the ranking.</b><br><br>";
-		document.getElementById("followrankbtn").innerHTML = "Follower Ranking";
 		document.getElementById("upvotebtn").style.display = "inline"; 
-		document.getElementById("ESPrankbtn").style.display = "inline";
+		document.getElementById("rankingbtn").style.display = "block";
+		
     }
 
   };
 
-  xhttp.open("GET", "get_follower_rank.php?SteemitUser=" + username, true);
+  xhttp.open("GET", rankType+".php?SteemitUser=" + username, true);
   xhttp.send();
 
 }
 
-// function to retrieve Effective SP ranking.	  
-function loadESP() {
 
-// hide other buttons while effective SP ranking is loading. Set up ranking display box and display loading text inside.
-document.getElementById("upvotebtn").style.display = "none";
-document.getElementById("followrankbtn").style.display = "none"; 
-document.getElementById("ranking").style.margin="auto";
-document.getElementById("ranking").style.marginTop="1.5rem";
-document.getElementById("ranking").style.marginBottom="1.5rem";
-document.getElementById("ranking").style.border="thick solid white";
-document.getElementById("ranking").style.maxWidth = "300px";
-document.getElementById("ranking").style.padding = "1rem";	
-document.getElementById("ranking").innerHTML = "Loading..";
-document.getElementById("ESPrankbtn").innerHTML = "Loading..";
-	
-
-  var username;
-  username =  document.getElementById("User").value;
-  username = username.replace("@","");
-
-  var xhttp = new XMLHttpRequest();
-
-  xhttp.onreadystatechange = function() {
-	// when data for effective SP ranking has been retrieved, display on page.
-    if (this.readyState == 4 && this.status == 200) {		
-		
-		document.getElementById("ranking").innerHTML = this.responseText;
-		document.getElementById("pleasescroll").innerHTML = "<b><font color=#78EF15>Please <a href=\"#ranking\">scroll down</a> to see the ranking.</b><br><br>";
-		document.getElementById("ESPrankbtn").innerHTML = "Effective SP Ranking";
-		document.getElementById("upvotebtn").style.display = "inline"; 
-		document.getElementById("followrankbtn").style.display = "inline"; 
-    }
-  };
-
-  xhttp.open("GET", "get_esp_rank.php?SteemitUser=" + username, true);
-  xhttp.send();
-
-}	  
 	  	  
     </script>
   </body>

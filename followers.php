@@ -86,24 +86,26 @@
 
   <body>  
     
-	<nav class="navbar navbar-expand-sm navbar-dark">
-
+   
+<nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
   <span class="navbar-brand mb-0 h1">Tools by <a href="http://steemit.com/@magicmonk">@magicmonk</a></span>
-
   <ul class="navbar-nav">
     <li class="nav-item">
       <a class="nav-link" href="index.php">Upvote Statistics</a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link" href="followers.php">Followers Ranking</a>
+    
+    <!-- Dropdown menu for ranking -->
+    <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Ranking tables</a>
+    <div class="dropdown-menu">
+    	<a class="dropdown-item" href="followers.php">Followers Ranking</a>
+    	<a class="dropdown-item" href="effectiveSP.php">Effective SP Ranking</a>
+    	<a class="dropdown-item" href="reputation.php">Reputation Ranking</a>     	
+    </div>    
     </li>
-    <li class="nav-item">
-      <a class="nav-link" href="effectiveSP.php">Effective SP Ranking</a>
-    </li>
-    </li>
+  
   </ul>
-</nav>     
-       
+</nav>  
          
 
     <div class="container-fluid bg-1 text-center" style="max-width:1000px;">
