@@ -34,6 +34,10 @@
     	<a class="dropdown-item" href="reputation.php">Reputation Ranking</a>     	
     </div>    
     </li>
+    
+    <li class="nav-item">
+      <a class="nav-link" href="conversation.php">Conversation Record</a>
+    </li>
   
   </ul>
 </nav>     
@@ -63,6 +67,8 @@
 			<a class="dropdown-item" href="#" onclick="loadRank('get_reputation_rank')">Reputation</a>			
 		</div>	
 		</div>
+		<br>
+		<button id="convbtn" class="btn btn-success" onclick="convBtn()">Conversation Record</button><br>     
 		<br>		          
 
 		<p>Created by <a href="http://steemit.com/@magicmonk"><img id="logo" src="images/magicmonkhead.png" width="64px">@magicmonk</a></p>
@@ -484,15 +490,23 @@ $(function(){
    
 });
 
-	  // function to hide other buttons while upvote button is fetching data.
-	  function upBtnTxt() {
-		 document.getElementById("upvotebtn").innerHTML = "Loading.."; 
-         document.getElementById("rankingbtn").style.display = "none";
-		 document.getElementById("logo").src="images/mmloading.gif";
+// function to hide other buttons while upvote button is fetching data.
+function upBtnTxt() {
+	document.getElementById("upvotebtn").innerHTML = "Loading.."; 
+	document.getElementById("rankingbtn").style.display = "none";
+	document.getElementById("logo").src="images/mmloading.gif";
 
-		  
-		  
-	  }
+}
+
+// go to conversation record and load first user name
+	  
+function convBtn() {
+	goToUser = document.getElementById("User").value;
+	window.location.href = 'conversation.php?User1='+goToUser;
+	
+	
+}
+	  
 
 // function to retrieve follower ranking	  
 function loadRank(filename) {
