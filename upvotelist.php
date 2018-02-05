@@ -8,12 +8,11 @@
 <script src="jquery/jquery-3.2.1.min.js"></script>
 <script src="popper.min.js"></script>
 <script src="bootstrap/js/bootstrap.min.js"></script>
-<link rel="stylesheet" type="text/css" href="style.css">
+<link rel="stylesheet" type="text/css" href="style.css?2">
 </head>
 
 <body>
 
-   
 <nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
   <span class="navbar-brand mb-0 h1">Tools by <a href="http://steemit.com/@magicmonk">@magicmonk</a></span>
   <ul class="navbar-nav">
@@ -30,9 +29,13 @@
     	<a class="dropdown-item" href="reputation.php">Reputation Ranking</a>     	
     </div>    
     </li>
+    
+    <li class="nav-item">
+      <a class="nav-link" href="conversation.php">Conversation Record</a>
+    </li>
   
   </ul>
-</nav>  
+</nav>     
     
 
 <div class="container-fluid bg-1 text-center">

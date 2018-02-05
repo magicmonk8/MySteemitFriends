@@ -16,7 +16,7 @@
 
     <script src="bootstrap/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="style.css?1">
+    <link rel="stylesheet" type="text/css" href="style.css?2">
 
     <style>
 
@@ -103,9 +103,13 @@
     	<a class="dropdown-item" href="reputation.php">Reputation Ranking</a>     	
     </div>    
     </li>
+    
+    <li class="nav-item">
+      <a class="nav-link" href="conversation.php">Conversation Record</a>
+    </li>
   
   </ul>
-</nav>  
+</nav>     
          
 
     <div class="container-fluid bg-1 text-center" style="max-width:1000px;">

@@ -43,11 +43,11 @@
 <form class="form-inline" method="get" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
 		  <div class="form-group" style="margin-top:10px;">
 			<label for="User1">Username 1:&nbsp;</label>
-			<input class="form-control" placeholder="Enter UserName" id="User1" type="text" name="User1" value="<? if ($_GET["User1"]) { echo $_GET["User1"];} ?>" autofocus>&nbsp;&nbsp;
+			<input class="form-control" placeholder="Enter UserName" id="User1" type="text" name="User1" value="<? if ($_GET["User1"]) { echo $_GET["User1"];} ?>" <? if (!$_GET["User1"]) { echo 'autofocus';} ?>>&nbsp;&nbsp;
 	      </div>
 	      <div class="form-group" style="margin-top:10px;">
 			<label for="User2">Username 2:&nbsp;</label>
-			<input class="form-control" placeholder="Enter Another UserName" id="User2" type="text" name="User2" value="<? if ($_GET["User2"]) { echo $_GET["User2"];} ?>" autofocus>&nbsp;&nbsp;
+			<input class="form-control" placeholder="Enter Another UserName" id="User2" type="text" name="User2" value="<? if ($_GET["User2"]) { echo $_GET["User2"];} ?>" <? if ($_GET["User1"]) { echo 'autofocus';} ?>>&nbsp;&nbsp;
 		  </div>
 		 <br>
 		 <button id="upvotebtn" class="btn btn-lg btn-primary" type="submit" style="margin-top:10px;">See conversation record</button><br>            
