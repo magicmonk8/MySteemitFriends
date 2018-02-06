@@ -81,7 +81,7 @@ $sth = $conn->prepare($sql);
 
 // execute SQL statement.	
 $sth->execute();    
-     echo '<table class="table table-sm table-responsive"><thead class="thead-inverse"><tr><th class="col-xs-2">Date</th><th class="col-xs-2">From</th><th class="col-xs-2">To</th><th class="col-xs-6">Comment Link</th></tr></thead><tbody>';
+     echo '<table class="table table-sm"><thead class="thead-inverse"><tr><th style="width:1%">Date</th><th style="width:1%">From</th><th style="width:1%">To</th><th>Comment Link</th></tr></thead><tbody>';
      
      // row number of $ button
      $rownum=0;
@@ -93,8 +93,10 @@ $sth->execute();
       echo $row[1];
       echo "</td><td>";
       echo $row[2];
-	  echo "</td><td class='text-nowrap'>";
-      echo '<a href="http://steemit.com/@'.$row[1].'/'.$row[3].'">'.$row[3].'</a>';
+	  echo "</td><td>";
+      echo '<p><a href="http://steemit.com/@'.$row[1].'/'.$row[3].'">Link to Comment</a></p>';
+	  echo '<div id='.$rownum.'><button type="button" class="btn btn-info" onClick="showArticle('.$rownum.',\''.$row[1].'\',\''.$row[3].'\')">Show Comment</button></div><br>';
+	  $rownum++;
       echo "</td></tr>";
       
     }
@@ -108,7 +110,43 @@ $sth->execute();
 
 </div>
 
+
 </body>
+
+
+<script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
+
+<script>
+	
+
+function showArticle(x,y,z) {
+
+// article url
+	var url=z;
+	
+// who is the author
+	var author=y;
+	
+// where comment text will be printed
+	var id=x;
+	document.getElementById(id).innerHTML="loading..";
+
+// update settings to new endpoint
+	steem.api.setOptions({ url: 'https://api.steemit.com'});
+
+// retrieve article text
+	
+	steem.api.getContent(author,url, function(err,result) {
+// print article text to correct location
+		document.getElementById(id).innerHTML=result.body;
+	});
+	
+}
+
+</script>
+
+
+
 	
 
 </html>
