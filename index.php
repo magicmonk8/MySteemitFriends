@@ -95,7 +95,8 @@ fclose($my_file);
 if ($_GET["User"]) {
 // hide other buttons while upvotes data is loading.
 	echo '<script>
-      document.getElementById("rankingbtn").style.display = "none";
+      document.getElementById("rankingbtn").style.display = "none";	  
+	  document.getElementById("convbtn").style.display = "none";
 	  document.getElementById("upvotebtn").innerHTML = "Loading..";
 	  document.getElementById("logo").src="images/mmloading.gif";
 		
@@ -458,6 +459,7 @@ if ($rankmethod==1) {
 	      document.getElementById("pleasescroll").innerHTML = "<b><font color=yellow>Please <a href=\"#filterbox\">scroll down</a> to see the results.</font></b><br><br>";
 		  document.getElementById("upvotebtn").innerHTML = "Upvote Stats";
 		  document.getElementById("rankingbtn").style.display = "block";
+		  document.getElementById("convbtn").style.display = "inline";
 		  document.getElementById("logo").src="images/magicmonkhead.png";	
 		  </script>';
 		
@@ -494,6 +496,7 @@ $(function(){
 function upBtnTxt() {
 	document.getElementById("upvotebtn").innerHTML = "Loading.."; 
 	document.getElementById("rankingbtn").style.display = "none";
+	document.getElementById("convbtn").style.display = "none";
 	document.getElementById("logo").src="images/mmloading.gif";
 
 }
@@ -523,6 +526,7 @@ function loadRank(filename) {
 	document.getElementById("logo").src="images/mmloading.gif";
 	document.getElementById("rankingbtn").style.display = "none";
 	document.getElementById("upvotebtn").style.display = "none"; 
+	document.getElementById("convbtn").style.display = "none";
   	document.getElementById("ranking").style.margin="auto";
 	document.getElementById("ranking").style.marginTop="1.5rem";
 	document.getElementById("ranking").style.marginBottom="1.5rem";
@@ -545,6 +549,7 @@ function loadRank(filename) {
 		document.getElementById("pleasescroll").innerHTML = "<b><font color=#78EF15>Please <a href=\"#ranking\">scroll down</a> to see the ranking.</b><br><br>";
 		document.getElementById("upvotebtn").style.display = "inline"; 
 		document.getElementById("rankingbtn").style.display = "block";
+		document.getElementById("convbtn").style.display = "inline";
 		
     }
 
