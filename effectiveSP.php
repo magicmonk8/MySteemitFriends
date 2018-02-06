@@ -16,7 +16,7 @@
 
     <script src="bootstrap/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="style.css?2">
+    <link rel="stylesheet" type="text/css" href="style.css?3">
 
     <style>
 
@@ -250,7 +250,7 @@ echo '<form action="effectiveSP.php" method="get">Go To Page Number <input type=
 
 
     $sql = "
-SELECT convert(float, a.vesting_shares)-convert(float,a.delegated_vesting_shares)+convert(float,a.received_vesting_shares) AS effective_vests, a.name
+SELECT convert(float, a.vesting_shares)-convert(float,a.delegated_vesting_shares)+convert(float,a.received_vesting_shares) AS effective_vests, a.name, convert(float, a.vesting_shares) AS vests
 FROM
 (SELECT name, Substring(vesting_shares,0,PATINDEX('%VESTS%',vesting_shares)) AS vesting_shares, Substring(delegated_vesting_shares,0,PATINDEX('%VESTS%',delegated_vesting_shares)) AS delegated_vesting_shares, Substring(received_vesting_shares,0,PATINDEX('%VESTS%',received_vesting_shares)) AS received_vesting_shares
 FROM Accounts (NOLOCK)) a
@@ -273,7 +273,7 @@ echo '<table id="bigtable" class="table table-sm" style="background-color:#0f488
 
     
 
-echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th>User Name</th><th>Effective SP</th></tr></thead>';
+echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th>User Name</th><th class="alignright">Effective SP</th><th class="alignright">Own SP</th></tr></thead>';
 
     // print the results. If successful, magicmonk will be printed on page.
 
@@ -283,7 +283,8 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ra
 		
 		$vests=$row[0];
 		$sp = $total_vesting_fund_steem * $vests / $total_vesting_shares;
-
+		$ownvests=$row[2];
+		$ownsp = $total_vesting_fund_steem * $ownvests / $total_vesting_shares;
 		
 
       echo '<tr><td style="text-align: center;">';
@@ -310,9 +311,12 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ra
 
           
 
-          echo "</td><td>";
+          echo "</td><td class='alignright'>";
 
           echo number_format(round($sp));
+		 echo "</td><td class='alignright'>";
+
+          echo number_format(round($ownsp));
 
           echo "</td></tr>";
 
