@@ -1,82 +1,43 @@
 <html>
-
   <head>
-
     <title>Effective SP Ranking - My Steemit Friends</title>
-
     <meta charset="utf-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-
     <script src="jquery/jquery-3.2.1.min.js"></script>
-
     <script src="extensions/popper.min.js"></script>
-
     <script src="bootstrap/js/bootstrap.min.js"></script>
-
     <link rel="stylesheet" type="text/css" href="style.css?3">
-
     <style>
-
-
-
     a.page-link{
-
- 
-
     color:blue !important;
-
-    }
-
-    a.page-link:visited {
-
-      color:blue !important;
-
-    }
-
-    ul {
-
-    margin:0.5rem;
-
     }
 		
-		ul.navbar-nav {
-
+    a.page-link:visited {
+      color:blue !important;
+    }
+		
+    ul {
+    margin:0.5rem;
+    }
+		
+	ul.navbar-nav {
     margin:0px;
-
     }
 
-    li {     
-
-    
-
-   
-
-    }
-
-    
 
     a.btn-info, a.btn-info:visited, a.btn-primary, a.btn-primary:visited {
-
     color:white !important;
-
     } 
 
     a.btn-light {
-
       color:blue !important;
-
     }
 
     a.btn-light:visited {
-
       color:blue !important;
-
     }
-
-    
+   
 
     </style>
 
