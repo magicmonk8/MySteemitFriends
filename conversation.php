@@ -38,7 +38,7 @@
   </ul>
 </nav>     
 
-<div class="container-fluid bg-1 text-center">
+<div class="container-fluid bg-1 text-center" style="padding-top:20px;">
 
 <form class="form-inline" method="get" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
 		  <div class="form-group" style="margin-top:10px;">
@@ -57,6 +57,19 @@
 
 // connection to SteemSQL database. See https://github.com/Bulletproofmonk/PHPSteemSQL/blob/master/connectv7.php
 include 'steemSQLconnect2.php';		
+
+// list of article addresses for displaying comments later.	
+$articleList=array();
+
+// list of authors for each comment.
+$authorList=array();
+
+// start putting addresses in the list at 0 element
+$articleIndex=0;
+
+// start putting authors in the list at 0 elemnt
+$authorIndex=0;
+
 
 if ($_GET["User1"]&&$_GET["User2"]) {
 	
@@ -81,25 +94,44 @@ $sth = $conn->prepare($sql);
 
 // execute SQL statement.	
 $sth->execute();    
-     echo '<table class="table table-sm"><thead class="thead-inverse"><tr><th style="width:1%">Date</th><th style="width:1%">From</th><th style="width:1%">To</th><th>Comment Link</th></tr></thead><tbody>';
+     echo '<table class="table table-sm"><thead class="thead-inverse"><tr><th style="width:1%">Timestamp</th><th style="width:1%">From</th><th style="width:1%">To</th><th>Comment Link</th></tr></thead><tbody>';
      
      // row number of $ button
      $rownum=0;
      
     while ($row = $sth->fetch(PDO::FETCH_NUM)) {
-      echo "<tr><td class='text-nowrap'>";
-      echo $row[0];
+      echo "<tr><td>";
+	// code for reformatting time
+	$s = $row[0];
+	$dt = new DateTime($s);
+
+	$date = $dt->format('m/d/Y');
+	$time = $dt->format('H:i:s');
+
+	  echo $date."<br>".$time;
+    
       echo "</td><td>";
       echo $row[1];
       echo "</td><td>";
       echo $row[2];
 	  echo "</td><td>";
       echo '<p><a href="http://steemit.com/@'.$row[1].'/'.$row[3].'">Link to Comment</a></p>';
-	  echo '<div id='.$rownum.'><button type="button" class="btn btn-info" onClick="showArticle('.$rownum.',\''.$row[1].'\',\''.$row[3].'\')">Show Comment</button></div><br>';
+
+// store URL of articles in articleList array
+ $articleList[$articleIndex]=$row[3];
+ $articleIndex++;
+
+// store list of authors in authorList array
+$authorList[$authorIndex]=$row[1];
+$authorIndex++;
+
+	  echo '<div id='.$rownum.'></div><br>';
 	  $rownum++;
       echo "</td></tr>";
       
     }
+
+if ($rownum==0) {echo "No Results Found!<br><br>";}
       
   echo "</tbody></table>";
 
@@ -119,7 +151,7 @@ $sth->execute();
 <script>
 	
 
-function showArticle(x,y,z) {
+const showArticle = async(x,y,z) => {
 
 // article url
 	var url=z;
@@ -136,12 +168,26 @@ function showArticle(x,y,z) {
 
 // retrieve article text
 	
-	steem.api.getContent(author,url, function(err,result) {
+const result = await steem.api.getContentAsync(author,url);
+ 
 // print article text to correct location
 		document.getElementById(id).innerHTML=result.body;
-	});
 	
+};
+
+const outputData = async () => {
+	
+<?
+for ($x=0;$x<sizeof($articleList);$x++) {
+	echo "await showArticle($x, '".$authorList[$x]."','".$articleList[$x]."');";	
 }
+	
+?>	
+}
+
+outputData();
+
+
 
 </script>
 

@@ -1,82 +1,43 @@
 <html>
-
   <head>
-
     <title>Effective SP Ranking - My Steemit Friends</title>
-
     <meta charset="utf-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-
     <script src="jquery/jquery-3.2.1.min.js"></script>
-
     <script src="extensions/popper.min.js"></script>
-
     <script src="bootstrap/js/bootstrap.min.js"></script>
-
     <link rel="stylesheet" type="text/css" href="style.css?3">
-
     <style>
-
-
-
     a.page-link{
-
- 
-
     color:blue !important;
-
-    }
-
-    a.page-link:visited {
-
-      color:blue !important;
-
-    }
-
-    ul {
-
-    margin:0.5rem;
-
     }
 		
-		ul.navbar-nav {
-
+    a.page-link:visited {
+      color:blue !important;
+    }
+		
+    ul {
+    margin:0.5rem;
+    }
+		
+	ul.navbar-nav {
     margin:0px;
-
     }
 
-    li {     
-
-    
-
-   
-
-    }
-
-    
 
     a.btn-info, a.btn-info:visited, a.btn-primary, a.btn-primary:visited {
-
     color:white !important;
-
     } 
 
     a.btn-light {
-
       color:blue !important;
-
     }
 
     a.btn-light:visited {
-
       color:blue !important;
-
     }
-
-    
+   
 
     </style>
 
@@ -250,9 +211,9 @@ echo '<form action="effectiveSP.php" method="get">Go To Page Number <input type=
 
 
     $sql = "
-SELECT convert(float, a.vesting_shares)-convert(float,a.delegated_vesting_shares)+convert(float,a.received_vesting_shares) AS effective_vests, a.name, convert(float, a.vesting_shares) AS vests
+SELECT convert(float, a.vesting_shares)-convert(float,a.delegated_vesting_shares)+convert(float,a.received_vesting_shares) AS effective_vests, a.name, convert(float, a.vesting_shares) AS vests, convert(float,sbd_balance) + convert(float,savings_sbd_balance)
 FROM
-(SELECT name, Substring(vesting_shares,0,PATINDEX('%VESTS%',vesting_shares)) AS vesting_shares, Substring(delegated_vesting_shares,0,PATINDEX('%VESTS%',delegated_vesting_shares)) AS delegated_vesting_shares, Substring(received_vesting_shares,0,PATINDEX('%VESTS%',received_vesting_shares)) AS received_vesting_shares
+(SELECT name, Substring(vesting_shares,0,PATINDEX('%VESTS%',vesting_shares)) AS vesting_shares, Substring(delegated_vesting_shares,0,PATINDEX('%VESTS%',delegated_vesting_shares)) AS delegated_vesting_shares, Substring(received_vesting_shares,0,PATINDEX('%VESTS%',received_vesting_shares)) AS received_vesting_shares, Substring(sbd_balance,0,PATINDEX('%SBD%',sbd_balance)) AS sbd_balance, Substring(savings_sbd_balance,0,PATINDEX('%SBD%',savings_sbd_balance)) AS savings_sbd_balance
 FROM Accounts (NOLOCK)) a
 Order by effective_vests DESC
 OFFSET ".$offset." ROWS
@@ -269,25 +230,28 @@ FETCH NEXT ".$pagesize." ROWS ONLY;
 
     echo '</div><div class="col">';
 
-echo '<table id="bigtable" class="table table-sm" style="background-color:#0f4880;border:5px solid white">';
+echo '<table id="bigtable" class="table table-sm table-striped" style="background-color:#0f4880;border:5px solid white">';
 
     
 
-echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th>User Name</th><th class="alignright">Effective SP</th><th class="alignright">Own SP</th></tr></thead>';
+echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th>User Name</th><th class="alignright">Effective SP</th><th class="alignright">Own SP</th><th class="alignright">SBD</th></tr></thead>';
 
     // print the results. If successful, magicmonk will be printed on page.
 
     $rank=$pagesize*($page-1)+1;
-
+    $rownum=0;
     while ($row = $sth->fetch(PDO::FETCH_NUM)) { 
-		
+
+// convert vests to sp		
 		$vests=$row[0];
 		$sp = $total_vesting_fund_steem * $vests / $total_vesting_shares;
 		$ownvests=$row[2];
 		$ownsp = $total_vesting_fund_steem * $ownvests / $total_vesting_shares;
 		
-
-      echo '<tr><td style="text-align: center;">';
+// create striped rows		
+	  if ($rownum%2==0) {echo '<tr>';} else {echo '<tr style="background-color:#0f3066">';}
+		$rownum++;
+      echo '<td style="text-align: center;">';
 
       echo $rank;
 
@@ -317,8 +281,15 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ra
 		 echo "</td><td class='alignright'>";
 
           echo number_format(round($ownsp));
+		echo "</td><td class='alignright'>";
+		
+		echo number_format(round($row[3]));
+
+          
 
           echo "</td></tr>";
+		
+		
 
           
 
