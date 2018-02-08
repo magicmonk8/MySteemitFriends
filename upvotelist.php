@@ -136,7 +136,10 @@ if ($articlesonly==1) {
     // if articles only, no comments
 	if ($months!="all") {
 		$newdate = date("Y-m-d", strtotime("-".$months." months"));
-		$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') AND (timestamp>=Convert(datetime, '".$newdate."')) AND (permlink IN (SELECT permlink FROM Comments WHERE author='".$author."' AND depth=0)) ORDER BY timestamp DESC";
+		$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') AND (timestamp>=Convert(datetime, '";
+		
+		if ($newdate) {$sql.=$newdate;} else {$sql.=$date;}
+		$sql.="')) AND (permlink IN (SELECT permlink FROM Comments WHERE author='".$author."' AND depth=0)) ORDER BY timestamp DESC";
     } else {
     	$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') AND (permlink IN (SELECT permlink FROM Comments WHERE author='".$author."' AND depth=0)) ORDER BY timestamp DESC";
     }
