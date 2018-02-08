@@ -14,15 +14,15 @@
 <body>
 
 <nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
-  <span class="navbar-brand mb-0 h1">Tools by <a href="http://steemit.com/@magicmonk">@magicmonk</a></span>
+  <span class="navbar-brand mb-0 h1"><a href="http://steemit.com/@magicmonk">@magicmonk</a></span>
   <ul class="navbar-nav">
     <li class="nav-item">
-      <a class="nav-link" href="index.php">Upvote Statistics</a>
+      <a class="nav-link" href="index.php">Upvote Stats</a>
     </li>
     
     <!-- Dropdown menu for ranking -->
     <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Ranking tables</a>
+    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Rankings</a>
     <div class="dropdown-menu">
     	<a class="dropdown-item" href="followers.php">Followers Ranking</a>
     	<a class="dropdown-item" href="effectiveSP.php">Effective SP Ranking</a>
@@ -31,7 +31,11 @@
     </li>
     
     <li class="nav-item">
-      <a class="nav-link" href="conversation.php">Conversation Record</a>
+      <a class="nav-link" href="conversation.php">Conversations</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-link" href="upvotelist.php">$ Calculator</a>
     </li>
   
   </ul>
@@ -39,6 +43,48 @@
     
 
 <div class="container-fluid bg-1 text-center">
+
+<?php
+// Get values from URL	
+
+// author and voter details stripped from URL
+$author = rtrim($_GET["author"]);
+$voter = rtrim($_GET["voter"]);
+	
+// if number of months not given, choose 3 as default
+if ($_GET["Months"]) {
+	$months = $_GET["Months"];
+} else {
+	$months = 3;
+}	
+// set date variable for SQL query.
+	$date = date("Y-m-d", strtotime("-".$months." months"));
+
+// check if date has been entered (submitted via form)	
+if ($_GET["date"]) {
+	$newdate = $_GET["date"];
+}
+	
+	?>
+
+
+<form class="form-inline justify-content-center" method="get" action="upvotelist.php" style="">
+		  <div class="form-group" style="margin-top:10px;">
+			<label for="voter">Voter:&nbsp;</label>
+			<input class="form-control" placeholder="Voter Username" id="voter" type="text" name="voter" value="<? if ($voter) {echo $voter;} ?>" autofocus>&nbsp;&nbsp;
+	      </div>
+	      <div class="form-group" style="margin-top:10px;">
+			<label for="author">Author:&nbsp;</label>
+			<input class="form-control" placeholder="Author Username" id="author" type="text" name="author" value="<? if ($author) {echo $author;} ?>" >&nbsp;&nbsp;
+		  </div>
+		  <div class="form-group" style="margin-top:10px;">
+ 		   <label for="fromDate">From Date:&nbsp;</label>  		
+    		<input class="form-control" name="date" type="date" value="<? if ($newdate) {echo $newdate;} elseif ($months=='all') {echo '2016-03-30';} else {echo $date;} ?>" id="date" min="2016-03-30" max="<?echo date("Y-m-d"); ?>">&nbsp;&nbsp;
+  		</div>
+		 <br>
+		 <button id="upvotebtn" class="btn btn-lg btn-primary" type="submit" style="margin-top:10px;">Calculate contribution amount</button><br>            
+		</form>
+	
 
 <div id="total_con" style="padding-top:1rem;padding-left:1rem;padding-right:1rem;border: 5px solid white; max-width:400px;margin:auto;display:none;margin-bottom:1rem;"></div>
 
@@ -53,17 +99,11 @@ $articleList=array();
 // start putting addresses in the list at 0 element
 $articleIndex=0;
 
-// author and voter details stripped from URL
-$author = rtrim($_GET["author"]);
-$voter = rtrim($_GET["voter"]);
 
 	
-// if number of months not given, choose 3 as default
-if ($_GET["Months"]) {
-	$months = $_GET["Months"];
-} else {
-	$months = 3;
-}
+// if author and voter details exist, then:
+if ($author && $voter) {
+
 
 // retrieve choice for whether to include articles only or to include comments as well
 if ($_GET["Articlesonly"]) {
@@ -78,17 +118,17 @@ echo '<p><a href="upvotelist.php?author='.$voter.'&voter='.$author.'&Months='.$m
 	
 // title at the top of page to state the voter and who is the author	
 echo '<p><a href="http://steemit.com/@'.$voter.'"><b>@'.$voter.'</b></a> upvoted <a href="http://steemit.com/@'.$author.'"><b>@'.$author.'</b></a> on the following:</p>';	
-	
-
-
-
-		
+			
 	
 // SQL executed if articles and comments are included
 if ($articlesonly==1) {
 	if ($months!="all") {
-		$newdate = date("Y-m-d", strtotime("-".$months." months"));
-    	$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') AND (timestamp>=Convert(datetime, '".$newdate."')) ORDER BY timestamp DESC";
+		
+    	$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') AND (timestamp>=Convert(datetime, '";
+		
+		if ($newdate) {$sql.=$newdate;} else {$sql.=$date;}
+		$sql.="')) ORDER BY timestamp DESC";
+		
     } else {
 		$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') ORDER BY timestamp DESC";
     }
@@ -131,7 +171,7 @@ $sth->execute();
   echo "</tbody></table>";
 
     unset($conn); unset($sth);
-    
+}
 ?>
 
 </div>
@@ -240,7 +280,7 @@ const showContribution = async(x,y) => {
 	totalconnum++;
 // show contribution on top of screen calculator.	
 	document.getElementById("total_con").style.display="block";
-	calculatorString='<h3>Calculator</h3> <p><a href="http://steemit.com/@<?=$voter?>"><b>@<?=$voter?></b></a> contributed a running total of<br>$'+Math.round(totalcon*100)/100+' from '+totalconnum;
+	calculatorString='<h3>Calculator</h3> <p><a href="http://steemit.com/@<?=$voter?>"><b>@<?=$voter?></b></a> contributed a running total of<br>$'+Math.round(totalcon*100)/100+' in '+totalconnum;
 	if (totalconnum>1) {
 		calculatorString += ' articles to <a href="http://steemit.com/@<?=$author?>"><b>@<?=$author?></b></a>.</p>';
 	} else {calculatorString+=' article to <a href="http://steemit.com/@<?=$author?>"><b>@<?=$author?></b></a>.</p>';}

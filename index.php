@@ -7,7 +7,7 @@
     <script src="jquery/jquery-3.2.1.min.js"></script>
     <script src="popper.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css?2">
+    <link rel="stylesheet" type="text/css" href="style.css?3">
     <style>
     	#bigtable {     background-color:#106288;   }    
     	@media only screen and (max-device-width: 480px) {  
@@ -19,15 +19,15 @@
   <body> 
    
 <nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
-  <span class="navbar-brand mb-0 h1">Tools by <a href="http://steemit.com/@magicmonk">@magicmonk</a></span>
+  <span class="navbar-brand mb-0 h1"><a href="http://steemit.com/@magicmonk">@magicmonk</a></span>
   <ul class="navbar-nav">
     <li class="nav-item">
-      <a class="nav-link" href="index.php">Upvote Statistics</a>
+      <a class="nav-link" href="index.php">Upvote Stats</a>
     </li>
     
     <!-- Dropdown menu for ranking -->
     <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Ranking tables</a>
+    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Rankings</a>
     <div class="dropdown-menu">
     	<a class="dropdown-item" href="followers.php">Followers Ranking</a>
     	<a class="dropdown-item" href="effectiveSP.php">Effective SP Ranking</a>
@@ -36,12 +36,16 @@
     </li>
     
     <li class="nav-item">
-      <a class="nav-link" href="conversation.php">Conversation Record</a>
+      <a class="nav-link" href="conversation.php">Conversations</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-link" href="upvotelist.php">$ Calculator</a>
     </li>
   
   </ul>
 </nav>     
-
+    
                   
 <div class="container-fluid bg-1 text-center">
 	<table style="background-color:#2E456D;border-collapse:collapse;border: 5px solid black;">
@@ -56,20 +60,23 @@
 		  2. Click the following buttons to see your:<br><br>
 		  <div id="pleasescroll"></div>
 
-		 <button id="upvotebtn" class="btn btn-primary" onclick="upBtnTxt()" type="submit">Upvote Stats</button><br>            
+		 <button id="upvotebtn" class="btn btn-primary" onclick="upBtnTxt()" type="submit">Upvote Stats</button> 
+		 <a style="color:white" id="convbtn" class="btn btn-success" onclick="convBtn()">Conversations</a>
 		</form>
 		
-		<div class="dropdown" id="rankingbtn">
-		<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">Ranking</button>
-		<div class="dropdown-menu">
-			<a class="dropdown-item" href="#" onclick="loadRank('get_follower_rank')">Followers</a>
+		<div class="btn-group" id="rankingbtn">
+    <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Rankings</button>
+    <div class="dropdown-menu">
+    	<a class="dropdown-item" href="#" onclick="loadRank('get_follower_rank')">Followers</a>
 			<a class="dropdown-item" href="#" onclick="loadRank('get_esp_rank')">Effective SP</a>
-			<a class="dropdown-item" href="#" onclick="loadRank('get_reputation_rank')">Reputation</a>			
-		</div>	
-		</div>
-		<br>
-		<button id="convbtn" class="btn btn-success" onclick="convBtn()">Conversation Record</button><br>     
-		<br>		          
+			<a class="dropdown-item" href="#" onclick="loadRank('get_reputation_rank')">Reputation</a>	     
+    </div>
+  </div><!-- /btn-group -->
+  <div class="btn-group">
+<button id="calcbtn" class="btn btn-danger" onclick="calcBtn()">$ Calculator</button>
+  </div><!-- /btn-group -->
+	
+		<br><br>
 
 		<p>Created by <a href="http://steemit.com/@magicmonk"><img id="logo" src="images/magicmonkhead.png" width="64px">@magicmonk</a></p>
 		<p><a href="https://steemit.com/steemit/@magicmonk/mysteemitfriend-s-new-edition-has-more-features-mysteemitfriends">Instructions</a></p>
@@ -97,8 +104,10 @@ if ($_GET["User"]) {
 	echo '<script>
       document.getElementById("rankingbtn").style.display = "none";	  
 	  document.getElementById("convbtn").style.display = "none";
-	  document.getElementById("upvotebtn").innerHTML = "Loading..";
+	  document.getElementById("calcbtn").style.display = "none";
+	  document.getElementById("upvotebtn").style.display = "none";
 	  document.getElementById("logo").src="images/mmloading.gif";
+	  document.getElementById("pleasescroll").innerHTML = "Loading..";
 		
 	</script>';		
 		
@@ -272,7 +281,7 @@ FROM Accounts (NOLOCK)
     $sp = $total_vesting_fund_steem * $vests / $total_vesting_shares;
     $sptw = $sp*$totalweight;
       echo '<tr><td class="mobile">';
-      echo '<a tabindex="0" data-trigger="click" data-toggle="popover" data-content="<p><a class=\'nounderline btn btn-primary\' href=\'http://steemit.com/@'.$row[0].'/\'>Steemit Profile</p><a class=\'nounderline btn btn-info\' href=\'index.php?User='.$voter.'\'>MSF Profile</a>">'.$voter.'</a>';
+      echo '<a tabindex="0" data-trigger="click" data-toggle="popover" data-content="<p><a class=\'nounderline btn btn-primary\' href=\'http://steemit.com/@'.$row[0].'/\'>Steemit Profile</p><p><a class=\'nounderline btn btn-info\' href=\'index.php?User='.$voter.'\'>MSF Profile</a></p><a class=\'nounderline btn btn-success\' href=\'conversation.php?User1='.$steemitUserName.'&User2='.$voter.'\'>Conversation Record</a>">'.$voter.'</a>';
       echo "</td><td align='right'>";      
       echo '<a href="upvotelist.php?author='.$steemitUserName.'&voter='.$voter.'&Months='.$months.'&Articlesonly='.$articlesonly.'">'.number_format(round($sptw)).'</a>';
       echo "</td></tr>";
@@ -285,7 +294,7 @@ FROM Accounts (NOLOCK)
     $voter=$row[0];
     $totalweight=$row[2];
       echo '<tr><td class="mobile">';
-      echo '<a tabindex="0" data-trigger="click" data-toggle="popover" data-content="<p><a class=\'nounderline btn btn-primary\' href=\'http://steemit.com/@'.$voter.'/\'>Steemit Profile</p><a class=\'nounderline btn btn-info\' href=\'index.php?User='.$voter.'\'>MSF Profile</a>">'.$voter.'</a>';
+      echo '<a tabindex="0" data-trigger="click" data-toggle="popover" data-content="<p><a class=\'nounderline btn btn-primary\' href=\'http://steemit.com/@'.$voter.'/\'>Steemit Profile</p><a class=\'nounderline btn btn-info\' href=\'index.php?User='.$voter.'\'>MSF Profile</a></p><a class=\'nounderline btn btn-success\' href=\'conversation.php?User1='.$steemitUserName.'&User2='.$voter.'\'>Conversation Record</a>">'.$voter.'</a>';
       echo "</td><td align='right'>";      
       echo '<a href="upvotelist.php?author='.$steemitUserName.'&voter='.$voter.'&Months='.$months.'&Articlesonly='.$articlesonly.'">'.number_format($totalweight).'</a>';
       echo "</td></tr>";
@@ -298,7 +307,7 @@ FROM Accounts (NOLOCK)
   if ($rankmethod==1) {
     while ($row = $sth->fetch(PDO::FETCH_NUM)) {
      echo '<tr><td class="mobile">';
-      echo '<a tabindex="0" data-trigger="click" data-toggle="popover" data-content="<p><a class=\'nounderline btn btn-primary\' href=\'http://steemit.com/@'.$row[0].'/\'>Steemit Profile</p><a class=\'nounderline btn btn-info\' href=\'index.php?User='.$row[0].'\'>MSF Profile</a>">'.$row[0].'</a>';
+      echo '<a tabindex="0" data-trigger="click" data-toggle="popover" data-content="<p><a class=\'nounderline btn btn-primary\' href=\'http://steemit.com/@'.$row[0].'/\'>Steemit Profile</p><a class=\'nounderline btn btn-info\' href=\'index.php?User='.$row[0].'\'>MSF Profile</a></p><a class=\'nounderline btn btn-success\' href=\'conversation.php?User1='.$steemitUserName.'&User2='.$row[0].'\'>Conversation Record</a>">'.$row[0].'</a>';
       echo "</td><td align='right'>";      
       echo '<a href="upvotelist.php?author='.$steemitUserName.'&voter='.$row[0].'&Months='.$months.'&Articlesonly='.$articlesonly.'">'.number_format($row[1]).'</a>';
       echo "</td></tr>";
@@ -427,7 +436,7 @@ if ($rankmethod==1) {
      $totalweight=$row[1];
     $TWSP = $steemitUserPower * $totalweight; 
       echo '<tr><td class="mobile">';
-      echo '<a tabindex="0" data-trigger="click" data-toggle="popover" data-content="<p><a class=\'nounderline btn btn-primary\' href=\'http://steemit.com/@'.$row[0].'/\'>Steemit Profile</p><a class=\'nounderline btn btn-info\' href=\'index.php?User='.$row[0].'\'>MSF Profile</a>">'.$row[0].'</a>';
+      echo '<a tabindex="0" data-trigger="click" data-toggle="popover" data-content="<p><a class=\'nounderline btn btn-primary\' href=\'http://steemit.com/@'.$row[0].'/\'>Steemit Profile</p><a class=\'nounderline btn btn-info\' href=\'index.php?User='.$row[0].'\'>MSF Profile</a></p><a class=\'nounderline btn btn-success\' href=\'conversation.php?User1='.$steemitUserName.'&User2='.$row[0].'\'>Conversation Record</a>">'.$row[0].'</a>';
       echo "</td><td align='right'>";
       echo '<a href="upvotelist.php?author='.$row[0].'&voter='.$steemitUserName.'&Months='.$months.'&Articlesonly='.$articlesonly.'">'.number_format(round($TWSP)).'</a>';
       echo "</td></tr>";
@@ -439,7 +448,7 @@ if ($rankmethod==1) {
     while ($row = $sth->fetch(PDO::FETCH_NUM)) {
     
       echo '<tr><td class="mobile">';
-      echo '<a tabindex="0" data-trigger="click" data-toggle="popover" data-content="<p><a class=\'nounderline btn btn-primary\' href=\'http://steemit.com/@'.$row[0].'/\'>Steemit Profile</p><a class=\'nounderline btn btn-info\' href=\'index.php?User='.$row[0].'\'>MSF Profile</a>">'.$row[0].'</a>';
+      echo '<a tabindex="0" data-trigger="click" data-toggle="popover" data-content="<p><a class=\'nounderline btn btn-primary\' href=\'http://steemit.com/@'.$row[0].'/\'>Steemit Profile</p><a class=\'nounderline btn btn-info\' href=\'index.php?User='.$row[0].'\'>MSF Profile</a></p><a class=\'nounderline btn btn-success\' href=\'conversation.php?User1='.$steemitUserName.'&User2='.$row[0].'\'>Conversation Record</a>">'.$row[0].'</a>';
       echo "</td><td align='right'>";
       echo '<a href="upvotelist.php?author='.$row[0].'&voter='.$steemitUserName.'&Months='.$months.'&Articlesonly='.$articlesonly.'">'.number_format($row[1]).'</a>';
       echo "</td></tr>";
@@ -457,9 +466,10 @@ if ($rankmethod==1) {
 	// show all buttons after upvotes data is displayed.
     echo '<script>
 	      document.getElementById("pleasescroll").innerHTML = "<b><font color=yellow>Please <a href=\"#filterbox\">scroll down</a> to see the results.</font></b><br><br>";
-		  document.getElementById("upvotebtn").innerHTML = "Upvote Stats";
-		  document.getElementById("rankingbtn").style.display = "block";
+		  document.getElementById("upvotebtn").style.display = "inline";
+		  document.getElementById("rankingbtn").style.display = "inline";
 		  document.getElementById("convbtn").style.display = "inline";
+		   document.getElementById("calcbtn").style.display = "inline";
 		  document.getElementById("logo").src="images/magicmonkhead.png";	
 		  </script>';
 		
@@ -494,10 +504,12 @@ $(function(){
 
 // function to hide other buttons while upvote button is fetching data.
 function upBtnTxt() {
-	document.getElementById("upvotebtn").innerHTML = "Loading.."; 
+	document.getElementById("upvotebtn").style.display = "none"; 
 	document.getElementById("rankingbtn").style.display = "none";
 	document.getElementById("convbtn").style.display = "none";
+	document.getElementById("calcbtn").style.display = "none";
 	document.getElementById("logo").src="images/mmloading.gif";
+	document.getElementById("pleasescroll").innerHTML = "Loading..";
 
 }
 
@@ -508,6 +520,12 @@ function convBtn() {
 	window.location.href = 'conversation.php?User1='+goToUser;
 	
 	
+}
+
+function calcBtn() {
+	goToUser = document.getElementById("User").value;
+	window.location.href = 'upvotelist.php?author='+goToUser;
+
 }
 	  
 
@@ -527,6 +545,7 @@ function loadRank(filename) {
 	document.getElementById("rankingbtn").style.display = "none";
 	document.getElementById("upvotebtn").style.display = "none"; 
 	document.getElementById("convbtn").style.display = "none";
+	document.getElementById("calcbtn").style.display = "none";
   	document.getElementById("ranking").style.margin="auto";
 	document.getElementById("ranking").style.marginTop="1.5rem";
 	document.getElementById("ranking").style.marginBottom="1.5rem";
@@ -548,8 +567,9 @@ function loadRank(filename) {
 		document.getElementById("ranking").innerHTML = this.responseText;
 		document.getElementById("pleasescroll").innerHTML = "<b><font color=#78EF15>Please <a href=\"#ranking\">scroll down</a> to see the ranking.</b><br><br>";
 		document.getElementById("upvotebtn").style.display = "inline"; 
-		document.getElementById("rankingbtn").style.display = "block";
+		document.getElementById("rankingbtn").style.display = "inline";
 		document.getElementById("convbtn").style.display = "inline";
+		document.getElementById("calcbtn").style.display = "inline";
 		
     }
 
