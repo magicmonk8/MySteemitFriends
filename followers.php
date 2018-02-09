@@ -88,33 +88,20 @@
     
    
 <nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
-  <span class="navbar-brand mb-0 h1"><a href="http://steemit.com/@magicmonk">@magicmonk</a></span>
-  <ul class="navbar-nav">
-    <li class="nav-item">
-      <a class="nav-link" href="index.php">Upvote Stats</a>
-    </li>
-    
-    <!-- Dropdown menu for ranking -->
-    <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Rankings</a>
+  <span class="navbar-brand mb-0 h1"><a href="http://steemit.com/@magicmonk"><img src="images/magicmonkhead.png" width="64px">@magicmonk</a></span>
+
+    <a class="btn btn-lg btn-primary navbutton nounderline"  href="index.php">Upvote Stats</a>
+    <a class="btn btn-lg btn-success navbutton nounderline"  href="conversation.php">Conversations</a>
+    <div class="btn-group navbutton" id="rankingbtn">
+    <button type="button" class="btn btn-lg btn-info dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:10rem">Rankings</button>
     <div class="dropdown-menu">
-    	<a class="dropdown-item" href="followers.php">Followers Ranking</a>
-    	<a class="dropdown-item" href="effectiveSP.php">Effective SP Ranking</a>
-    	<a class="dropdown-item" href="reputation.php">Reputation Ranking</a>     	
-    </div>    
-    </li>
-    
-    <li class="nav-item">
-      <a class="nav-link" href="conversation.php">Conversations</a>
-    </li>
-    
-    <li class="nav-item">
-      <a class="nav-link" href="upvotelist.php">$ Calculator</a>
-    </li>
-  
-  </ul>
+    	<a class="dropdown-item" href="followers.php">Followers</a>
+			<a class="dropdown-item" href="effectiveSP.php">Effective SP</a>
+			<a class="dropdown-item" href="reputation.php">Reputation</a>	     
+    </div>
+  </div><!-- /btn-group -->
+    <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
 </nav>     
-       
          
 
     <div class="container-fluid bg-1 text-center" style="max-width:1000px;">
