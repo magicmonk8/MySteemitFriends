@@ -8,37 +8,25 @@
 <script src="jquery/jquery-3.2.1.min.js"></script>
 <script src="popper.min.js"></script>
 <script src="bootstrap/js/bootstrap.min.js"></script>
-<link rel="stylesheet" type="text/css" href="style.css?2">
+<link rel="stylesheet" type="text/css" href="style.css?3">
 </head>
 
 <body>
 
 <nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
-  <span class="navbar-brand mb-0 h1"><a href="http://steemit.com/@magicmonk">@magicmonk</a></span>
-  <ul class="navbar-nav">
-    <li class="nav-item">
-      <a class="nav-link" href="index.php">Upvote Stats</a>
-    </li>
-    
-    <!-- Dropdown menu for ranking -->
-    <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Rankings</a>
+  <span class="navbar-brand mb-0 h1"><a href="http://steemit.com/@magicmonk"><img src="images/magicmonkhead.png" width="64px">@magicmonk</a></span>
+
+    <a class="btn btn-lg btn-primary navbutton nounderline"  href="index.php">Upvote Stats</a>
+    <a class="btn btn-lg btn-success navbutton nounderline"  href="conversation.php">Conversations</a>
+    <div class="btn-group navbutton" id="rankingbtn">
+    <button type="button" class="btn btn-lg btn-info dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:10rem">Rankings</button>
     <div class="dropdown-menu">
-    	<a class="dropdown-item" href="followers.php">Followers Ranking</a>
-    	<a class="dropdown-item" href="effectiveSP.php">Effective SP Ranking</a>
-    	<a class="dropdown-item" href="reputation.php">Reputation Ranking</a>     	
-    </div>    
-    </li>
-    
-    <li class="nav-item">
-      <a class="nav-link" href="conversation.php">Conversations</a>
-    </li>
-    
-    <li class="nav-item">
-      <a class="nav-link" href="upvotelist.php">$ Calculator</a>
-    </li>
-  
-  </ul>
+    	<a class="dropdown-item" href="followers.php">Followers</a>
+			<a class="dropdown-item" href="effectiveSP.php">Effective SP</a>
+			<a class="dropdown-item" href="reputation.php">Reputation</a>	     
+    </div>
+  </div><!-- /btn-group -->
+    <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
 </nav>     
     
 
@@ -64,6 +52,11 @@ if ($_GET["Months"]) {
 if ($_GET["date"]) {
 	$newdate = $_GET["date"];
 }
+
+// check if to date has been entered (submitted via form)
+if ($_GET["toDate"]) {
+	$todate = $_GET["toDate"];
+}
 	
 	?>
 
@@ -71,16 +64,22 @@ if ($_GET["date"]) {
 <form class="form-inline justify-content-center" method="get" action="upvotelist.php" style="">
 		  <div class="form-group" style="margin-top:10px;">
 			<label for="voter">Voter:&nbsp;</label>
-			<input class="form-control" placeholder="Voter Username" id="voter" type="text" name="voter" value="<? if ($voter) {echo $voter;} ?>" autofocus>&nbsp;&nbsp;
+			<input class="form-control" placeholder="Voter Username" id="voter" type="text" size="15" name="voter" value="<? if ($voter) {echo $voter;} ?>" autofocus>&nbsp;&nbsp;
 	      </div>
 	      <div class="form-group" style="margin-top:10px;">
 			<label for="author">Author:&nbsp;</label>
-			<input class="form-control" placeholder="Author Username" id="author" type="text" name="author" value="<? if ($author) {echo $author;} ?>" >&nbsp;&nbsp;
+			<input class="form-control" placeholder="Author Username" size="15" id="author" type="text" name="author" value="<? if ($author) {echo $author;} ?>" >&nbsp;&nbsp;
 		  </div>
 		  <div class="form-group" style="margin-top:10px;">
  		   <label for="fromDate">From Date:&nbsp;</label>  		
     		<input class="form-control" name="date" type="date" value="<? if ($newdate) {echo $newdate;} elseif ($months=='all') {echo '2016-03-30';} else {echo $date;} ?>" id="date" min="2016-03-30" max="<?echo date("Y-m-d"); ?>">&nbsp;&nbsp;
-  		</div>
+  		   </div>
+  		  
+  		   <div class="form-group" style="margin-top:10px;">
+ 		   <label for="toDate">To Date:&nbsp;</label>  		
+    		<input class="form-control" name="toDate" type="date" value="<? if ($todate) {echo $todate;} else { echo date("Y-m-d");} ?>" id="toDate" min="2016-03-30" max="<?echo date("Y-m-d"); ?>">&nbsp;&nbsp;
+  		   </div>
+  		   
 		 <br>
 		 <button id="upvotebtn" class="btn btn-lg btn-primary" type="submit" style="margin-top:10px;">Calculate contribution amount</button><br>            
 		</form>
@@ -89,6 +88,11 @@ if ($_GET["date"]) {
 <div id="total_con" style="padding-top:1rem;padding-left:1rem;padding-right:1rem;border: 5px solid white; max-width:400px;margin:auto;display:none;margin-bottom:1rem;"></div>
 
 <?php
+
+
+	
+// if author and voter details exist, then:
+if ($author && $voter) {
 
 // connection to SteemSQL database. See https://github.com/Bulletproofmonk/PHPSteemSQL/blob/master/connectv7.php
 include 'steemSQLconnect2.php';		
@@ -100,11 +104,6 @@ $articleList=array();
 $articleIndex=0;
 
 
-	
-// if author and voter details exist, then:
-if ($author && $voter) {
-
-
 // retrieve choice for whether to include articles only or to include comments as well
 if ($_GET["Articlesonly"]) {
 	$articlesonly = $_GET["Articlesonly"];
@@ -113,7 +112,7 @@ if ($_GET["Articlesonly"]) {
 }
 	
 // look up how much the author contributed to the voter	
-echo '<p><a href="upvotelist.php?author='.$voter.'&voter='.$author.'&Months='.$months.'&Articlesonly='.$articlesonly.'"><b>Reverse Lookup</b>: how much has <b>@'.$author.'</b> contributed to <b>@'.$voter.'?</b></a></p>';	
+echo '<p><a href="upvotelist.php?toDate='.$todate.'&date='.$newdate.'&author='.$voter.'&voter='.$author.'&Months='.$months.'&Articlesonly='.$articlesonly.'"><b>Reverse Lookup</b>: how much has <b>@'.$author.'</b> contributed to <b>@'.$voter.'?</b></a></p>';	
 
 	
 // title at the top of page to state the voter and who is the author	
@@ -127,6 +126,9 @@ if ($articlesonly==1) {
     	$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') AND (timestamp>=Convert(datetime, '";
 		
 		if ($newdate) {$sql.=$newdate;} else {$sql.=$date;}
+		$sql.="')) AND (timestamp<=Convert(datetime,'";
+		
+		if ($todate) {$sql.=$todate;} else {$sql.=date("Y-m-d");}
 		$sql.="')) ORDER BY timestamp DESC";
 		
     } else {
@@ -139,6 +141,10 @@ if ($articlesonly==1) {
 		$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') AND (timestamp>=Convert(datetime, '";
 		
 		if ($newdate) {$sql.=$newdate;} else {$sql.=$date;}
+		$sql.="')) AND (timestamp<=Convert(datetime,'";
+		
+		if ($todate) {$sql.=$todate;} else {$sql.=date("Y-m-d");}
+		
 		$sql.="')) AND (permlink IN (SELECT permlink FROM Comments WHERE author='".$author."' AND depth=0)) ORDER BY timestamp DESC";
     } else {
     	$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') AND (permlink IN (SELECT permlink FROM Comments WHERE author='".$author."' AND depth=0)) ORDER BY timestamp DESC";

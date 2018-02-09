@@ -8,35 +8,27 @@
 <script src="jquery/jquery-3.2.1.min.js"></script>
 <script src="popper.min.js"></script>
 <script src="bootstrap/js/bootstrap.min.js"></script>
-<link rel="stylesheet" type="text/css" href="style.css?2">
+<link rel="stylesheet" type="text/css" href="style.css?3">
 </head>
 
 <body>
 
-   
 <nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
-  <span class="navbar-brand mb-0 h1">Tools by <a href="http://steemit.com/@magicmonk">@magicmonk</a></span>
-  <ul class="navbar-nav">
-    <li class="nav-item">
-      <a class="nav-link" href="index.php">Upvote Statistics</a>
-    </li>
-    
-    <!-- Dropdown menu for ranking -->
-    <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Ranking tables</a>
+  <span class="navbar-brand mb-0 h1"><a href="http://steemit.com/@magicmonk"><img src="images/magicmonkhead.png" width="64px">@magicmonk</a></span>
+
+    <a class="btn btn-lg btn-primary navbutton nounderline"  href="index.php">Upvote Stats</a>
+    <a class="btn btn-lg btn-success navbutton nounderline"  href="conversation.php">Conversations</a>
+    <div class="btn-group navbutton" id="rankingbtn">
+    <button type="button" class="btn btn-lg btn-info dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:10rem">Rankings</button>
     <div class="dropdown-menu">
-    	<a class="dropdown-item" href="followers.php">Followers Ranking</a>
-    	<a class="dropdown-item" href="effectiveSP.php">Effective SP Ranking</a>
-    	<a class="dropdown-item" href="reputation.php">Reputation Ranking</a>     	
-    </div>    
-    </li>
+    	<a class="dropdown-item" href="followers.php">Followers</a>
+			<a class="dropdown-item" href="effectiveSP.php">Effective SP</a>
+			<a class="dropdown-item" href="reputation.php">Reputation</a>	     
+    </div>
+  </div><!-- /btn-group -->
+    <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
+</nav>         
     
-    <li class="nav-item">
-      <a class="nav-link" href="conversation.php">Conversation Record</a>
-    </li>
-  
-  </ul>
-</nav>     
 
 <div class="container-fluid bg-1 text-center" style="padding-top:20px;">
 
@@ -55,6 +47,10 @@
 		
 <?php
 
+
+// only execute code if information has been submitted.
+if ($_GET["User1"]&&$_GET["User2"]) {
+
 // connection to SteemSQL database. See https://github.com/Bulletproofmonk/PHPSteemSQL/blob/master/connectv7.php
 include 'steemSQLconnect2.php';		
 
@@ -69,9 +65,7 @@ $articleIndex=0;
 
 // start putting authors in the list at 0 elemnt
 $authorIndex=0;
-
-
-if ($_GET["User1"]&&$_GET["User2"]) {
+	
 	
 // steemit user details
 $user1 = rtrim(strtolower($_GET["User1"]));
@@ -131,7 +125,7 @@ $authorIndex++;
       
     }
 
-if ($rownum==0) {echo "No Results Found!<br><br>";}
+if ($rownum==0) {echo "No Results Found! Check the spelling of Usernames.<br><br>";}
       
   echo "</tbody></table>";
 
