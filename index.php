@@ -26,7 +26,14 @@
 			width:10rem;
 			margin:1rem;
 		}
-		
+
+    a {
+		cursor: pointer;  
+		}
+		.btn {
+			cursor: pointer;  
+		}
+
     </style>
     
   </head>
@@ -40,9 +47,11 @@
     <div class="btn-group navbutton" id="rankingbtn">
     <button type="button" class="btn btn-lg btn-info dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:10rem">Rankings</button>
     <div class="dropdown-menu">
-    	<a class="dropdown-item" href="followers.php">Followers</a>
-			<a class="dropdown-item" href="effectiveSP.php">Effective SP</a>
-			<a class="dropdown-item" href="reputation.php">Reputation</a>	     
+    	<a class="dropdown-item" href="followers.php">Followers</a>			
+		<a class="dropdown-item" href="reputation.php">Reputation</a>
+		<a class="dropdown-item" href="effectiveSP.php">Effective SP</a>
+		<a class="dropdown-item" href="ownSP.php">Own SP</a>
+		<a class="dropdown-item" href="sbd.php">SBD</a>		     
     </div>
   </div><!-- /btn-group -->
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
@@ -73,8 +82,10 @@
     <button style='width:100%' type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Rankings</button>
     <div class="dropdown-menu">
     	<a class="dropdown-item" href="#" onclick="loadRank('get_follower_rank')">Followers</a>
-			<a class="dropdown-item" href="#" onclick="loadRank('get_esp_rank')">Effective SP</a>
-			<a class="dropdown-item" href="#" onclick="loadRank('get_reputation_rank')">Reputation</a>	     
+    	<a class="dropdown-item" href="#" onclick="loadRank('get_reputation_rank')">Reputation</a>	     
+		<a class="dropdown-item" href="#" onclick="loadRank('get_esp_rank')">Effective SP</a>
+		<a class="dropdown-item" href="#" onclick="loadRank('get_osp_rank')">Own SP</a>
+		<a class="dropdown-item" href="#" onclick="loadRank('get_sbd_rank')">SBD</a>		
     </div>
   </div><!-- /btn-group -->
  </td><td class='nopadding' style="width:50%">
@@ -677,9 +688,7 @@ function loadRank(filename) {
 	document.getElementById("ranking").style.maxWidth = "300px";
 	document.getElementById("ranking").style.padding = "1rem";	
   	document.getElementById("ranking").innerHTML = "Loading..";
-	
-
- 
+	 
   
   var xhttp = new XMLHttpRequest();
 	
