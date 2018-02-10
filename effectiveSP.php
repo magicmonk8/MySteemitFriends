@@ -37,7 +37,10 @@
     a.btn-light:visited {
       color:blue !important;
     }
-   
+   		.navbutton {
+			width:10rem;
+			margin:1rem;
+		}
 
     </style>
 
@@ -97,13 +100,14 @@
 <h3>Select page number</h3><br>
 
 
-
 <?php
+	
+// connect to SteemSQL database
 include 'steemSQLconnect2.php';		
 
 	
-	
-	$my_file = fopen("global.txt",'r');
+// retrieve global values for calculating Steem Power	
+$my_file = fopen("global.txt",'r');
 $total_vesting_fund_steem=fgets($my_file);
 $total_vesting_fund_steem = preg_replace('/[^0-9.]+/', '', $total_vesting_fund_steem);
 $total_vesting_shares=fgets($my_file);
@@ -111,16 +115,15 @@ $total_vesting_shares = preg_replace('/[^0-9.]+/', '', $total_vesting_shares);
 fclose($my_file);
 
 
-
+// number of pages on the browsing panel
 $numberofpages=7;
-
-$numberofrows=10;
 
 $pagesize=50;
 
 if ($_GET["page"]) {
 
-$page = $_GET["page"];
+// sanitize input with filter_var, make sure the input is an integer.
+$page = filter_var($_GET["page"],FILTER_VALIDATE_INT);
 
 } else {$page=1;}
 
@@ -209,16 +212,19 @@ FROM
 (SELECT name, Substring(vesting_shares,0,PATINDEX('%VESTS%',vesting_shares)) AS vesting_shares, Substring(delegated_vesting_shares,0,PATINDEX('%VESTS%',delegated_vesting_shares)) AS delegated_vesting_shares, Substring(received_vesting_shares,0,PATINDEX('%VESTS%',received_vesting_shares)) AS received_vesting_shares, Substring(sbd_balance,0,PATINDEX('%SBD%',sbd_balance)) AS sbd_balance, Substring(savings_sbd_balance,0,PATINDEX('%SBD%',savings_sbd_balance)) AS savings_sbd_balance
 FROM Accounts (NOLOCK)) a
 Order by effective_vests DESC
-OFFSET ".$offset." ROWS
-FETCH NEXT ".$pagesize." ROWS ONLY;
+OFFSET :offset ROWS
+FETCH NEXT :pagesize ROWS ONLY;
 	";
 
     
 
-    // execute the query. Store the results in sth variable.
 
+// prepare the SQL statement, then bind value to variables, this prevents SQL injection.
     $sth = $conn->prepare($sql);
+    $sth -> bindValue(':offset', $offset, PDO::PARAM_INT);
+ 	$sth -> bindValue(':pagesize', $pagesize, PDO::PARAM_INT);
 
+	
     $sth->execute();
 
     echo '</div><div class="col">';
