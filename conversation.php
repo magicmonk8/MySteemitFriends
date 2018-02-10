@@ -9,6 +9,15 @@
 <script src="popper.min.js"></script>
 <script src="bootstrap/js/bootstrap.min.js"></script>
 <link rel="stylesheet" type="text/css" href="style.css?3">
+
+<style>
+
+		.navbutton {
+			width:10rem;
+			margin:1rem;
+		}
+</style>
+
 </head>
 
 <body>
@@ -21,13 +30,16 @@
     <div class="btn-group navbutton" id="rankingbtn">
     <button type="button" class="btn btn-lg btn-info dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:10rem">Rankings</button>
     <div class="dropdown-menu">
-    	<a class="dropdown-item" href="followers.php">Followers</a>
-			<a class="dropdown-item" href="effectiveSP.php">Effective SP</a>
-			<a class="dropdown-item" href="reputation.php">Reputation</a>	     
+    	<a class="dropdown-item" href="followers.php">Followers</a>			
+		<a class="dropdown-item" href="reputation.php">Reputation</a>
+		<a class="dropdown-item" href="effectiveSP.php">Effective SP</a>
+		<a class="dropdown-item" href="ownSP.php">Own SP</a>
+		<a class="dropdown-item" href="sbd.php">SBD</a>		     
     </div>
   </div><!-- /btn-group -->
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
-</nav>         
+</nav>     
+           
     
 
 <div class="container-fluid bg-1 text-center" style="padding-top:20px;">
