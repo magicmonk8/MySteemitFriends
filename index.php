@@ -51,7 +51,8 @@
 		<a class="dropdown-item" href="reputation.php">Reputation</a>
 		<a class="dropdown-item" href="effectiveSP.php">Effective SP</a>
 		<a class="dropdown-item" href="ownSP.php">Own SP</a>
-		<a class="dropdown-item" href="sbd.php">SBD</a>		     
+		<a class="dropdown-item" href="sbd.php">SBD</a>	
+		<a class="dropdown-item" href="accountvalue.php">Estimated Account Value</a>     
     </div>
   </div><!-- /btn-group -->
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
@@ -85,7 +86,8 @@
     	<a class="dropdown-item" href="#" onclick="loadRank('get_reputation_rank')">Reputation</a>	     
 		<a class="dropdown-item" href="#" onclick="loadRank('get_esp_rank')">Effective SP</a>
 		<a class="dropdown-item" href="#" onclick="loadRank('get_osp_rank')">Own SP</a>
-		<a class="dropdown-item" href="#" onclick="loadRank('get_sbd_rank')">SBD</a>		
+		<a class="dropdown-item" href="#" onclick="loadRank('get_sbd_rank')">SBD</a>
+        <a class="dropdown-item" href="#" onclick="loadRank('get_av_rank')">Estimated Account Value</a>		
     </div>
   </div><!-- /btn-group -->
  </td><td class='nopadding' style="width:50%">
