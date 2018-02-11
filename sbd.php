@@ -57,7 +57,6 @@
   <body class="bg-4">   
 
     
-   
 <nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
   <span class="navbar-brand mb-0 h1"><a href="http://steemit.com/@magicmonk"><img src="images/magicmonkhead.png" width="64px">@magicmonk</a></span>
 
@@ -66,13 +65,18 @@
     <div class="btn-group navbutton" id="rankingbtn">
     <button type="button" class="btn btn-lg btn-info dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:10rem">Rankings</button>
     <div class="dropdown-menu">
-    	<a class="dropdown-item" href="followers.php">Followers</a>
-			<a class="dropdown-item" href="effectiveSP.php">Effective SP</a>
-			<a class="dropdown-item" href="reputation.php">Reputation</a>	     
+    	<a class="dropdown-item" href="followers.php">Followers</a>			
+		<a class="dropdown-item" href="reputation.php">Reputation</a>
+		<a class="dropdown-item" href="effectiveSP.php">Effective SP</a>
+		<a class="dropdown-item" href="ownSP.php">Own SP</a>
+		<a class="dropdown-item" href="sbd.php">SBD</a>	
+		<a class="dropdown-item" href="accountvalue.php">Estimated Account Value</a>     
     </div>
   </div><!-- /btn-group -->
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
-</nav>        
+</nav>     
+      
+         
        
    
     <div class="container-fluid bg-4 text-center" style="max-width:1000px;">

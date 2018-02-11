@@ -99,11 +99,13 @@
 		<a class="dropdown-item" href="reputation.php">Reputation</a>
 		<a class="dropdown-item" href="effectiveSP.php">Effective SP</a>
 		<a class="dropdown-item" href="ownSP.php">Own SP</a>
-		<a class="dropdown-item" href="sbd.php">SBD</a>		     
+		<a class="dropdown-item" href="sbd.php">SBD</a>	
+		<a class="dropdown-item" href="accountvalue.php">Estimated Account Value</a>     
     </div>
   </div><!-- /btn-group -->
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
 </nav>     
+       
     
 
     <div class="container-fluid bg-1 text-center" style="max-width:1000px;">
