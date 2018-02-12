@@ -53,6 +53,7 @@
 		<a class="dropdown-item" href="ownSP.php">Own SP</a>
 		<a class="dropdown-item" href="sbd.php">SBD</a>	
 		<a class="dropdown-item" href="accountvalue.php">Estimated Account Value</a>     
+   		<a class="dropdown-item" href="pending_payout.php">Pending Payout</a>     
     </div>
   </div><!-- /btn-group -->
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
@@ -88,6 +89,7 @@
 		<a class="dropdown-item" href="#" onclick="loadRank('get_osp_rank')">Own SP</a>
 		<a class="dropdown-item" href="#" onclick="loadRank('get_sbd_rank')">SBD</a>
         <a class="dropdown-item" href="#" onclick="loadRank('get_av_rank')">Estimated Account Value</a>		
+        <a class="dropdown-item" href="#" onclick="loadRank('get_pendpay_rank')">Pending Payout</a>		
     </div>
   </div><!-- /btn-group -->
  </td><td class='nopadding' style="width:50%">
