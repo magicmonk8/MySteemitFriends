@@ -17,7 +17,7 @@ from
 (SELECT
 author, sum(pending_payout_value) AS total_payout
 FROM Comments
-WHERE parent_author='' AND created >= '2018/02/04' AND created < '2018/02/13' AND pending_payout_value !=0
+WHERE parent_author='' AND created >= '".date("Y-m-d", strtotime("-8 days"))."' AND created < '".date("Y-m-d")."' AND pending_payout_value !=0
 GROUP BY author
 
 ) a

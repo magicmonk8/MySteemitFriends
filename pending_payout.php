@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Top Authors by Pending Payout - My Steemit Friends</title>
+    <title>7-Day Top Authors by Pending Payout - My Steemit Friends</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
@@ -86,7 +86,7 @@
 
      
 
-<h1>Steemit 7-Day Pending Payout Ranking</h1>       
+<h1>Steemit 7-Day Top Author by Pending Payout Ranking</h1>       
 
 <br>
 
@@ -213,7 +213,7 @@ echo '<form action="pending_payout.php" method="get">Go To Page Number <input ty
 $sql = "SELECT
 author, sum(pending_payout_value) AS total_payout
 FROM Comments (NOLOCK)
-WHERE parent_author='' AND created >= '2018/02/04' AND created < '2018/02/13' AND pending_payout_value !=0
+WHERE parent_author='' AND created >= '".date("Y-m-d", strtotime("-8 days"))."' AND created < '".date("Y-m-d")."' AND pending_payout_value !=0
 GROUP BY author
 ORDER BY sum(pending_payout_value) DESC
 OFFSET :offset ROWS
