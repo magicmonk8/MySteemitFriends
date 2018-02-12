@@ -71,12 +71,11 @@
 		<a class="dropdown-item" href="ownSP.php">Own SP</a>
 		<a class="dropdown-item" href="sbd.php">SBD</a>	
 		<a class="dropdown-item" href="accountvalue.php">Estimated Account Value</a>     
+   		<a class="dropdown-item" href="pending_payout.php">Pending Payout</a>     
     </div>
   </div><!-- /btn-group -->
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
-</nav>     
-     
-       
+</nav>    
    
     <div class="container-fluid bg-4 text-center" style="max-width:1000px;">
 
@@ -258,7 +257,7 @@ echo '<table id="bigtable" class="table table-sm table-striped" style="backgroun
 
     
 
-echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th>User Name</th><th class="alignright">Estimated Account Value</th><th class="alignright">Total STEEM</th><th class="alignright">Total SBD</th></tr></thead>';
+echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th>User Name</th><th class="alignright">Estimated Account Value</th><th class="alignright">Steem Power + STEEM</th><th class="alignright">Total SBD</th></tr></thead>';
 
     // print the results. If successful, magicmonk will be printed on page.
 
