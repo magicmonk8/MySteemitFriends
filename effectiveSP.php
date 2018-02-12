@@ -49,7 +49,7 @@
   <body class="bg-3">   
 
     
- <nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
+<nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
   <span class="navbar-brand mb-0 h1"><a href="http://steemit.com/@magicmonk"><img src="images/magicmonkhead.png" width="64px">@magicmonk</a></span>
 
     <a class="btn btn-lg btn-primary navbutton nounderline"  href="index.php">Upvote Stats</a>
@@ -63,11 +63,11 @@
 		<a class="dropdown-item" href="ownSP.php">Own SP</a>
 		<a class="dropdown-item" href="sbd.php">SBD</a>	
 		<a class="dropdown-item" href="accountvalue.php">Estimated Account Value</a>     
+   		<a class="dropdown-item" href="pending_payout.php">Pending Payout</a>     
     </div>
   </div><!-- /btn-group -->
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
-</nav>     
-    
+</nav>    
     
    
     <div class="container-fluid bg-3 text-center" style="max-width:1000px;">
