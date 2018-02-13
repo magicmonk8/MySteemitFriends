@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Estimated Account Value Ranking - My Steemit Friends</title>
+    <title>Top Authors by SBD Past Payout in last 30 days - My Steemit Friends</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
@@ -45,7 +45,7 @@
 
 	/*background color */
 	.bg-4 {
-		background-color:#052715;
+		background-color:#1D1604;
 		color: white;
 	}	
 	
@@ -77,7 +77,8 @@
   </div><!-- /btn-group -->
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
 </nav>     
-      
+    
+       
    
     <div class="container-fluid bg-4 text-center" style="max-width:1000px;">
 
@@ -87,7 +88,7 @@
 
      
 
-<h1>Steemit Estimated Account Value Ranking</h1>       
+<h1>Steemit Top Authors by SBD Past Payout in last 30 days Ranking</h1>       
 
 <br>
 
@@ -119,27 +120,7 @@
 include 'steemSQLconnect2.php';		
 
 	
-// retrieve global values for calculating Steem Power	
-$my_file = fopen("steemprice.txt",'r');
-$steemprice=fgets($my_file);
-$steemprice = preg_replace('/[^0-9.]+/', '', $steemprice);
-fclose($my_file);
-
 	
-// retrieve current steem median history price for calculating account value
-$my_file = fopen("global.txt",'r');
-$total_vesting_fund_steem=fgets($my_file);
-$total_vesting_fund_steem = preg_replace('/[^0-9.]+/', '', $total_vesting_fund_steem);
-$total_vesting_shares=fgets($my_file);
-$total_vesting_shares = preg_replace('/[^0-9.]+/', '', $total_vesting_shares);
-fclose($my_file);
-
-
-// amount of steem per vest (needed to convert vests to steem)
-	
-$steem_per_vest = round($total_vesting_fund_steem / $total_vesting_shares, 6, PHP_ROUND_HALF_UP);
-	
-
 // number of pages on the browsing panel
 $numberofpages=7;
 
@@ -188,11 +169,11 @@ for ($x=$page-3;$x<=$page+3;$x++) {
 
       if ($x==$page) {
 
-        echo '<li class="page-item active"><a class="page-link" href="accountvalue.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item active"><a class="page-link" href="past_payout.php?page='.$x.'">'.$x.'</a></li>';
 
       } else {
 
-        echo '<li class="page-item"><a class="page-link" href="accountvalue.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item"><a class="page-link" href="past_payout.php?page='.$x.'">'.$x.'</a></li>';
 
       }  
 
@@ -204,11 +185,11 @@ for ($x=$page-3;$x<=$page+3;$x++) {
 
       if ($x==$page) {
 
-        echo '<li class="page-item active"><a class="page-link" href="accountvalue.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item active"><a class="page-link" href="past_payout.php?page='.$x.'">'.$x.'</a></li>';
 
       } else {
 
-        echo '<li class="page-item"><a class="page-link" href="accountvalue.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item"><a class="page-link" href="past_payout.php?page='.$x.'">'.$x.'</a></li>';
 
       }  
 
@@ -220,30 +201,27 @@ echo '</ul></nav><br>';
 
 if ($page>1) {
 
-echo '<a href="accountvalue.php?page='.($page-1).'" class="btn btn-light" role="button">Previous Page</a> ';
+echo '<a href="past_payout.php?page='.($page-1).'" class="btn btn-light" role="button">Previous Page</a> ';
 
 }
 
-echo '<a href="accountvalue.php?page='.($page+1).'" class="btn btn-light" role="button">Next Page</a><br><br>'; 
+echo '<a href="past_payout.php?page='.($page+1).'" class="btn btn-light" role="button">Next Page</a><br><br>'; 
 
 
 
-echo '<form action="accountvalue.php" method="get">Go To Page Number <input type="text" name="page" size="5"> <input type="submit" value="Go"></form><br></div>';
+echo '<form action="past_payout.php" method="get">Go To Page Number <input type="text" name="page" size="5"> <input type="submit" value="Go"></form><br></div>';
 
 
-    $sql = "SELECT name, STEEM+sp AS totalSTEEM, sbd as totalSBD, (STEEM+sp)*".$steemprice."+sbd AS accountval
-	FROM (
-SELECT name, convert(float,balance)+convert(float,savings_balance) AS STEEM, convert(float, a.vesting_shares)*".$steem_per_vest." AS sp, convert(float,sbd_balance) + convert(float,savings_sbd_balance) AS sbd
-FROM
-(SELECT name, Substring(balance,0,PATINDEX('%STEEM%',balance)) AS balance, Substring(savings_balance,0,PATINDEX('%STEEM%',savings_balance)) AS savings_balance, Substring(vesting_shares,0,PATINDEX('%VESTS%',vesting_shares)) AS vesting_shares,  Substring(sbd_balance,0,PATINDEX('%SBD%',sbd_balance)) AS sbd_balance, Substring(savings_sbd_balance,0,PATINDEX('%SBD%',savings_sbd_balance)) AS savings_sbd_balance
-FROM Accounts (NOLOCK)) a) b
-Order by accountval DESC
+$sql="select 
+author, sum(sdb_payout) AS sbd_paid, sum(vesting_payout) AS vests_paid 
+From VOAuthorRewards
+where timestamp >= '".date("Y-m-d", strtotime("-30 days"))."'
+GROUP BY author
+ORDER BY sbd_paid DESC
 OFFSET :offset ROWS
 FETCH NEXT :pagesize ROWS ONLY;
-	";
-
-    
-
+";
+	
 
 // prepare the SQL statement, then bind value to variables, this prevents SQL injection.
     $sth = $conn->prepare($sql);
@@ -257,9 +235,7 @@ FETCH NEXT :pagesize ROWS ONLY;
 
 echo '<table id="bigtable" class="table table-sm table-striped" style="background-color:#0f4880;border:5px solid white">';
 
-    
-
-echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th>User Name</th><th class="alignright">Estimated Account Value</th><th class="alignright">Steem Power + STEEM</th><th class="alignright">Total SBD</th></tr></thead>';
+echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th>User Name</th><th>SBD Paid</th><th>Vests Paid</th></tr></thead>';
 
     // print the results. If successful, magicmonk will be printed on page.
 
@@ -269,10 +245,9 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ra
 
 // convert vests to sp		
 
-		$name=$row['name'];
-		$totalsteem=$row['totalSTEEM'];
-		$totalsbd=$row['totalSBD'];
-		$accountval=$row['accountval'];
+		$name=$row['author'];
+		$sbd_paid=$row['sbd_paid'];
+		$vests_paid=$row['vests_paid'];
 		
 // calculation of SP formula no longer used (done in SQL). Kept here for reference: $ownsp = $total_vesting_fund_steem * $ownvests / $total_vesting_shares;
 		
@@ -301,27 +276,16 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ra
 
       } 
 
-          echo "</td><td class='alignright'>";
+          echo "</td><td>";
 		
-		echo number_format(round($accountval));
-
-
-          echo "</td><td class='alignright'>";
-
-        echo number_format(round($totalsteem));  
+		echo number_format(round($sbd_paid));
+						   
+						   echo "</td><td>";
 		
-		 echo "</td><td class='alignright'>";
-
-		  echo number_format(round($totalsbd));
-          
-		
+		echo number_format(round($vests_paid));
           
 
           echo "</td></tr>";
-		
-		
-
-          
 
         }
 
@@ -415,7 +379,7 @@ function loadDoc() {
 
   };
 
-  xhttp.open("GET", "get_av_rank.php?SteemitUser=" + username, true);
+  xhttp.open("GET", "get_pastpay_rank.php?SteemitUser=" + username, true);
 
   xhttp.send();
 
