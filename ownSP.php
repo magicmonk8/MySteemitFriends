@@ -73,12 +73,12 @@
 		<a class="dropdown-item" href="sbd.php">SBD</a>	
 		<a class="dropdown-item" href="accountvalue.php">Estimated Account Value</a>     
    		<a class="dropdown-item" href="pending_payout.php">Pending Payout</a>
-   		<a class="dropdown-item" href="past_payout.php">Past Payout</a>         
+   		<a class="dropdown-item" href="past_payout.php">Past Payout</a>  
+   		<a class="dropdown-item" href="witnessproxies.php">Witness Proxies</a>          
     </div>
   </div><!-- /btn-group -->
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
 </nav>     
-    
    
     <div class="container-fluid bg-4 text-center" style="max-width:1000px;">
 
