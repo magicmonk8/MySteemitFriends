@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Own SP Ranking - My Steemit Friends</title>
+    <title>Witness Proxies Voting Power Ranking - My Steemit Friends</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
@@ -45,7 +45,7 @@
 
 	/*background color */
 	.bg-4 {
-		background-color:#44174A;
+		background-color:#052715;
 		color: white;
 	}	
 	
@@ -57,7 +57,6 @@
   <body class="bg-4">   
 
     
-   
 <nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
   <span class="navbar-brand mb-0 h1"><a href="http://steemit.com/@magicmonk"><img src="images/magicmonkhead.png" width="64px">@magicmonk</a></span>
 
@@ -73,12 +72,12 @@
 		<a class="dropdown-item" href="sbd.php">SBD</a>	
 		<a class="dropdown-item" href="accountvalue.php">Estimated Account Value</a>     
    		<a class="dropdown-item" href="pending_payout.php">Pending Payout</a>
-   		<a class="dropdown-item" href="past_payout.php">Past Payout</a>  
-   		<a class="dropdown-item" href="witnessproxies.php">Witness Proxies</a>          
+   		<a class="dropdown-item" href="past_payout.php">Past Payout</a>         
     </div>
   </div><!-- /btn-group -->
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
 </nav>     
+      
    
     <div class="container-fluid bg-4 text-center" style="max-width:1000px;">
 
@@ -88,7 +87,7 @@
 
      
 
-<h1>Steemit Own SP Ranking</h1>       
+<h1>Steemit Witness Proxies Voting Power Ranking</h1>       
 
 <br>
 
@@ -115,19 +114,20 @@
 
 
 <?php
+
+// number formatting required for vests
+function custom_number_format($n, $precision = 3) {   
+        $n_format = number_format($n / 1000000, $precision);
+    
+    
+
+    return $n_format;
+}	
+	
 // connect to SteemSQL database
 include 'steemSQLconnect2.php';		
 
 	
-// retrieve global values for calculating Steem Power	
-$my_file = fopen("global.txt",'r');
-$total_vesting_fund_steem=fgets($my_file);
-$total_vesting_fund_steem = preg_replace('/[^0-9.]+/', '', $total_vesting_fund_steem);
-$total_vesting_shares=fgets($my_file);
-$total_vesting_shares = preg_replace('/[^0-9.]+/', '', $total_vesting_shares);
-fclose($my_file);
-
-
 // number of pages on the browsing panel
 $numberofpages=7;
 
@@ -176,11 +176,11 @@ for ($x=$page-3;$x<=$page+3;$x++) {
 
       if ($x==$page) {
 
-        echo '<li class="page-item active"><a class="page-link" href="ownSP.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item active"><a class="page-link" href="witnessproxies.php?page='.$x.'">'.$x.'</a></li>';
 
       } else {
 
-        echo '<li class="page-item"><a class="page-link" href="ownSP.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item"><a class="page-link" href="witnessproxies.php?page='.$x.'">'.$x.'</a></li>';
 
       }  
 
@@ -192,11 +192,11 @@ for ($x=$page-3;$x<=$page+3;$x++) {
 
       if ($x==$page) {
 
-        echo '<li class="page-item active"><a class="page-link" href="ownSP.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item active"><a class="page-link" href="witnessproxies.php?page='.$x.'">'.$x.'</a></li>';
 
       } else {
 
-        echo '<li class="page-item"><a class="page-link" href="ownSP.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item"><a class="page-link" href="witnessproxies.php?page='.$x.'">'.$x.'</a></li>';
 
       }  
 
@@ -208,23 +208,47 @@ echo '</ul></nav><br>';
 
 if ($page>1) {
 
-echo '<a href="ownSP.php?page='.($page-1).'" class="btn btn-light" role="button">Previous Page</a> ';
+echo '<a href="witnessproxies.php?page='.($page-1).'" class="btn btn-light" role="button">Previous Page</a> ';
 
 }
 
-echo '<a href="ownSP.php?page='.($page+1).'" class="btn btn-light" role="button">Next Page</a><br><br>'; 
+echo '<a href="witnessproxies.php?page='.($page+1).'" class="btn btn-light" role="button">Next Page</a><br><br>'; 
 
 
 
-echo '<form action="ownSP.php" method="get">Go To Page Number <input type="text" name="page" size="5"> <input type="submit" value="Go"></form><br></div>';
+echo '<form action="witnessproxies.php" method="get">Go To Page Number <input type="text" name="page" size="5"> <input type="submit" value="Go"></form><br></div>';
 
 
     $sql = "
-SELECT convert(float, a.vesting_shares)-convert(float,a.delegated_vesting_shares)+convert(float,a.received_vesting_shares) AS effective_vests, a.name, convert(float, a.vesting_shares) AS vests, convert(float,sbd_balance) + convert(float,savings_sbd_balance)
-FROM
-(SELECT name, Substring(vesting_shares,0,PATINDEX('%VESTS%',vesting_shares)) AS vesting_shares, Substring(delegated_vesting_shares,0,PATINDEX('%VESTS%',delegated_vesting_shares)) AS delegated_vesting_shares, Substring(received_vesting_shares,0,PATINDEX('%VESTS%',received_vesting_shares)) AS received_vesting_shares, Substring(sbd_balance,0,PATINDEX('%SBD%',sbd_balance)) AS sbd_balance, Substring(savings_sbd_balance,0,PATINDEX('%SBD%',savings_sbd_balance)) AS savings_sbd_balance
-FROM Accounts (NOLOCK)) a
-Order by vests DESC
+select f.proxy AS proxy, f.proxied_vests AS proxiedvests, convert(float,Substring(g.vesting_shares,0,PATINDEX('%VESTS%',g.vesting_shares))) AS own_vests, convert(float,Substring(g.vesting_shares,0,PATINDEX('%VESTS%',g.vesting_shares)))+f.proxied_vests AS total_vests
+FROM 
+(
+select e.proxy AS proxy, sum(e.vesting_shares) as proxied_vests
+FROM (
+select c.account, c.proxy, convert(float,Substring(d.vesting_shares,0,PATINDEX('%VESTS%',d.vesting_shares))) AS vesting_shares
+from (select a.* 
+from TxAccountWitnessProxies a 
+INNER JOIN 
+(
+SELECT account, MAX(timestamp) AS maxtime
+FROM TxAccountWitnessProxies
+GROUP BY account
+) b 
+ON a.account=b.account
+AND a.timestamp= b.maxtime
+) c INNER JOIN (
+select name, vesting_shares
+from Accounts) d
+ON c.account = d.name
+) e
+where e.proxy != ''
+GROUP BY e.proxy
+) f
+INNER JOIN 
+(SELECT name, vesting_shares
+from Accounts) g
+ON f.proxy = g.name
+ORDER BY total_vests DESC
 OFFSET :offset ROWS
 FETCH NEXT :pagesize ROWS ONLY;
 	";
@@ -246,19 +270,22 @@ echo '<table id="bigtable" class="table table-sm table-striped" style="backgroun
 
     
 
-echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th>User Name</th><th class="alignright">Own SP</th><th class="alignright">Effective SP</th><th class="alignright">SBD</th></tr></thead>';
+echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th style="text-align: center;">Proxy</th><th style="text-align: center;">Total Vests (millions)</th><th style="text-align: center;">Own Vests (millions)</th><th style="text-align: center;">Proxied Vests (millions)</th></tr></thead>';
 
     // print the results. If successful, magicmonk will be printed on page.
 
     $rank=$pagesize*($page-1)+1;
     $rownum=0;
-    while ($row = $sth->fetch(PDO::FETCH_NUM)) { 
+    while ($row = $sth->fetch(PDO::FETCH_ASSOC)) { 
 
 // convert vests to sp		
-		$vests=$row[0];
-		$sp = $total_vesting_fund_steem * $vests / $total_vesting_shares;
-		$ownvests=$row[2];
-		$ownsp = $total_vesting_fund_steem * $ownvests / $total_vesting_shares;
+
+		$name=$row['proxy'];
+		$totalvests=$row['total_vests'];
+		$ownvests=$row['own_vests'];
+		$proxiedvests=$row['proxiedvests'];
+		
+// calculation of SP formula no longer used (done in SQL). Kept here for reference: $ownsp = $total_vesting_fund_steem * $ownvests / $total_vesting_shares;
 		
 // create striped rows		
 	  if ($rownum%2==0) {echo '<tr>';} else {echo '<tr style="background-color:#0f3066">';}
@@ -271,34 +298,34 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ra
 
       echo "</td><td>";
 
-      if ($row[1]==$highlight) {
+      if ($name==$highlight) {
 
       echo '<span style="background-color:red">';
 
       } 
 
-      echo '<a tabindex="0" data-trigger="click" data-toggle="popover" data-content="<p><a class=\'nounderline btn btn-primary\' href=\'http://steemit.com/@'.$row[1].'/\'>Steemit Profile</p><a class=\'nounderline btn btn-info\' href=\'index.php?User='.$row[1].'\'>MSF Profile</a>">'.$row[1].'</a>';
+      echo '<a tabindex="0" data-trigger="click" data-toggle="popover" data-content="<p><a class=\'nounderline btn btn-primary\' href=\'http://steemit.com/@'.$name.'/\'>Steemit Profile</p><a class=\'nounderline btn btn-info\' href=\'index.php?User='.$name.'\'>MSF Profile</a>">'.$name.'</a>';
 
-      if ($row[1]==$highlight) {
+      if ($name==$highlight) {
 
       echo '</span>';
 
       } 
 
-          
+          echo "</td><td class='alignright'>";		
+
+		echo custom_number_format($totalvests);
+
 
           echo "</td><td class='alignright'>";
 
-        echo number_format(round($ownsp));  
+        echo custom_number_format($ownvests);  
 		
 		 echo "</td><td class='alignright'>";
 
-		  echo number_format(round($sp));
+		  echo custom_number_format($proxiedvests);
           
-		echo "</td><td class='alignright'>";
 		
-		echo number_format(round($row[3]));
-
           
 
           echo "</td></tr>";
@@ -399,7 +426,7 @@ function loadDoc() {
 
   };
 
-  xhttp.open("GET", "get_osp_rank.php?SteemitUser=" + username, true);
+  xhttp.open("GET", "get_proxy_rank.php?SteemitUser=" + username, true);
 
   xhttp.send();
 
