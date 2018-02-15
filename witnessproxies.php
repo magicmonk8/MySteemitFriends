@@ -49,6 +49,13 @@
 		color: white;
 	}	
 	
+		.popover {
+    background: black;
+	color:white !important;
+}
+	.pop-content {
+    color: white !important;    
+}
 
     </style>
 
@@ -220,6 +227,8 @@ echo '<form action="witnessproxies.php" method="get">Go To Page Number <input ty
 
 
     $sql = "
+;With q1 as
+(
 select f.proxy AS proxy, f.proxied_vests AS proxiedvests, convert(float,Substring(g.vesting_shares,0,PATINDEX('%VESTS%',g.vesting_shares))) AS own_vests, convert(float,Substring(g.vesting_shares,0,PATINDEX('%VESTS%',g.vesting_shares)))+f.proxied_vests AS total_vests
 FROM 
 (
@@ -248,7 +257,17 @@ INNER JOIN
 (SELECT name, vesting_shares
 from Accounts) g
 ON f.proxy = g.name
-ORDER BY total_vests DESC
+),
+
+q2 as
+(
+SELECT name, witness_votes
+FROM Accounts
+)
+select q1.*, q2.witness_votes AS witness_votes
+from q1 INNER JOIN q2
+ON q1.proxy=q2.name
+ORDER BY q1.total_vests DESC
 OFFSET :offset ROWS
 FETCH NEXT :pagesize ROWS ONLY;
 	";
@@ -270,7 +289,7 @@ echo '<table id="bigtable" class="table table-sm table-striped" style="backgroun
 
     
 
-echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th style="text-align: center;">Proxy</th><th style="text-align: center;">Total Vests (millions)</th><th style="text-align: center;">Own Vests (millions)</th><th style="text-align: center;">Proxied Vests (millions)</th></tr></thead>';
+echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th style="text-align: center;">Proxy</th><th style="text-align: center;">Total Vests (millions)</th><th style="text-align: center;">Own Vests (millions)</th><th style="text-align: center;">Proxied Vests (millions)</th><th style="text-align: center;">Votes casted</th></tr></thead>';
 
     // print the results. If successful, magicmonk will be printed on page.
 
@@ -284,6 +303,7 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ra
 		$totalvests=$row['total_vests'];
 		$ownvests=$row['own_vests'];
 		$proxiedvests=$row['proxiedvests'];
+		$witnessvotes=json_decode($row['witness_votes']);
 		
 // calculation of SP formula no longer used (done in SQL). Kept here for reference: $ownsp = $total_vesting_fund_steem * $ownvests / $total_vesting_shares;
 		
@@ -312,31 +332,39 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ra
 
       } 
 
-          echo "</td><td class='alignright'>";		
+      echo "</td><td class='alignright'>";		
 
-		echo custom_number_format($totalvests);
+	  echo custom_number_format($totalvests);
 
 
-          echo "</td><td class='alignright'>";
+      echo "</td><td class='alignright'>";
 
-        echo custom_number_format($ownvests);  
+      echo custom_number_format($ownvests);  
+
+
+	  echo "</td><td class='alignright'>";
 		
-		 echo "</td><td class='alignright'>";
-
-		  echo custom_number_format($proxiedvests);
-          
+// link to steemdb.com to show who has set proxies to this user & their vests.				
+      echo '<a href="https://steemdb.com/@'.$name.'/proxied">';
+	  echo custom_number_format($proxiedvests);
+      echo '</a>';		
 		
-          
+	  echo "</td><td class='alignright'>";
 
-          echo "</td></tr>";
+// show in popover who this user has voted for.		
 		
 		
+echo '<a tabindex="0" data-trigger="click" data-toggle="popover" data-content="';
+	foreach($witnessvotes as $value) {
+    echo "<font color='white'>".$value."</font><br>";
+    }
+	echo '">'.count($witnessvotes).'</a>';		
+		    
+      echo "</td></tr>";
+    
+	  }
 
-          
-
-        }
-
-        echo "</table>";
+echo "</table>";
 
 
 
