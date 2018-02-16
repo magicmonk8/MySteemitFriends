@@ -34,6 +34,12 @@
 			cursor: pointer;  
 		}
 
+		/* no padding or margin in table */
+		.nopadnomarg td, nopadnomarg tr {
+			margin:0px;
+			padding:0px;
+		}
+		
     </style>
     
   </head>
@@ -55,7 +61,8 @@
 		<a class="dropdown-item" href="accountvalue.php">Estimated Account Value</a>     
    		<a class="dropdown-item" href="pending_payout.php">Pending Payout</a>
    		<a class="dropdown-item" href="past_payout.php">Past Payout</a>  
-   		<a class="dropdown-item" href="witnessproxies.php">Witness Proxies</a>          
+   		<a class="dropdown-item" href="witnessvoting.php">Witness Voting Power: All Users</a>          
+   		<a class="dropdown-item" href="witnessproxies.php">Witness Voting Power: Proxies</a> 
     </div>
   </div><!-- /btn-group -->
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
@@ -85,15 +92,22 @@
    		<div class="btn-group" id="rankingbtn" style='width:100%'>
     <button style='width:100%' type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Rankings</button>
     <div class="dropdown-menu">
-    	<a class="dropdown-item" href="#" onclick="loadRank('get_follower_rank')">Followers</a>
-    	<a class="dropdown-item" href="#" onclick="loadRank('get_reputation_rank')">Reputation</a>	     
-		<a class="dropdown-item" href="#" onclick="loadRank('get_esp_rank')">Effective SP</a>
-		<a class="dropdown-item" href="#" onclick="loadRank('get_osp_rank')">Own SP</a>
-		<a class="dropdown-item" href="#" onclick="loadRank('get_sbd_rank')">SBD</a>
-        <a class="dropdown-item" href="#" onclick="loadRank('get_av_rank')">Estimated Account Value</a>		
-        <a class="dropdown-item" href="#" onclick="loadRank('get_pendpay_rank')">Pending Payout</a>	
-        <a class="dropdown-item" href="#" onclick="loadRank('get_pastpay_rank')">Past Payout</a>	
-       	<a class="dropdown-item" href="#" onclick="loadRank('get_proxy_rank')">Witness Proxies</a>	
+    <table class="nopadnomarg">
+    <tr><td><a class="dropdown-item" href="#" onclick="loadRank('get_follower_rank')">Followers</a></td>
+    <td><a class="dropdown-item" href="#" onclick="loadRank('get_reputation_rank')">Reputation</a></td></tr>
+    	
+    <tr><td><a class="dropdown-item" href="#" onclick="loadRank('get_esp_rank')">Effective SP</a></td>
+    <td><a class="dropdown-item" href="#" onclick="loadRank('get_osp_rank')">Own SP</a></td></tr>	
+    
+    <tr><td><a class="dropdown-item" href="#" onclick="loadRank('get_sbd_rank')">SBD</a></td>
+    <td><a class="dropdown-item" href="#" onclick="loadRank('get_av_rank')">Estimated Account Value</a></td></tr>	
+    <tr><td><a class="dropdown-item" href="#" onclick="loadRank('get_pendpay_rank')">Pending Payout</a></td>
+    <td><a class="dropdown-item" href="#" onclick="loadRank('get_pastpay_rank')">Past Payout</a></td></tr>	
+    	
+    </table>
+        <a class="dropdown-item" href="#" onclick="loadRank('get_voting_rank')">Witness Voting Power: All Users</a>		
+       	<a class="dropdown-item" href="#" onclick="loadRank('get_proxy_rank')">Witness Voting Power: Proxies</a>	
+       	
         		
     </div>
   </div><!-- /btn-group -->
