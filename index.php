@@ -61,6 +61,7 @@
 		<a class="dropdown-item" href="accountvalue.php">Estimated Account Value</a>     
    		<a class="dropdown-item" href="pending_payout.php">Pending Payout</a>
    		<a class="dropdown-item" href="past_payout.php">Past Payout</a>  
+   		<a class="dropdown-item" href="powerdown.php">Power Down</a> 
    		<a class="dropdown-item" href="witnessvoting.php">Witness Voting Power: All Users</a>          
    		<a class="dropdown-item" href="witnessproxies.php">Witness Voting Power: Proxies</a> 
     </div>
@@ -105,6 +106,7 @@
     <td><a class="dropdown-item" href="#" onclick="loadRank('get_pastpay_rank')">Past Payout</a></td></tr>	
     	
     </table>
+       <a class="dropdown-item" href="#" onclick="loadRank('get_powerdown_rank')">Power Down</a>
         <a class="dropdown-item" href="#" onclick="loadRank('get_voting_rank')">Witness Voting Power: All Users</a>		
        	<a class="dropdown-item" href="#" onclick="loadRank('get_proxy_rank')">Witness Voting Power: Proxies</a>	
        	
