@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>30-Day Top Author By SBD Past Payout Ranking- My Steemit Friends</title>
+    <title>Power Down Ranking - My Steemit Friends</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
@@ -45,7 +45,7 @@
 
 	/*background color */
 	.bg-4 {
-		background-color:#1D1604;
+		background-color:#2b1d3a;
 		color: white;
 	}	
 	
@@ -56,7 +56,7 @@
 
   <body class="bg-4">   
 
-<nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
+ <nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
   <span class="navbar-brand mb-0 h1"><a href="http://steemit.com/@magicmonk"><img src="images/magicmonkhead.png" width="64px">@magicmonk</a></span>
 
     <a class="btn btn-lg btn-primary navbutton nounderline"  href="index.php">Upvote Stats</a>
@@ -79,7 +79,8 @@
   </div><!-- /btn-group -->
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
 </nav>     
-        
+                
+      
    
     <div class="container-fluid bg-4 text-center" style="max-width:1000px;">
 
@@ -89,7 +90,7 @@
 
      
 
-<h1>30-Day Top Author By SBD Past Payout Ranking</h1>       
+<h1>Steemit Power Down Ranking</h1>       
 
 <br>
 
@@ -121,6 +122,25 @@
 include 'steemSQLconnect2.php';		
 
 	
+// retrieve global values for calculating Steem Power	
+$my_file = fopen("steemprice.txt",'r');
+$steemprice=fgets($my_file);
+$steemprice = preg_replace('/[^0-9.]+/', '', $steemprice);
+fclose($my_file);
+
+	
+// retrieve current steem median history price for calculating account value
+$my_file = fopen("global.txt",'r');
+$total_vesting_fund_steem=fgets($my_file);
+$total_vesting_fund_steem = preg_replace('/[^0-9.]+/', '', $total_vesting_fund_steem);
+$total_vesting_shares=fgets($my_file);
+$total_vesting_shares = preg_replace('/[^0-9.]+/', '', $total_vesting_shares);
+fclose($my_file);
+
+
+// amount of steem per vest (needed to convert vests to steem)
+	
+$steem_per_vest = round($total_vesting_fund_steem / $total_vesting_shares, 6, PHP_ROUND_HALF_UP);
 	
 // number of pages on the browsing panel
 $numberofpages=7;
@@ -170,11 +190,11 @@ for ($x=$page-3;$x<=$page+3;$x++) {
 
       if ($x==$page) {
 
-        echo '<li class="page-item active"><a class="page-link" href="past_payout.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item active"><a class="page-link" href="powerdown.php?page='.$x.'">'.$x.'</a></li>';
 
       } else {
 
-        echo '<li class="page-item"><a class="page-link" href="past_payout.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item"><a class="page-link" href="powerdown.php?page='.$x.'">'.$x.'</a></li>';
 
       }  
 
@@ -186,11 +206,11 @@ for ($x=$page-3;$x<=$page+3;$x++) {
 
       if ($x==$page) {
 
-        echo '<li class="page-item active"><a class="page-link" href="past_payout.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item active"><a class="page-link" href="powerdown.php?page='.$x.'">'.$x.'</a></li>';
 
       } else {
 
-        echo '<li class="page-item"><a class="page-link" href="past_payout.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item"><a class="page-link" href="powerdown.php?page='.$x.'">'.$x.'</a></li>';
 
       }  
 
@@ -202,27 +222,35 @@ echo '</ul></nav><br>';
 
 if ($page>1) {
 
-echo '<a href="past_payout.php?page='.($page-1).'" class="btn btn-light" role="button">Previous Page</a> ';
+echo '<a href="powerdown.php?page='.($page-1).'" class="btn btn-light" role="button">Previous Page</a> ';
 
 }
 
-echo '<a href="past_payout.php?page='.($page+1).'" class="btn btn-light" role="button">Next Page</a><br><br>'; 
+echo '<a href="powerdown.php?page='.($page+1).'" class="btn btn-light" role="button">Next Page</a><br><br>'; 
 
 
 
-echo '<form action="past_payout.php" method="get">Go To Page Number <input type="text" name="page" size="5"> <input type="submit" value="Go"></form><br></div>';
+echo '<form action="powerdown.php" method="get">Go To Page Number <input type="text" name="page" size="5"> <input type="submit" value="Go"></form><br></div>';
 
+	
+	$sql = "
+SELECT name, convert(float, Substring(vesting_shares,0,PATINDEX('%VESTS%',vesting_shares)))*".$steem_per_vest." AS sp, 
+convert(float, Substring(vesting_withdraw_rate,0,PATINDEX('%VESTS%',vesting_withdraw_rate)))*".$steem_per_vest." AS next_withdrawl_sp, 
+next_vesting_withdrawal, 
+b.maxtime as withdrawl_start_date
+FROM Accounts (NOLOCK) a INNER JOIN
+(select account, max(timestamp) AS maxtime
+from TxWithdraws (NOLOCK)
+group by account
+) b
+ON a.name = b.account
 
-$sql="select 
-author, sum(sdb_payout) AS sbd_paid, sum(vesting_payout) AS vests_paid 
-From VOAuthorRewards
-where timestamp >= '".date("Y-m-d", strtotime("-30 days"))."'
-GROUP BY author
-ORDER BY sbd_paid DESC
+where vesting_withdraw_rate NOT LIKE '0.0000%'
+Order by next_withdrawl_sp DESC
 OFFSET :offset ROWS
 FETCH NEXT :pagesize ROWS ONLY;
-";
 	
+	";
 
 // prepare the SQL statement, then bind value to variables, this prevents SQL injection.
     $sth = $conn->prepare($sql);
@@ -232,11 +260,13 @@ FETCH NEXT :pagesize ROWS ONLY;
 	
     $sth->execute();
 
-    echo '</div><div class="col">';
+    echo '<br><br></div><div class="col">';
 
 echo '<table id="bigtable" class="table table-sm table-striped" style="background-color:#0f4880;border:5px solid white">';
 
-echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th>User Name</th><th>SBD Paid</th><th>Vests Paid</th></tr></thead>';
+    
+
+echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">R<br>a<br>n<br>k</th><th>User Name</th><th style="text-align: center;" class="text-nowrap">Next Power<br>Down SP</th><th class="text-nowrap" style="text-align: center;">Next Power<br>Down Date</th><th style="text-align: center;">Current SP</th><th style="text-align: center;" class="text-nowrap">Power Down<br>Start Date</th><th class="text-nowrap" style="text-align: center;">Time since<br>Power Down</th></tr></thead>';
 
     // print the results. If successful, magicmonk will be printed on page.
 
@@ -246,9 +276,11 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ra
 
 // convert vests to sp		
 
-		$name=$row['author'];
-		$sbd_paid=$row['sbd_paid'];
-		$vests_paid=$row['vests_paid'];
+		$name=$row['name'];
+		$sp=$row['sp'];
+		$next_withdrawl_sp=$row['next_withdrawl_sp'];
+		$next_withdrawl_date=$row['next_vesting_withdrawal'];
+		$withdrawl_start_date=$row['withdrawl_start_date'];
 		
 // calculation of SP formula no longer used (done in SQL). Kept here for reference: $ownsp = $total_vesting_fund_steem * $ownvests / $total_vesting_shares;
 		
@@ -275,18 +307,45 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ra
 
       echo '</span>';
 
-      } 
-
-          echo "</td><td>";
+      }          
 		
-		echo number_format(round($sbd_paid));
-						   
-						   echo "</td><td>";
+		echo "</td><td class='alignright'>";
 		
-		echo number_format(round($vests_paid));
+		echo number_format(round($next_withdrawl_sp)); 
+		
+		echo "</td><td style='text-align: center;'>";
+		
+		// convert timestamp to date
+		
+		$dt1 = new DateTime($next_withdrawl_date);
+		$date1 = $dt1->format('Y-m-d');				
+		echo $date1;	
           
+		echo "</td><td class='alignright'>";
+		
+		echo number_format(round($sp));  
+          
+		echo "</td><td style='text-align: center;'>";
 
+		$dt2 = new DateTime($withdrawl_start_date);
+		$date2 = $dt2->format('Y-m-d');				
+		echo $date2;	
+          
+		echo "</td><td style='text-align: center;'>";
+// find difference between 2 dates tutorial: http://php.net/manual/en/datetime.diff.php
+		
+
+		$interval = date_diff($dt2, $dt1);
+		$days=$interval->format('%a');
+		$weeks=floor($days/7);
+		$leftdays=$days%7;
+		echo $weeks." weeks<br>and ".$leftdays." days";
+		
           echo "</td></tr>";
+		
+		
+
+          
 
         }
 
@@ -380,7 +439,7 @@ function loadDoc() {
 
   };
 
-  xhttp.open("GET", "get_pastpay_rank.php?SteemitUser=" + username, true);
+  xhttp.open("GET", "get_powerdown_rank.php?SteemitUser=" + username, true);
 
   xhttp.send();
 
