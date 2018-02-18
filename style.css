@@ -1,3 +1,59 @@
+a.page-link{
+color:blue !important;
+}
+
+a.page-link:visited {
+color:blue !important;
+}
+
+ul {
+margin:0.5rem;
+}
+
+ul.navbar-nav {
+margin:0px;
+}
+
+
+a.btn-info, a.btn-info:visited, a.btn-primary, a.btn-primary:visited {
+color:white !important;
+} 
+
+.navbutton {
+width:10rem;
+margin:1rem;
+}
+
+
+/* change mouse cursor when hovering over links and buttons to finger */
+a {
+		cursor: pointer;
+  }
+		.btn {
+			cursor: pointer;  
+		}
+
+
+.navbutton {
+			width:10rem;
+			margin:1rem;
+}
+		
+
+/* dropdown menu inline with button on my page */
+.div-inline{
+    display:inline-block;
+}
+
+a.btn {
+	color:white !important;
+	text-decoration: none !important;
+	
+}
+/* number alignment for ranking tables */
+.alignright {
+	text-align: right;
+}
 
 /* CSS for drop downs */
 .dropdown-menu a:hover {
@@ -22,6 +78,20 @@ text-decoration:none;
 
 .popover {
     background: #2E456D;
+	color:white;
+}
+
+.popover a {
+
+	color:white;
+}
+
+.pop-content {
+    color: white;    
+}
+
+.pop-content a {
+    color: white;    
 }
 
 /* css for filter box row */
@@ -211,6 +281,12 @@ li.nav-item:hover {
 }
 
 
+a.btn-light {
+color:blue !important;
+}
 
+a.btn-light:visited {
+color:blue !important;
+}
 
 

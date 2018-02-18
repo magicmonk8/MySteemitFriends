@@ -7,54 +7,30 @@
     <script src="jquery/jquery-3.2.1.min.js"></script>
     <script src="extensions/popper.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css?4">
+    <link rel="stylesheet" type="text/css" href="style.css?7">
     <style>
-    a.page-link{
-    color:blue !important;
-    }
-		
-    a.page-link:visited {
-      color:blue !important;
-    }
-		
-    ul {
-    margin:0.5rem;
-    }
-		
-	ul.navbar-nav {
-    margin:0px;
-    }
-
-
-    a.btn-info, a.btn-info:visited, a.btn-primary, a.btn-primary:visited {
-    color:white !important;
-    } 
-
-    a.btn-light {
-      color:blue !important;
-    }
-
-    a.btn-light:visited {
-      color:blue !important;
-    }
-		
-   	.navbutton {
-		width:10rem;
-		margin:1rem;
-	}
-
+  
 	/*background color */
-	.bg-4 {
+	.bg {
 		background-color:#2b1d3a;
 		color: white;
 	}	
 	
+	/*enlarge radio button */
+	input[type=radio] {
+    border: 0px;
+    width: 1.3em;
+    height: 1.3em;
+	vertical-align:middle;
+	}
 
+
+		
     </style>
 
   </head>
 
-  <body class="bg-4">   
+  <body class="bg">   
 
  <nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
   <span class="navbar-brand mb-0 h1"><a href="http://steemit.com/@magicmonk"><img src="images/magicmonkhead.png" width="64px">@magicmonk</a></span>
@@ -80,15 +56,13 @@
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
 </nav>     
                 
-      
    
-    <div class="container-fluid bg-4 text-center" style="max-width:1000px;">
+    <div class="container-fluid bg text-center" style="max-width:1000px;">
 
     <div class="row">
 
      <div class="col">
 
-     
 
 <h1>Steemit Power Down Ranking</h1>       
 
@@ -105,6 +79,27 @@
 <button type="button" onclick="loadDoc()">Show Ranking (wait a few seconds)</button><br><br>
 
 <div id="ranking"></div>
+
+</div>
+
+<br><br>
+
+<div style="border:5px solid white;padding:10px;">
+
+<h3>Options</h3>
+<?php 
+	if ($_GET["rankopt"]) { 
+		$rankopt = $_GET["rankopt"];
+	} else {$rankopt='pdonly';}
+?>
+<form method="get" action="<?php filter_input(INPUT_SERVER, 'PHP_SELF', FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>">
+<span style="font-size:1.5rem">Ranking table includes:</span><br><br>
+
+  <input type="radio" name="rankopt" value="pdonly" <? if ($rankopt=='pdonly') {echo "checked";}?>> <span style="font-size:1.3rem">Powering Down Users</span><br>
+  <input type="radio" name="rankopt" value="allusers" <? if ($rankopt=='allusers') {echo "checked";}?>> <span style="font-size:1.3rem">All Users</span><br><br>
+	<button type="submit" class="btn btn-default">Refresh</button>
+
+</form>
 
 </div>
 
@@ -165,23 +160,12 @@ $highlight = strtolower($_GET["highlight"]);
 }
 
 
-
-
-
-
-
-
-
 // where to start the results
 
 $offset = ($page - 1) * $pagesize;
 
 
-
-
-
 echo '<nav aria-label="Page navigation example"><ul class="pagination justify-content-center">';
-
 
 
 if ($page>=4) {
@@ -190,11 +174,23 @@ for ($x=$page-3;$x<=$page+3;$x++) {
 
       if ($x==$page) {
 
-        echo '<li class="page-item active"><a class="page-link" href="powerdown.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item active"><a class="page-link" href="powerdown.php?page='.$x.'';
+		
+		if ($rankopt=='allusers') {
+			echo '&rankopt=allusers';
+		}
+		  
+		  echo '">'.$x.'</a></li>';
 
       } else {
 
-        echo '<li class="page-item"><a class="page-link" href="powerdown.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item"><a class="page-link" href="powerdown.php?page='.$x.'';
+		  
+		if ($rankopt=='allusers') {
+			echo '&rankopt=allusers';
+		}		  
+		  
+		 echo '">'.$x.'</a></li>';
 
       }  
 
@@ -206,11 +202,24 @@ for ($x=$page-3;$x<=$page+3;$x++) {
 
       if ($x==$page) {
 
-        echo '<li class="page-item active"><a class="page-link" href="powerdown.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item active"><a class="page-link" href="powerdown.php?page='.$x.'';
+		
+		if ($rankopt=='allusers') {
+			echo '&rankopt=allusers';
+		}
+		  
+		  
+		  echo '">'.$x.'</a></li>';
 
       } else {
 
-        echo '<li class="page-item"><a class="page-link" href="powerdown.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item"><a class="page-link" href="powerdown.php?page='.$x.'';
+		  
+				if ($rankopt=='allusers') {
+			echo '&rankopt=allusers';
+		}  
+		  
+		  echo '">'.$x.'</a></li>';
 
       }  
 
@@ -222,17 +231,50 @@ echo '</ul></nav><br>';
 
 if ($page>1) {
 
-echo '<a href="powerdown.php?page='.($page-1).'" class="btn btn-light" role="button">Previous Page</a> ';
+echo '<a href="powerdown.php?page='.($page-1).'';
+
+if ($rankopt=='allusers') {
+	echo '&rankopt=allusers';
+}	
+	
+	
+echo '" class="btn btn-light" role="button">Previous Page</a> ';
 
 }
 
-echo '<a href="powerdown.php?page='.($page+1).'" class="btn btn-light" role="button">Next Page</a><br><br>'; 
+echo '<a href="powerdown.php?page='.($page+1).'';
+
+if ($rankopt=='allusers') {
+	echo '&rankopt=allusers';
+}
+
+	
+echo '" class="btn btn-light" role="button">Next Page</a><br><br>'; 
 
 
 
 echo '<form action="powerdown.php" method="get">Go To Page Number <input type="text" name="page" size="5"> <input type="submit" value="Go"></form><br></div>';
+	
+echo '<br><br>';
+	
+echo '<div style="border:5px solid white;padding:10px;">
+<h3>Explanation</h3>
+<p><b>SP Withdrawl Amount:</b> How much SP is withdrawn at the next power down.</p> 
+<p><b>Power Down Duration:</b> How long the user has been powering down.</p>
+<p><b>N/A:</b> Not Applicable. If a user is not powering down, the table will not display the power down dates.</p>
+
+
+</div>
+';
+	
+	
+	
+	
+echo '<br><br></div><div class="col">';
 
 	
+if ($rankopt=='pdonly') {
+	// SQL for ranking table containing users only powering down
 	$sql = "
 SELECT name, convert(float, Substring(vesting_shares,0,PATINDEX('%VESTS%',vesting_shares)))*".$steem_per_vest." AS sp, 
 convert(float, Substring(vesting_withdraw_rate,0,PATINDEX('%VESTS%',vesting_withdraw_rate)))*".$steem_per_vest." AS next_withdrawl_sp, 
@@ -252,6 +294,28 @@ FETCH NEXT :pagesize ROWS ONLY;
 	
 	";
 
+} else {
+	// SQL for ranking table containing all users
+		$sql = "
+SELECT name, convert(float, Substring(vesting_shares,0,PATINDEX('%VESTS%',vesting_shares)))*".$steem_per_vest." AS sp, 
+convert(float, Substring(vesting_withdraw_rate,0,PATINDEX('%VESTS%',vesting_withdraw_rate)))*".$steem_per_vest." AS next_withdrawl_sp, 
+next_vesting_withdrawal, 
+b.maxtime as withdrawl_start_date
+FROM Accounts (NOLOCK) a INNER JOIN
+(select account, max(timestamp) AS maxtime
+from TxWithdraws (NOLOCK)
+group by account
+) b
+ON a.name = b.account
+Order by sp DESC
+OFFSET :offset ROWS
+FETCH NEXT :pagesize ROWS ONLY;
+	
+	";
+	
+	
+}
+	
 // prepare the SQL statement, then bind value to variables, this prevents SQL injection.
     $sth = $conn->prepare($sql);
     $sth -> bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -260,13 +324,13 @@ FETCH NEXT :pagesize ROWS ONLY;
 	
     $sth->execute();
 
-    echo '<br><br></div><div class="col">';
+
 
 echo '<table id="bigtable" class="table table-sm table-striped" style="background-color:#0f4880;border:5px solid white">';
 
     
 
-echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">R<br>a<br>n<br>k</th><th>User Name</th><th style="text-align: center;" class="text-nowrap">Next Power<br>Down SP</th><th class="text-nowrap" style="text-align: center;">Next Power<br>Down Date</th><th style="text-align: center;">Current SP</th><th style="text-align: center;" class="text-nowrap">Power Down<br>Start Date</th><th class="text-nowrap" style="text-align: center;">Time since<br>Power Down</th></tr></thead>';
+echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">R<br>a<br>n<br>k</th><th>User Name</th><th style="text-align: center;">SP Withdrawl Amount</th><th style="text-align: center;">Next Withdrawl Date</th><th style="text-align: center;">Current SP</th><th style="text-align: center;">Power Down<br>Start Date</th><th style="text-align: center;">Power Down Duration</th></tr></thead>';
 
     // print the results. If successful, magicmonk will be printed on page.
 
@@ -280,13 +344,14 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">R<
 		$sp=$row['sp'];
 		$next_withdrawl_sp=$row['next_withdrawl_sp'];
 		$next_withdrawl_date=$row['next_vesting_withdrawal'];
-		$withdrawl_start_date=$row['withdrawl_start_date'];
+		$withdrawl_start_date=$row['withdrawl_start_date'];	
+
 		
 // calculation of SP formula no longer used (done in SQL). Kept here for reference: $ownsp = $total_vesting_fund_steem * $ownvests / $total_vesting_shares;
 		
-// create striped rows		
-	  if ($rownum%2==0) {echo '<tr>';} else {echo '<tr style="background-color:#0f3066">';}
-		$rownum++;
+// highlight power down rows
+	  if ($next_withdrawl_sp==0) {echo '<tr>';} else {echo '<tr style="background-color:#73200F">';}
+		
       echo '<td style="text-align: center;">';
 
       echo $rank;
@@ -313,38 +378,59 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">R<
 		
 		echo number_format(round($next_withdrawl_sp)); 
 		
-		echo "</td><td style='text-align: center;'>";
+		echo "</td><td style='text-align: center;' class='text-nowrap'>";
 		
 		// convert timestamp to date
 		
 		$dt1 = new DateTime($next_withdrawl_date);
 		$date1 = $dt1->format('Y-m-d');				
-		echo $date1;	
-          
+		
+		
+		if ($next_withdrawl_sp!=0) {			
+		echo $date1;	    
+	
+		} else {
+			// if not powering down, print N/A (Not Applicable).
+			echo "N/A";
+		}
+		
+		
 		echo "</td><td class='alignright'>";
 		
 		echo number_format(round($sp));  
           
-		echo "</td><td style='text-align: center;'>";
+		echo "</td><td style='text-align: center;' class='text-nowrap'>";
 
 		$dt2 = new DateTime($withdrawl_start_date);
-		$date2 = $dt2->format('Y-m-d');				
-		echo $date2;	
-          
-		echo "</td><td style='text-align: center;'>";
-// find difference between 2 dates tutorial: http://php.net/manual/en/datetime.diff.php
+		$date2 = $dt2->format('Y-m-d');		
 		
-
+		// only print date if powering down
+		if ($next_withdrawl_sp!=0) {			
+			echo $date2;	    
+	
+		} else {
+			// if not powering down, print N/A (Not Applicable).
+			echo "N/A";
+		}
+		
+	
+          
+		echo "</td><td style='text-align: center;' class='text-nowrap'>";
+// find difference between 2 dates tutorial: http://php.net/manual/en/datetime.diff.php
+// only print time if powering down.		
+		if ($next_withdrawl_sp!=0) {	
 		$interval = date_diff($dt2, $dt1);
 		$days=$interval->format('%a');
 		$weeks=floor($days/7);
 		$leftdays=$days%7;
-		echo $weeks." weeks<br>and ".$leftdays." days";
+		echo $weeks." weeks<br>and ".$leftdays." days";		
+        
+		} else {
+		echo "N/A";
+			
+		}
 		
-          echo "</td></tr>";
-		
-		
-
+		echo "</td></tr>";
           
 
         }
