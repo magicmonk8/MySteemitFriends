@@ -68,7 +68,10 @@
 
 <br>
 
-<div style="border:5px solid white;padding:10px;">
+<b><font size="+2" color=#78EF15>Please <a href="#rtable">scroll down</a> to see the table.</b></font><br><br>
+
+
+<div style="border:5px solid white;padding:10px;max-width:500px;margin:auto">
 
 <h3>Search Username for Ranking</h3>
 
@@ -84,19 +87,20 @@
 
 <br><br>
 
-<div style="border:5px solid white;padding:10px;">
+<div style="border:5px solid white;padding:10px;max-width:500px;margin:auto">
 
 <h3>Options</h3>
 <?php 
 	if ($_GET["rankopt"]) { 
 		$rankopt = $_GET["rankopt"];
-	} else {$rankopt='pdonly';}
+	} else {$rankopt='allusers';}
 ?>
 <form method="get" action="<?php filter_input(INPUT_SERVER, 'PHP_SELF', FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>">
 <span style="font-size:1.5rem">Ranking table includes:</span><br><br>
 
-  <input type="radio" name="rankopt" value="pdonly" <? if ($rankopt=='pdonly') {echo "checked";}?>> <span style="font-size:1.3rem">Powering Down Users</span><br>
-  <input type="radio" name="rankopt" value="allusers" <? if ($rankopt=='allusers') {echo "checked";}?>> <span style="font-size:1.3rem">All Users</span><br><br>
+ <input type="radio" name="rankopt" value="allusers" <? if ($rankopt=='allusers') {echo "checked";}?>> <span style="font-size:1.3rem">All Users</span><br>
+  <input type="radio" name="rankopt" value="pdonly" <? if ($rankopt=='pdonly') {echo "checked";}?>> <span style="font-size:1.3rem">Powering Down Users</span><br><br>
+ 
 	<button type="submit" class="btn btn-default">Refresh</button>
 
 </form>
@@ -105,24 +109,43 @@
 
 <br><br>
 
-<div style="border:5px solid white;padding:10px;">
-
-<h3>Select page number</h3><br>
-
-
-
 <?php
 
 // connect to SteemSQL database
 include 'steemSQLconnect2.php';		
 
 	
-// retrieve global values for calculating Steem Power	
-$my_file = fopen("steemprice.txt",'r');
+// retrieve Coin Market Cap steem price in USD for calculating withdrawl amount
+$my_file = fopen("CMCsteemprice.txt",'r');
 $steemprice=fgets($my_file);
-$steemprice = preg_replace('/[^0-9.]+/', '', $steemprice);
+$steemprice= preg_replace('/[^0-9.]+/', '', $steemprice);
 fclose($my_file);
 
+?>
+
+<div style="border:5px solid white;padding:10px;">
+<h3>Explanation</h3>
+<p><b>Withdrawl Amount (SP):</b> How much SP is withdrawn at the next power down.</p> 
+<p><b>Withdrawl Amount (USD):</b> The equivalent value of the SP withdraw in USD according to Coinmarketcap latest prices (<b>1 Steem = <? echo round($steemprice,2);?> USD.</b></p> 
+<p><b>Next Withdrawl Date:</b> When the user will be withdrawing this amount.</p> 
+<p><b>Current SP:</b> How much Steem Power the user currently has.</p>
+<p><b>Power Down Start Date:</b> When the user started powering down (only the most recent power down can be tracked).</p>
+<p><b>Power Down Duration:</b> How long the user has been powering down.</p>
+
+<p><b>N/A:</b> Not Applicable. If a user is not powering down, the table will not display the power down dates.</p>
+
+
+</div>	
+<br><br>
+
+
+<div style="border:5px solid white;padding:10px;max-width:500px;margin:auto">
+
+<h3>Select page number</h3><br>
+
+
+
+<?
 	
 // retrieve current steem median history price for calculating account value
 $my_file = fopen("global.txt",'r');
@@ -136,6 +159,7 @@ fclose($my_file);
 // amount of steem per vest (needed to convert vests to steem)
 	
 $steem_per_vest = round($total_vesting_fund_steem / $total_vesting_shares, 6, PHP_ROUND_HALF_UP);
+
 	
 // number of pages on the browsing panel
 $numberofpages=7;
@@ -253,24 +277,18 @@ echo '" class="btn btn-light" role="button">Next Page</a><br><br>';
 
 
 
-echo '<form action="powerdown.php" method="get">Go To Page Number <input type="text" name="page" size="5"> <input type="submit" value="Go"></form><br></div>';
-	
-echo '<br><br>';
-	
-echo '<div style="border:5px solid white;padding:10px;">
-<h3>Explanation</h3>
-<p><b>SP Withdrawl Amount:</b> How much SP is withdrawn at the next power down.</p> 
-<p><b>Power Down Duration:</b> How long the user has been powering down.</p>
-<p><b>N/A:</b> Not Applicable. If a user is not powering down, the table will not display the power down dates.</p>
+echo '<form action="powerdown.php" method="get">Go To Page Number <input type="text" name="page" size="5"> <input type="submit" value="Go">';
 
+	   echo '<input id="User" type="hidden" name="rankopt" value="';
+    echo $rankopt;
+    echo '" style="display: none;visibility: hidden;">';
+	
+	
+	echo '</form><br></div>';
+	
+echo '<br><br>';	
 
-</div>
-';
-	
-	
-	
-	
-echo '<br><br></div><div class="col">';
+echo '</div><div class="col" id="rtable">';
 
 	
 if ($rankopt=='pdonly') {
@@ -301,7 +319,7 @@ SELECT name, convert(float, Substring(vesting_shares,0,PATINDEX('%VESTS%',vestin
 convert(float, Substring(vesting_withdraw_rate,0,PATINDEX('%VESTS%',vesting_withdraw_rate)))*".$steem_per_vest." AS next_withdrawl_sp, 
 next_vesting_withdrawal, 
 b.maxtime as withdrawl_start_date
-FROM Accounts (NOLOCK) a INNER JOIN
+FROM Accounts (NOLOCK) a LEFT JOIN
 (select account, max(timestamp) AS maxtime
 from TxWithdraws (NOLOCK)
 group by account
@@ -330,7 +348,7 @@ echo '<table id="bigtable" class="table table-sm table-striped" style="backgroun
 
     
 
-echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">R<br>a<br>n<br>k</th><th>User Name</th><th style="text-align: center;">SP Withdrawl Amount</th><th style="text-align: center;">Next Withdrawl Date</th><th style="text-align: center;">Current SP</th><th style="text-align: center;">Power Down<br>Start Date</th><th style="text-align: center;">Power Down Duration</th></tr></thead>';
+echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">R<br>a<br>n<br>k</th><th>User Name</th><th style="text-align: center;">Withdrawl Amount (SP)</th><th style="text-align: center;">Withdrawl Amount (USD)</th><th style="text-align: center;">Next Withdrawl Date</th><th style="text-align: center;">Current SP</th><th style="text-align: center;">Power Down Start Date</th><th style="text-align: center;">Power Down Duration</th></tr></thead>';
 
     // print the results. If successful, magicmonk will be printed on page.
 
@@ -343,6 +361,7 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">R<
 		$name=$row['name'];
 		$sp=$row['sp'];
 		$next_withdrawl_sp=$row['next_withdrawl_sp'];
+		$next_withdrawl_usd=$next_withdrawl_sp*$steemprice;
 		$next_withdrawl_date=$row['next_vesting_withdrawal'];
 		$withdrawl_start_date=$row['withdrawl_start_date'];	
 
@@ -350,7 +369,7 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">R<
 // calculation of SP formula no longer used (done in SQL). Kept here for reference: $ownsp = $total_vesting_fund_steem * $ownvests / $total_vesting_shares;
 		
 // highlight power down rows
-	  if ($next_withdrawl_sp==0) {echo '<tr>';} else {echo '<tr style="background-color:#73200F">';}
+	  if ($next_withdrawl_sp<=0.01) {echo '<tr>';} else {echo '<tr style="background-color:#73200F">';}
 		
       echo '<td style="text-align: center;">';
 
@@ -362,7 +381,7 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">R<
 
       if ($name==$highlight) {
 
-      echo '<span style="background-color:red">';
+      echo '<span style="background-color:black">';
 
       } 
 
@@ -378,6 +397,11 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">R<
 		
 		echo number_format(round($next_withdrawl_sp)); 
 		
+		echo "</td><td class='alignright'>";
+		
+		echo "$".number_format(round($next_withdrawl_usd)); 		
+		
+		
 		echo "</td><td style='text-align: center;' class='text-nowrap'>";
 		
 		// convert timestamp to date
@@ -386,12 +410,12 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">R<
 		$date1 = $dt1->format('Y-m-d');				
 		
 		
-		if ($next_withdrawl_sp!=0) {			
-		echo $date1;	    
-	
-		} else {
-			// if not powering down, print N/A (Not Applicable).
+		if ($next_withdrawl_sp<=0.01) {			
+		    // if not powering down, print N/A (Not Applicable).
 			echo "N/A";
+		} else {
+			
+			echo $date1;	
 		}
 		
 		
@@ -405,12 +429,13 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">R<
 		$date2 = $dt2->format('Y-m-d');		
 		
 		// only print date if powering down
-		if ($next_withdrawl_sp!=0) {			
-			echo $date2;	    
-	
-		} else {
+		if ($next_withdrawl_sp<=0.01) {	
 			// if not powering down, print N/A (Not Applicable).
 			echo "N/A";
+				    
+	
+		} else {
+			echo $date2;
 		}
 		
 	
@@ -418,16 +443,17 @@ echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">R<
 		echo "</td><td style='text-align: center;' class='text-nowrap'>";
 // find difference between 2 dates tutorial: http://php.net/manual/en/datetime.diff.php
 // only print time if powering down.		
-		if ($next_withdrawl_sp!=0) {	
-		$interval = date_diff($dt2, $dt1);
+		if ($next_withdrawl_sp<=0.01) {	
+			
+        echo "N/A";
+			
+		} else {
+		
+			$interval = date_diff($dt2, $dt1);
 		$days=$interval->format('%a');
 		$weeks=floor($days/7);
 		$leftdays=$days%7;
-		echo $weeks." weeks<br>and ".$leftdays." days";		
-        
-		} else {
-		echo "N/A";
-			
+		echo $weeks." weeks<br>and ".$leftdays." days";	
 		}
 		
 		echo "</td></tr>";
@@ -525,7 +551,16 @@ function loadDoc() {
 
   };
 
-  xhttp.open("GET", "get_powerdown_rank.php?SteemitUser=" + username, true);
+<?
+if ($rankopt=='allusers') {
+	echo 'xhttp.open("GET", "get_powerdown_rank.php?rankopt=allusers&SteemitUser=" + username, true);';
+} else {
+	echo 'xhttp.open("GET", "get_powerdown_rank.php?SteemitUser=" + username, true);';
+	
+}
+	
+?>
+  
 
   xhttp.send();
 

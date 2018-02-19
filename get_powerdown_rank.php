@@ -20,8 +20,33 @@ $steem_per_vest = round($total_vesting_fund_steem / $total_vesting_shares, 6, PH
 $SteemitUser = $_GET["SteemitUser"];
 $SteemitUser = filter_var($SteemitUser, FILTER_SANITIZE_STRING);
 
+if ($_GET["rankopt"]) { 
+	$rankopt = $_GET["rankopt"];
+} else {$rankopt='allusers';}
 
 
+if ($rankopt=='allusers') {
+$sql = "
+;With cte as
+(
+select vests, RANK() over (order by vests DESC) AS RankByOSP, name
+from
+(
+SELECT TOP 100 PERCENT a.name AS name, convert(float, a.vesting_shares) AS vests
+FROM
+(SELECT name, Substring(vesting_shares,0,PATINDEX('%VESTS%',vesting_shares)) AS vesting_shares
+FROM Accounts (NOLOCK)) a
+Order by vests DESC
+) b
+)
+select vests, RankByOSP
+from cte
+where name=:name;
+";
+	
+	
+	
+} else {
 	$sql = "
 	
 ;With cte as	
@@ -39,7 +64,7 @@ from cte
 where name=:name;
 
 	";
-
+}
 
     // execute the query. Store the results in sth variable.
 
@@ -52,14 +77,38 @@ where name=:name;
 
     // print the results. If successful, magicmonk will be printed on page.
 
+
+
     while ($row = $sth->fetch(PDO::FETCH_NUM)) {
 
-           $next_withdrawl_sp=$row[0];
-			
-           $rank=$row[1];
 
-        }
+		if ($rankopt=='allusers') {
 
+				   $vests=$row[0];
+				   $sp = $total_vesting_fund_steem * $vests / $total_vesting_shares;
+				   $rank=$row[1];
+
+		} else {
+				   $next_withdrawl_sp=$row[0];			
+				   $rank=$row[1];
+		}
+
+    }
+
+
+if ($rankopt=='allusers') {
+
+	echo "<p>".$SteemitUser." owns ".number_format(round($sp))." SP and is ranked at  ".$rank.".</p>";
+
+
+
+$page = ceil($rank/50);
+
+echo "<p><a href=powerdown.php?rankopt=allusers&page=".$page."&highlight=".$SteemitUser.">".$SteemitUser." is on page ".$page.". Click to see this page on the Power Down Ranking</a>.</p>";
+
+
+	
+} else {
 	
 if ($next_withdrawl_sp) {
 
@@ -76,7 +125,7 @@ echo "<p><a href=powerdown.php?page=".$page."&highlight=".$SteemitUser.">".$Stee
 }
 
         
-
+}
 
 
 // terminate connectiion
