@@ -8,7 +8,7 @@ $cSession = curl_init();
 
 //step2
 
-curl_setopt($cSession,CURLOPT_URL,"https://api.coinmarketcap.com/v1/ticker/steem-dollars/?convert=USD");
+curl_setopt($cSession,CURLOPT_URL,"https://api.coinmarketcap.com/v1/ticker/steem/?convert=USD");
 
 curl_setopt($cSession,CURLOPT_RETURNTRANSFER,true);
 
