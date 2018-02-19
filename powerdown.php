@@ -555,7 +555,7 @@ function loadDoc() {
 if ($rankopt=='allusers') {
 	echo 'xhttp.open("GET", "get_powerdown_rank.php?rankopt=allusers&SteemitUser=" + username, true);';
 } else {
-	echo 'xhttp.open("GET", "get_powerdown_rank.php?SteemitUser=" + username, true);';
+	echo 'xhttp.open("GET", "get_powerdown_rank.php?rankopt=pdonly&SteemitUser=" + username, true);';
 	
 }
 	
