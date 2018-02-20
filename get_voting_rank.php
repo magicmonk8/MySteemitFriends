@@ -104,9 +104,10 @@ echo "<p><a href=witnessvoting.php?rankopt=".$rankopt."&page=".$page."&highlight
 	 $row=$sth->fetch(PDO::FETCH_ASSOC);
 	 $proxy = $row['proxy'];	
 
-	if ($proxy) {
+	if ($proxy!=" ") {
 	echo "<p>".$SteemitUser." is not part of the ranking because they have proxied their voting power to: ";
 	 echo $proxy."</p>";
+		
 	} else {
 		echo "<p>".$SteemitUser." is not part of the ranking because they have not casted any witness votes";		
 	}
