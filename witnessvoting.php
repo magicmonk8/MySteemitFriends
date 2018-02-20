@@ -117,6 +117,31 @@
 
 <br><br>
 
+<div style="border:5px solid white;padding:10px;max-width:500px;margin:auto">
+
+<h3>Options</h3>
+<?php 
+	if ($_GET["rankopt"]) { 
+		$rankopt = $_GET["rankopt"];
+	} else {$rankopt='allusers';}
+?>
+<form method="get" action="<?php filter_input(INPUT_SERVER, 'PHP_SELF', FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>">
+<span style="font-size:1.5rem">Ranking table includes:</span><br><br>
+
+ <input type="radio" name="rankopt" value="allusers" <? if ($rankopt=='allusers') {echo "checked";}?>> <span style="font-size:1.3rem">All Users</span><br>
+  <input type="radio" name="rankopt" value="wvonly" <? if ($rankopt=='wvonly') {echo "checked";}?>> <span style="font-size:1.3rem">Votes Casted >0</span><br><br>
+ 
+	<button type="submit" class="btn btn-default">Refresh</button>
+
+</form>
+
+</div>
+
+
+<br><br>
+
+
+
 <div style="border:5px solid white;padding:10px;">
 
 <h3>Select page number</h3><br>
@@ -152,8 +177,6 @@ $page = filter_var($_GET["page"],FILTER_VALIDATE_INT);
 
 
 
-
-
 if ($_GET["highlight"]) {
 
 $highlight = strtolower($_GET["highlight"]);
@@ -161,19 +184,9 @@ $highlight = strtolower($_GET["highlight"]);
 }
 
 
-
-
-
-
-
-
-
 // where to start the results
 
 $offset = ($page - 1) * $pagesize;
-
-
-
 
 
 echo '<nav aria-label="Page navigation example"><ul class="pagination justify-content-center">';
@@ -186,11 +199,28 @@ for ($x=$page-3;$x<=$page+3;$x++) {
 
       if ($x==$page) {
 
-        echo '<li class="page-item active"><a class="page-link" href="witnessvoting.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item active"><a class="page-link" href="witnessvoting.php?page='.$x.'';
+		 
+		if ($rankopt=='allusers') {
+			echo '&rankopt=allusers';
+		} else {
+			echo '&rankopt=wvonly';
+		}
+		  
+		 echo '">'.$x.'</a></li>'; 		  
+		  
 
       } else {
 
-        echo '<li class="page-item"><a class="page-link" href="witnessvoting.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item"><a class="page-link" href="witnessvoting.php?page='.$x.'';
+		  
+		if ($rankopt=='allusers') {
+			echo '&rankopt=allusers';
+		} else {
+			echo '&rankopt=wvonly';
+		}
+		  
+		 echo '">'.$x.'</a></li>'; 		  
 
       }  
 
@@ -202,11 +232,26 @@ for ($x=$page-3;$x<=$page+3;$x++) {
 
       if ($x==$page) {
 
-        echo '<li class="page-item active"><a class="page-link" href="witnessvoting.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item active"><a class="page-link" href="witnessvoting.php?page='.$x.'';
+		  
+		  		if ($rankopt=='allusers') {
+			echo '&rankopt=allusers';
+		} else {
+			echo '&rankopt=wvonly';
+		}
+		  
+		 echo '">'.$x.'</a></li>'; 		  
 
       } else {
 
-        echo '<li class="page-item"><a class="page-link" href="witnessvoting.php?page='.$x.'">'.$x.'</a></li>';
+        echo '<li class="page-item"><a class="page-link" href="witnessvoting.php?page='.$x.'';
+		  		if ($rankopt=='allusers') {
+			echo '&rankopt=allusers';
+		} else {
+			echo '&rankopt=wvonly';
+		}
+		  
+		 echo '">'.$x.'</a></li>'; 		  
 
       }  
 
@@ -218,22 +263,48 @@ echo '</ul></nav><br>';
 
 if ($page>1) {
 
-echo '<a href="witnessvoting.php?page='.($page-1).'" class="btn btn-light" role="button">Previous Page</a> ';
+echo '<a href="witnessvoting.php?page='.($page-1).'';
+if ($rankopt=='allusers') {
+			echo '&rankopt=allusers';
+} else {
+			echo '&rankopt=wvonly';
+}
+		  
+	  	
+echo '" class="btn btn-light" role="button">Previous Page</a> ';
 
 }
 
-echo '<a href="witnessvoting.php?page='.($page+1).'" class="btn btn-light" role="button">Next Page</a><br><br>'; 
+echo '<a href="witnessvoting.php?page='.($page+1).'';
+	
+if ($rankopt=='allusers') {
+			echo '&rankopt=allusers';
+} else {
+			echo '&rankopt=wvonly';
+}
+	
+	
+echo '" class="btn btn-light" role="button">Next Page</a><br><br>'; 
 
 
 
-echo '<form action="witnessvoting.php" method="get">Go To Page Number <input type="text" name="page" size="5"> <input type="submit" value="Go"></form><br></div>';
+echo '<form action="witnessvoting.php" method="get">Go To Page Number <input type="text" name="page" size="5"> <input type="submit" value="Go">';
+	
+	echo '<input type="hidden" name="rankopt" value="';
+    echo $rankopt;
+    echo '" style="display: none;visibility: hidden;">';
+	
+	
+	
+echo '</form><br></div>';
 
 
     $sql = "
 	
 /* Join each proxy's vesting with other users' vests in one table, including witness votes, calculate sum of vests in each row, rank by sum of vests */
 
-select g.name AS name, ISNULL(f.proxied_vests, 0 ) as proxied_vests, convert(float,Substring(g.vesting_shares,0,PATINDEX('%VESTS%',g.vesting_shares))) AS own_vests, convert(float,Substring(g.vesting_shares,0,PATINDEX('%VESTS%',g.vesting_shares)))+ISNULL(f.proxied_vests, 0 ) AS total_vests, g.witness_votes as witness_votes
+select g.name AS name, ISNULL(f.proxied_vests, 0 ) as proxied_vests, convert(float,Substring(g.vesting_shares,0,PATINDEX('%VESTS%',g.vesting_shares))) AS own_vests, convert(float,Substring(g.vesting_shares,0,PATINDEX('%VESTS%',g.vesting_shares)))+ISNULL(f.proxied_vests, 0 ) AS total_vests, g.witness_votes as witness_votes,
+g.witnesses_voted_for
 FROM 
 (
 /* sum vesting_shares for each proxy */
@@ -251,10 +322,17 @@ where e.proxy != ''
 GROUP BY e.proxy
 ) f
 RIGHT JOIN 
-(SELECT name, vesting_shares, witness_votes
+(SELECT name, vesting_shares, witness_votes, witnesses_voted_for
 from Accounts
 WHERE proxy='') g
-ON f.proxy = g.name
+ON f.proxy = g.name";
+	if ($rankopt=="wvonly") {
+		// only insert this SQL if on witness voters only mode. 
+$sql.="
+where witnesses_voted_for>0";
+		
+	}
+$sql.="
 ORDER BY total_vests DESC
 OFFSET :offset ROWS
 FETCH NEXT :pagesize ROWS ONLY;
@@ -442,7 +520,18 @@ function loadDoc() {
 
   };
 
-  xhttp.open("GET", "get_voting_rank.php?SteemitUser=" + username, true);
+<?
+	// search for ranking in the current mode - all users or witness voters only. 
+	
+if ($rankopt=='allusers') {
+	echo 'xhttp.open("GET", "get_voting_rank.php?rankopt=allusers&SteemitUser=" + username, true);';
+} else {
+	echo 'xhttp.open("GET", "get_voting_rank.php?rankopt=wvonly&SteemitUser=" + username, true);';
+	
+}
+	
+?>	
+	
 
   xhttp.send();
 
