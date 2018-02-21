@@ -24,6 +24,10 @@
 	vertical-align:middle;
 	}
 
+		
+	input[type=number]{
+    width: 3.5rem;
+    } 
 
 		
     </style>
@@ -82,6 +86,23 @@
 <button type="button" onclick="loadDoc()">Show Ranking (wait a few seconds)</button><br><br>
 
 <div id="ranking"></div>
+
+</div>
+
+<br><br>
+
+<div style="border:5px solid white;padding:10px;max-width:500px;margin:auto">
+
+<h3>Sum of SP being withdrawn</h3>
+
+
+<form>From the top <input name="topSPNum" id="topSPNum" type="number" min="1" max="500" value="200"> SP holders<br>
+(Maximum 500)
+</form>
+
+<button type="button" onclick="calcSumSP()">Calculate</button><br><br>
+
+<div id="sumSP"></div>
 
 </div>
 
@@ -159,7 +180,7 @@ fclose($my_file);
 // amount of steem per vest (needed to convert vests to steem)
 	
 $steem_per_vest = round($total_vesting_fund_steem / $total_vesting_shares, 6, PHP_ROUND_HALF_UP);
-
+echo $steem_per_vest;
 	
 // number of pages on the browsing panel
 $numberofpages=7;
@@ -172,8 +193,6 @@ if ($_GET["page"]) {
 $page = filter_var($_GET["page"],FILTER_VALIDATE_INT);
 
 } else {$page=1;}
-
-
 
 
 
@@ -279,7 +298,7 @@ echo '" class="btn btn-light" role="button">Next Page</a><br><br>';
 
 echo '<form action="powerdown.php" method="get">Go To Page Number <input type="text" name="page" size="5"> <input type="submit" value="Go">';
 
-	   echo '<input id="User" type="hidden" name="rankopt" value="';
+	   echo '<input type="hidden" name="rankopt" value="';
     echo $rankopt;
     echo '" style="display: none;visibility: hidden;">';
 	
@@ -288,7 +307,7 @@ echo '<form action="powerdown.php" method="get">Go To Page Number <input type="t
 	
 echo '<br><br>';	
 
-echo '</div><div class="col" id="rtable">';
+echo '</div><div class="col">';
 
 	
 if ($rankopt=='pdonly') {
@@ -561,6 +580,33 @@ if ($rankopt=='allusers') {
 	
 ?>
   
+
+  xhttp.send();
+
+}
+	
+	
+	function calcSumSP() {
+
+  document.getElementById("sumSP").innerHTML = "Loading..";
+
+  var topSPNum;
+
+  topSPNum =  document.getElementById("topSPNum").value;  
+
+  var xhttp = new XMLHttpRequest();
+
+  xhttp.onreadystatechange = function() {
+
+    if (this.readyState == 4 && this.status == 200) {
+
+      document.getElementById("sumSP").innerHTML = this.responseText;
+
+    }
+
+  };
+
+  xhttp.open("GET", "calcSumSP.php?&topSPNum=" + topSPNum, true);
 
   xhttp.send();
 
