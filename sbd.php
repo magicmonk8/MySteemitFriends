@@ -56,10 +56,14 @@
 
   <body class="bg-4">   
 
-  <nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
-  <span class="navbar-brand mb-0 h1"><a href="http://steemit.com/@magicmonk"><img src="images/magicmonkhead.png" width="64px">@magicmonk</a></span>
-
-    <a class="btn btn-lg btn-primary navbutton nounderline"  href="index.php">Upvote Stats</a>
+<nav id="mynav" class="navbar navbar-expand-md navbar-dark">
+  <!-- Toggler/collapsibe Button -->
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+    <span class="navbar-toggler-icon"></span>
+  </button>  
+  <div class="collapse navbar-collapse" id="collapsibleNavbar">
+     <a class="btn btn-lg btn-warning navbutton nounderline"  href="contributors.php" style="color:black">Contributors</a>
+     <a class="btn btn-lg btn-primary navbutton nounderline"  href="index.php">Upvote Stats</a>
     <a class="btn btn-lg btn-success navbutton nounderline"  href="conversation.php">Conversations</a>
     <div class="btn-group navbutton" id="rankingbtn">
     <button type="button" class="btn btn-lg btn-info dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:10rem">Rankings</button>
@@ -78,6 +82,7 @@
     </div>
   </div><!-- /btn-group -->
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
+  </div> 
 </nav>     
         
     

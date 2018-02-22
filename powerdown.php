@@ -36,10 +36,15 @@
 
   <body class="bg">   
 
- <nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
-  <span class="navbar-brand mb-0 h1"><a href="http://steemit.com/@magicmonk"><img src="images/magicmonkhead.png" width="64px">@magicmonk</a></span>
 
-    <a class="btn btn-lg btn-primary navbutton nounderline"  href="index.php">Upvote Stats</a>
+<nav id="mynav" class="navbar navbar-expand-md navbar-dark">
+  <!-- Toggler/collapsibe Button -->
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+    <span class="navbar-toggler-icon"></span>
+  </button>  
+  <div class="collapse navbar-collapse" id="collapsibleNavbar">
+     <a class="btn btn-lg btn-warning navbutton nounderline"  href="contributors.php" style="color:black">Contributors</a>
+     <a class="btn btn-lg btn-primary navbutton nounderline"  href="index.php">Upvote Stats</a>
     <a class="btn btn-lg btn-success navbutton nounderline"  href="conversation.php">Conversations</a>
     <div class="btn-group navbutton" id="rankingbtn">
     <button type="button" class="btn btn-lg btn-info dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:10rem">Rankings</button>
@@ -58,6 +63,7 @@
     </div>
   </div><!-- /btn-group -->
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
+  </div> 
 </nav>     
                 
    
@@ -147,7 +153,7 @@ fclose($my_file);
 <div style="border:5px solid white;padding:10px;">
 <h3>Explanation</h3>
 <p><b>Withdrawl Amount (SP):</b> How much SP is withdrawn at the next power down.</p> 
-<p><b>Withdrawl Amount (USD):</b> The equivalent value of the SP withdraw in USD according to Coinmarketcap latest prices (<b>1 Steem = <? echo round($steemprice,2);?> USD.</b></p> 
+<p><b>Withdrawl Amount (USD):</b> The equivalent value of the SP withdraw in USD according to Coinmarketcap latest prices (<b>1 Steem = <? echo round($steemprice,2);?> USD).</b></p> 
 <p><b>Next Withdrawl Date:</b> When the user will be withdrawing this amount.</p> 
 <p><b>Current SP:</b> How much Steem Power the user currently has.</p>
 <p><b>Power Down Start Date:</b> When the user started powering down (only the most recent power down can be tracked).</p>
@@ -180,7 +186,7 @@ fclose($my_file);
 // amount of steem per vest (needed to convert vests to steem)
 	
 $steem_per_vest = round($total_vesting_fund_steem / $total_vesting_shares, 6, PHP_ROUND_HALF_UP);
-echo $steem_per_vest;
+
 	
 // number of pages on the browsing panel
 $numberofpages=7;
@@ -307,7 +313,7 @@ echo '<form action="powerdown.php" method="get">Go To Page Number <input type="t
 	
 echo '<br><br>';	
 
-echo '</div><div class="col">';
+echo '</div><div id="rtable" class="col">';
 
 	
 if ($rankopt=='pdonly') {

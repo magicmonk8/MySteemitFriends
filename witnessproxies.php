@@ -7,7 +7,7 @@
     <script src="jquery/jquery-3.2.1.min.js"></script>
     <script src="extensions/popper.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css?4">
+    <link rel="stylesheet" type="text/css" href="style.css?5">
     <style>
     a.page-link{
     color:blue !important;
@@ -63,10 +63,14 @@
 
   <body class="bg-4">   
 
-<nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
-  <span class="navbar-brand mb-0 h1"><a href="http://steemit.com/@magicmonk"><img src="images/magicmonkhead.png" width="64px">@magicmonk</a></span>
-
-    <a class="btn btn-lg btn-primary navbutton nounderline"  href="index.php">Upvote Stats</a>
+<nav id="mynav" class="navbar navbar-expand-md navbar-dark">
+  <!-- Toggler/collapsibe Button -->
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+    <span class="navbar-toggler-icon"></span>
+  </button>  
+  <div class="collapse navbar-collapse" id="collapsibleNavbar">
+     <a class="btn btn-lg btn-warning navbutton nounderline"  href="contributors.php" style="color:black">Contributors</a>
+     <a class="btn btn-lg btn-primary navbutton nounderline"  href="index.php">Upvote Stats</a>
     <a class="btn btn-lg btn-success navbutton nounderline"  href="conversation.php">Conversations</a>
     <div class="btn-group navbutton" id="rankingbtn">
     <button type="button" class="btn btn-lg btn-info dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:10rem">Rankings</button>
@@ -85,7 +89,8 @@
     </div>
   </div><!-- /btn-group -->
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
-</nav>     
+  </div> 
+</nav>      
          
       
    
@@ -115,7 +120,11 @@
 
 </div>
 
+
+
 <br><br>
+
+
 
 <div style="border:5px solid white;padding:10px;">
 
@@ -232,26 +241,19 @@ echo '<form action="witnessproxies.php" method="get">Go To Page Number <input ty
     $sql = "
 ;With q1 as
 (
+/* find the proxied vests, own vests of the proxy and the total vests of each proxy */
 select f.proxy AS proxy, f.proxied_vests AS proxiedvests, convert(float,Substring(g.vesting_shares,0,PATINDEX('%VESTS%',g.vesting_shares))) AS own_vests, convert(float,Substring(g.vesting_shares,0,PATINDEX('%VESTS%',g.vesting_shares)))+f.proxied_vests AS total_vests
 FROM 
 (
+/* group each proxy together and find the sum of vests of users selecting that proxy */
+
 select e.proxy AS proxy, sum(e.vesting_shares) as proxied_vests
 FROM (
-select c.account, c.proxy, convert(float,Substring(d.vesting_shares,0,PATINDEX('%VESTS%',d.vesting_shares))) AS vesting_shares
-from (select a.* 
-from TxAccountWitnessProxies a 
-INNER JOIN 
-(
-SELECT account, MAX(timestamp) AS maxtime
-FROM TxAccountWitnessProxies
-GROUP BY account
-) b 
-ON a.account=b.account
-AND a.timestamp= b.maxtime
-) c INNER JOIN (
-select name, vesting_shares
-from Accounts) d
-ON c.account = d.name
+
+/* select each user, their proxy, and how many vests they own. */
+
+select name, proxy, convert(float,Substring(vesting_shares,0,PATINDEX('%VESTS%',vesting_shares))) AS vesting_shares
+from Accounts (NOLOCK)
 ) e
 where e.proxy != ''
 GROUP BY e.proxy
@@ -267,6 +269,7 @@ q2 as
 SELECT name, witness_votes
 FROM Accounts
 )
+/* retrieve the proxy's steem power & their witness votes */
 select q1.*, q2.witness_votes AS witness_votes
 from q1 INNER JOIN q2
 ON q1.proxy=q2.name
