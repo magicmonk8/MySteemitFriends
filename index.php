@@ -7,7 +7,7 @@
     <script src="jquery/jquery-3.2.1.min.js"></script>
     <script src="popper.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css?3">
+    <link rel="stylesheet" type="text/css" href="style.css?4">
     <style>
     	#bigtable {     background-color:#106288;   }    
     	@media only screen and (max-device-width: 480px) {  
@@ -39,16 +39,22 @@
 			margin:0px;
 			padding:0px;
 		}
+
+
 		
     </style>
     
   </head>
   <body> 
    
-<nav id="mynav" class="navbar navbar-expand-sm navbar-dark">
-  <span class="navbar-brand mb-0 h1"><a href="http://steemit.com/@magicmonk"><img src="images/magicmonkhead.png" width="64px">@magicmonk</a></span>
-
-    <a class="btn btn-lg btn-primary navbutton nounderline"  href="index.php">Upvote Stats</a>
+<nav id="mynav" class="navbar navbar-expand-md navbar-dark">
+  <!-- Toggler/collapsibe Button -->
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+    <span class="navbar-toggler-icon"></span>
+  </button>  
+  <div class="collapse navbar-collapse" id="collapsibleNavbar">
+     <a class="btn btn-lg btn-warning navbutton nounderline"  href="contributors.php" style="color:black">Contributors</a>
+     <a class="btn btn-lg btn-primary navbutton nounderline"  href="index.php">Upvote Stats</a>
     <a class="btn btn-lg btn-success navbutton nounderline"  href="conversation.php">Conversations</a>
     <div class="btn-group navbutton" id="rankingbtn">
     <button type="button" class="btn btn-lg btn-info dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:10rem">Rankings</button>
@@ -67,6 +73,7 @@
     </div>
   </div><!-- /btn-group -->
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
+  </div> 
 </nav>     
     
                   
@@ -80,8 +87,10 @@
 			<label for="User">1. Type your Steemit UserName:</label><br>
 			<input id="User" type="text" name="User" value="<? if ($_GET["User"]) { echo $_GET["User"];} ?>" autofocus>
 		  </div>
-		  2. Click the following buttons to see your:<br><br>
+			<p>2. Click the following buttons to see your:</p>
 		  <div id="pleasescroll"></div>
+		<a id="contributton" class="btn btn-lg btn-warning navbutton nounderline" onclick="contriBtn()" style="color:black" style="margin:0px;">Contributors</a>
+		  
 		<table id="buttontable1" class='nopadding' style='width:100%;'><tr><td class='nopadding' style="width:50%">
 		 <button style='width:100%' id="upvotebtn" class="btn btn-primary" type="submit">Upvote Stats</button> 
 		 </td><td class='nopadding' style="width:50%">
@@ -151,8 +160,9 @@ fclose($my_file);
 	echo '<script>
 			  $("#buttontable1").hide();
 			  $("#buttontable2").hide();
+			  $("#contributton").hide();
 	  document.getElementById("logo").src="images/mmloading.gif";
-	  document.getElementById("pleasescroll").innerHTML = "Loading..";
+	  document.getElementById("pleasescroll").innerHTML = "<p>Loading..</p>";
 		
 	</script>';		
 		
@@ -614,9 +624,10 @@ if ($rankmethod==1) {
 	
 	// show all buttons after upvotes data is displayed.
     echo '<script>
-	      document.getElementById("pleasescroll").innerHTML = "<b><font color=yellow>Please <a href=\"#filterbox\">scroll down</a> to see the results.</font></b><br><br>";
+	      document.getElementById("pleasescroll").innerHTML = "<p><b><font color=yellow>Please <a href=\"#filterbox\">scroll down</a> to see the results.</font></b></p>";
 		  $("#buttontable1").show();
 		  $("#buttontable2").show();
+		  $("#contributton").show();
 		  
 		  document.getElementById("logo").src="images/magicmonkhead.png";	
 		  </script>';
@@ -641,6 +652,7 @@ $(function(){
 		  function() {
 			$('#buttontable1').hide();
 			$('#buttontable2').hide();
+			$('#contributton').hide();  
 			document.getElementById("logo").src="images/mmloading.gif";
 			document.getElementById("pleasescroll").innerHTML = "Loading..";			  
 			  
@@ -681,8 +693,12 @@ function convBtn() {
 function calcBtn() {
 	goToUser = document.getElementById("User").value;
 	window.location.href = 'upvotelist.php?author='+goToUser;
-
 }
+
+function contriBtn() {
+	goToUser = document.getElementById("User").value;
+	window.location.href = 'contributors.php?author='+goToUser;
+}	  
 	  
 
 // function to retrieve follower ranking	  
@@ -704,6 +720,8 @@ function loadRank(filename) {
 // function for hiding buttons
 	$('#buttontable1').hide();
 	$('#buttontable2').hide();
+	$('#contributton').hide();
+	
 	
 // display of ranking block	
   	document.getElementById("ranking").style.margin="auto";
@@ -723,11 +741,13 @@ function loadRank(filename) {
 		
 		document.getElementById("logo").src="images/magicmonkhead.png";		
 		document.getElementById("ranking").innerHTML = this.responseText;
-		document.getElementById("pleasescroll").innerHTML = "<b><font color=#78EF15>Please <a href=\"#ranking\">scroll down</a> to see the ranking.</b><br><br>";
+		document.getElementById("pleasescroll").innerHTML = "<b><font color=#78EF15>Please <a href=\"#ranking\">scroll down</a> to see the ranking.</b></font><br><br>";
 
 // show all buttons once ranking is complete
 		$("#buttontable1").show();
 		$("#buttontable2").show();
+		$("#contributton").show();
+		
 		
 		
     }
