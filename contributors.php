@@ -1,6 +1,11 @@
 <html>
+<?php
+  if ($_GET["author"]) { 
+	  $author = $_GET["author"];
+  }
+?>
   <head>
-    <title>Top Contributors - My Steemit Friends</title>
+    <title><?if ($author) {echo $author."'s ";} ?>Top Contributors - My Steemit Friends</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
@@ -9,8 +14,14 @@
     <script src="bootstrap/js/bootstrap.min.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css?4">
     <style>
+
+    td {
+      text-align: center;
+	  background-color:#1F1704;
+    }
+
     a.page-link{
-    color:blue !important;
+      color:blue !important;
     }
 		
     a.page-link:visited {
@@ -18,16 +29,15 @@
     }
 		
     ul {
-    margin:0.5rem;
+      margin:0.5rem;
     }
 		
-	ul.navbar-nav {
-    margin:0px;
+    ul.navbar-nav {
+       margin:0px;
     }
 
-
     a.btn-info, a.btn-info:visited, a.btn-primary, a.btn-primary:visited {
-    color:white !important;
+       color:white !important;
     } 
 
     a.btn-light {
@@ -38,32 +48,24 @@
       color:blue !important;
     }
 		
-   	.navbutton {
+    .navbutton {
 		width:10rem;
 		margin:1rem;
-	}
+     }
 
 	/*background color */
-	.bg-4 {
-		background-color:#4E3D0B;
-		color: white;
-	}	
-	
-		.popover {
-    background: black;
-	color:white !important;
-}
-	.pop-content {
-    color: white !important;    
-}
+    .bg {
+      background-color:#4E3D0B;
+      color: white;
+     }	
 
-    </style>
+   </style>
 
   </head>
 
-  <body class="bg-4">   
+  <body class="bg">   
 
-<nav id="mynav" class="navbar navbar-expand-md navbar-dark">
+<nav id="mynav" class="navbar navbar-expand-lg navbar-dark">
   <!-- Toggler/collapsibe Button -->
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
     <span class="navbar-toggler-icon"></span>
@@ -92,38 +94,43 @@
   </div> 
 </nav>  
    
-    <div class="container-fluid bg-4 text-center" style="max-width:1000px;">
+<div class="container-fluid bg text-center">
+<div class="row">
+<div class="col-lg">
 
-     
-
-<h1>Top Contributors Ranking</h1>       
-
-<br>
+<h1>All Contributors Ranking</h1><br>
 
 <div style="border:5px solid white;padding:10px;max-width:500px;margin:auto">
 
-<h3>Search Username for Ranking</h3>
+<h3>Show contributors for:</h3><br>
 
-<br>
-<form style='margin-bottom:0px;' method="get" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">Steemit UserName: <input id="author" type="text" name="author" value="<? if ($_GET["author"]) { echo $_GET["author"];} ?>" autofocus>
-
+<form style='margin-bottom:0px;' method="get" action="<? echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">Steemit UserName: <input id="author" type="text" name="author" value="<? if ($author) { echo $author;} ?>" autofocus>
 <br><br>
-<button class="btn btn-light" type="submit">Show Top Contributors</button> 
+<button class="btn btn-light" type="submit">Show contributors</button> 
 <br><br>
-
 </form>
 
 </div>
 
 <br><br>
 
+<div style="border:5px solid white;padding:10px;max-width:500px;margin:auto">
+
+<h3>Search for user in contributor table:</h3><br>
+
+Search for user: <input type="text" id="searchName" onkeyup="searchFunction()">
+
+<br><br>
+
+</div>
+<br><br>
+</div><div class="col-lg">
 
 <?php
 
 		
-if ($_GET["author"]) {		
+if ($author) {		
 
-$author = $_GET["author"];
 $author = filter_var($author, FILTER_SANITIZE_STRING);
 // connect to SteemSQL database
 include 'steemSQLconnect2.php';		
@@ -133,7 +140,7 @@ echo '<table id="bigtable" class="table table-sm table-striped" style="backgroun
 
     
 
-echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th style="text-align: center;">Name</th><th style="text-align: center;">Contribution Amount ($)</th></tr></thead>';		
+echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th style="text-align: center;">Name</th><th style="text-align: center;">Contribution Amount</th></tr></thead>';		
 		
 
     $sql = "
@@ -190,55 +197,36 @@ AND a.ID = c.ID
 ) e
 group by voter
 order by contribution DESC
-	";
-
-    
+";
 
 
 // prepare the SQL statement, then bind value to variables, this prevents SQL injection.
     $sth = $conn->prepare($sql);
-	$sth -> bindValue(':name', $author, PDO::PARAM_STR);
-	
+    $sth -> bindValue(':name', $author, PDO::PARAM_STR);
     $sth->execute();
 
-    // for printing ranking and striped rows.
-	$rank=1;
+// variables for printing ranking and striped rows.
+    $rank=1;
     $rownum=0;
-    // print the results. 
+
+// store result in json object
+    $rows = array();
 
     while ($row = $sth->fetch(PDO::FETCH_ASSOC)) { 
 
-		$voter=$row['voter'];
-		$contribution=$row['contribution'];
-		
-		if ($contribution>0) {
-// calculation of SP formula no longer used (done in SQL). Kept here for reference: $ownsp = $total_vesting_fund_steem * $ownvests / $total_vesting_shares;
-		
-// create striped rows		
-	  if ($rownum%2==0) {echo '<tr>';} else {echo '<tr style="background-color:#0f3066">';}
-		$rownum++;
-      echo '<td style="text-align: center;">';
+// only add to json array if contribution larger than 0
 
-      echo $rank;
-
-      $rank++;
-
-      echo "</td><td style='text-align: center;'>";      
-
-      echo $voter;      
-
-      echo "</td><td style='text-align: center;'>";		
-
-	  echo '$'.number_format($contribution,2);
-
-      echo "</td></tr>";
-    
-	  }
-	}
+      $row['contribution']=number_format($row[contribution],2);
+       
+      if ($row['contribution']>0) {
+      $row['rank']=$rank;
+      $rank++;         
+      $rows[] = $row;
+      }
+  }
+	
 
 echo "</table>";
-
-
 
 // terminate connectiion
 
@@ -248,12 +236,44 @@ unset($conn); unset($sth);
 
 ?>  
 
-
-
 </div>
+</div>
+</div>
+<script>
+// output to table from JSON string
+var ar = <? echo json_encode($rows) ?>;
+console.log(ar);
 
+for(var i=0;i<ar.length;i++) {
 
+        var tr="<tr>";
+        var td1="<td>"+ar[i]["rank"]+"</td>";
+        var td2="<td>"+'<a href="http://steemit.com/@'+ar[i]["voter"]+'">'+ar[i]["voter"]+"</a></td>";
+        var td3="<td>"+'<a href="http://mysteemitfriends.online/contributors.php?author='+ar[i]["voter"]+'">$'+ar[i]["contribution"]+"</a></td></tr>";
+
+       $("#bigtable").append(tr+td1+td2+td3); 
+
+}
+
+function searchFunction(){
+
+// retrieve content from textbox 
+   textboxval=$("#searchName").val();
+
+// remove all rows in the table (all rows except first) 
+  $("#bigtable").find("tr:gt(0)").remove();
+
+  for(var i=0;i<ar.length;i++) {
+        if (ar[i]["voter"].includes(textboxval)) {
+			
+		var tr="<tr>";
+        var td1="<td>"+ar[i]["rank"]+"</td>";
+        var td2="<td>"+'<a href="http://steemit.com/@'+ar[i]["voter"]+'">'+ar[i]["voter"]+"</a></td>";
+        var td3="<td>"+'<a href="http://mysteemitfriends.online/contributors.php?author='+ar[i]["voter"]+'">$'+ar[i]["contribution"]+"</a></td></tr>";
+        $("#bigtable").append(tr+td1+td2+td3); 
+     }
+  }
+}
+</script>
 </body>
-
-
 </html>
