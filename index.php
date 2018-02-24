@@ -38,12 +38,8 @@
 		.nopadnomarg td, nopadnomarg tr {
 			margin:0px;
 			padding:0px;
-		}
-
-
-		
-    </style>
-    
+		}		
+    </style>    
   </head>
   <body> 
    
@@ -82,7 +78,6 @@
 	  <tr>
 	   <td class="text-center" style="padding:10px;">
 		<img src="images/title.png" class="img-fluid"><br><br>
-		<form style='margin-bottom:0px;' method="get" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
 		  <div class="form-group">
 			<label for="User">1. Type your Steemit UserName:</label><br>
 			<input id="User" type="text" name="User" value="<? if ($_GET["User"]) { echo $_GET["User"];} ?>" autofocus>
@@ -92,11 +87,10 @@
 		<a id="contributton" class="btn btn-lg btn-warning navbutton nounderline" onclick="contriBtn()" style="color:black" style="margin:0px;">Contributors</a>
 		  
 		<table id="buttontable1" class='nopadding' style='width:100%;'><tr><td class='nopadding' style="width:50%">
-		 <button style='width:100%' id="upvotebtn" class="btn btn-primary" type="submit">Upvote Stats</button> 
+		 <a style='width:100%' id="upvotebtn" class="btn btn-primary" onclick="upvoteBtn()">Upvote Stats</a> 
 		 </td><td class='nopadding' style="width:50%">
 		 <a  style="color:white" id="convbtn" class="btn btn-success" onclick="convBtn()">Conversations</a>
 		 </td></tr></table>	
-		</form>
 		
 <table id="buttontable2" class='nopadding' style="margin-top:0px;width:100%;padding:0px;"><tr><td class='nopadding' style="width:50%">
    		<div class="btn-group" id="rankingbtn" style='width:100%'>
@@ -118,8 +112,6 @@
        <a class="dropdown-item" href="#" onclick="loadRank('get_powerdown_rank')">Power Down</a>
         <a class="dropdown-item" href="#" onclick="loadRank('get_voting_rank')">Witness Voting Power: All Users</a>		
        	<a class="dropdown-item" href="#" onclick="loadRank('get_proxy_rank')">Witness Voting Power: Proxies</a>	
-       	
-        		
     </div>
   </div><!-- /btn-group -->
  </td><td class='nopadding' style="width:50%">
@@ -128,7 +120,6 @@
   </div><!-- /btn-group -->
 	</td></tr></table>	
 		<br>
-
 		<p>Created by <a href="http://steemit.com/@magicmonk"><img id="logo" src="images/magicmonkhead.png" width="64px">@magicmonk</a></p>
 		<p><a href="https://steemit.com/steemit/@magicmonk/mysteemitfriend-s-new-edition-has-more-features-mysteemitfriends">Instructions</a></p>
 	   </td>
@@ -139,11 +130,9 @@
    
 <?php
 
-
 // if a user name was provided in the URL, do the following	
 if ($_GET["User"]) {
 	
-
 // connect to SteemSQL database.
 include 'steemSQLconnect2.php';		
 
@@ -153,8 +142,7 @@ $total_vesting_fund_steem=fgets($my_file);
 $total_vesting_fund_steem = preg_replace('/[^0-9.]+/', '', $total_vesting_fund_steem);
 $total_vesting_shares=fgets($my_file);
 $total_vesting_shares = preg_replace('/[^0-9.]+/', '', $total_vesting_shares);
-fclose($my_file);
-	
+fclose($my_file);	
 	
 // hide other buttons while upvotes data is loading.
 	echo '<script>
@@ -162,8 +150,7 @@ fclose($my_file);
 			  $("#buttontable2").hide();
 			  $("#contributton").hide();
 	  document.getElementById("logo").src="images/mmloading.gif";
-	  document.getElementById("pleasescroll").innerHTML = "<p>Loading..</p>";
-		
+	  document.getElementById("pleasescroll").innerHTML = "<p>Loading..</p>";		
 	</script>';		
 		
     $steemitUserName = rtrim(strtolower($_GET["User"]));
@@ -224,8 +211,7 @@ if ($rankmethod==1) {
   $sql.="')) AND (timestamp<=Convert(datetime,'";
 		
   if ($todate) {$sql.=$todate;} else {$sql.=date("Y-m-d");}
-  $sql.="'))";	  
-	  
+  $sql.="'))";	  	  
   }
   
   if ($userfilter) {
@@ -236,8 +222,7 @@ if ($rankmethod==1) {
   $sql = $sql." AND (permlink IN (SELECT permlink FROM Comments (NOLOCK) WHERE (Author = '$steemitUserName') AND (depth=0)))";  
   } 
   
-  $sql = $sql." GROUP BY voter ORDER BY count(ID) DESC";    
-     
+  $sql = $sql." GROUP BY voter ORDER BY count(ID) DESC";         
 
    } else {
 
@@ -275,7 +260,6 @@ FROM Accounts (NOLOCK)
 ) b on a.voter = b.name
 ) c";
 
-
   if ($rankmethod==2) {
     $sql=$sql." ORDER BY TW DESC";
     }
@@ -309,8 +293,7 @@ FROM Accounts (NOLOCK)
 	if ($newdate) {echo $newdate;} elseif ($months=='all') {echo '2016-03-30';} else {echo $date;} 
 	echo '" id="date" min="2016-03-30" max="';
 	echo date("Y-m-d"); 
-	echo '">&nbsp;&nbsp;</p>';
-		
+	echo '">&nbsp;&nbsp;</p>';		
 		
 // to date html form control
   	echo '<p>&nbsp;&nbsp;To Date: <input name="toDate" type="date" value="';
@@ -334,8 +317,7 @@ FROM Accounts (NOLOCK)
     echo '</select>
           months</p>';
 */
-echo '
-          
+echo '          
     <p>Ranked by <select name="RankMethod">';
     if ($rankmethod==1) {echo '<option selected value="1">Number of Votes</option>'; } else {echo '<option value="1">Number of Votes</option>';}
     if ($rankmethod==2) {echo '<option selected value="2">Total weight</option>'; } else {echo '<option value="2">Total weight</option>';}
@@ -347,18 +329,10 @@ echo '
           <button class="btn btn-primary" type="submit">Update results</button>';
     echo '<input id="User" type="hidden" name="User" value="';
     echo $steemitUserName;
-    echo '" style="display: none;visibility: hidden;">
+    echo '" style="display: none;visibility: hidden;">    
     
-    
-    </div></div></div>
-    
-    </div>
-    
-    
-  </form>';
-    
-   
-         
+    </div></div></div></div>    
+  </form>';         
         
     echo '<table id="bigtable" style="border-collapse:collapse;border: 5px solid black;"><tr><td style="vertical-align:top;background-color:#0f4880;border: 5px solid black;">';    
 
@@ -387,8 +361,7 @@ echo '
       echo '<a href="upvotelist.php?toDate='.$todate.'&date='.$newdate.'&author='.$steemitUserName.'&voter='.$voter.'&Articlesonly='.$articlesonly.'">'.number_format(round($sptw)).'</a>';
       echo "</td></tr>";
     }
-  }
- 
+  } 
  
  if ($rankmethod==2) {   
     while ($row = $sth->fetch(PDO::FETCH_NUM)) {
@@ -400,10 +373,7 @@ echo '
       echo '<a href="upvotelist.php?toDate='.$todate.'&date='.$newdate.'&author='.$steemitUserName.'&voter='.$voter.'&Articlesonly='.$articlesonly.'">'.number_format($totalweight).'</a>';
       echo "</td></tr>";
     }
-  }
-  
-  
-  
+  } 
   
   if ($rankmethod==1) {
     while ($row = $sth->fetch(PDO::FETCH_NUM)) {
@@ -416,15 +386,13 @@ echo '
   }      
     echo "</tbody></table>";
     echo '</td><td style="vertical-align:top;background-color:#3a539b;">';
-    echo '<p>Who has <a href="http://steemit.com/@'.$steemitUserName.'">'.$steemitUserName.'</a> upvoted?</p>';
-    
+    echo '<p>Who has <a href="http://steemit.com/@'.$steemitUserName.'">'.$steemitUserName.'</a> upvoted?</p>';    
     
     echo '<table class="table table-sm"><thead class="thead-inverse mobile"><tr><th>User</th>';
     if ($rankmethod==1) {echo '<th class="upvote" align="right"></th>';}
     if ($rankmethod==2) {echo '<th class="totalweight" align="right"></th>';}
     if ($rankmethod==3) {echo '<th class="sptotalweight" align="right"></th>';}
     echo '</tr></thead><tbody>';
-
 	
 // retrieve Steem Power of username typed in the form
 if ($rankmethod==3) {
@@ -438,20 +406,15 @@ WHERE name='$steemitUserName'
     $sth->execute();
    while ($row = $sth->fetch(PDO::FETCH_NUM)) {
       $steemitUserPower = $row[1];
-   }
-   
-   $steemitUserPower =$total_vesting_fund_steem * $steemitUserPower / $total_vesting_shares;
-   
-}
-	
+   }   
+   $steemitUserPower =$total_vesting_fund_steem * $steemitUserPower / $total_vesting_shares;   
+}	
     
 if ($rankmethod==1) {    
     if ($articlesonly==1) {
         
-        if ($months!="all") {
-          
-            $sql = "SELECT author, count(ID) FROM TxVotes WHERE voter='$steemitUserName'";
-			  
+        if ($months!="all") {          
+            $sql = "SELECT author, count(ID) FROM TxVotes WHERE voter='$steemitUserName'";			  
 			$sql = $sql." AND (timestamp>=Convert(datetime, '";
 			if ($newdate) {$sql.=$newdate;} else {$sql.=$date;}
 			$sql.="')) AND (timestamp<=Convert(datetime,'";
@@ -466,8 +429,7 @@ if ($rankmethod==1) {
              $sql = "SELECT author, count(ID) FROM TxVotes WHERE voter='$steemitUserName' AND author LIKE '%".$userfilter."%' GROUP BY author ORDER BY count(ID) DESC"; 
           } else {
              $sql = "SELECT author, count(ID) FROM TxVotes WHERE voter='$steemitUserName' GROUP BY author ORDER BY count(ID) DESC"; 
-          }
-    
+          }    
        } 
        
        } else {
@@ -501,17 +463,10 @@ if ($rankmethod==1) {
              $sql = "SELECT author, count(ID) FROM TxVotes WHERE voter='$steemitUserName' AND author LIKE '%".$userfilter."%' AND (permlink IN (SELECT permlink FROM Comments WHERE depth=0 AND author LIKE '%".$userfilter."%')) GROUP BY author ORDER BY count(ID) DESC"; 
           } else {
              $sql = "SELECT author, count(ID) FROM TxVotes WHERE voter='$steemitUserName' AND permlink NOT LIKE 're-%' GROUP BY author ORDER BY count(ID) DESC"; 
-          }
-    
-       } 
-       
-       
+          }    
+       }       
        }
 } else {
-
-
-
-
     if ($articlesonly==1) {
         
         if ($months!="all") {
@@ -572,24 +527,15 @@ if ($rankmethod==1) {
              $sql = "SELECT author, sum(weight)/100 FROM TxVotes WHERE voter='$steemitUserName' AND author LIKE '%".$userfilter."%' AND (permlink IN (SELECT permlink FROM Comments WHERE depth=0 AND author LIKE '%".$userfilter."%')) GROUP BY author ORDER BY sum(weight) DESC"; 
           } else {
              $sql = "SELECT author, sum(weight)/100 FROM TxVotes WHERE voter='$steemitUserName' AND permlink NOT LIKE 're-%' GROUP BY author ORDER BY sum(weight) DESC"; 
-          }
-    
-       } 
-       
-       
+          }    
+       }       
        }
-
-
-
-
-}   
-    
+}       
     
     $sth = $conn->prepare($sql);
     $sth->execute();
     
-    if ($rankmethod==3) {
-    
+    if ($rankmethod==3) {    
     
      while ($row = $sth->fetch(PDO::FETCH_NUM)) {
      $totalweight=$row[1];
@@ -598,27 +544,18 @@ if ($rankmethod==1) {
       echo '<a tabindex="0" data-trigger="click" data-toggle="popover" data-content="<p><a class=\'nounderline btn btn-primary\' href=\'http://steemit.com/@'.$row[0].'/\'>Steemit Profile</p><a class=\'nounderline btn btn-info\' href=\'index.php?User='.$row[0].'\'>MSF Profile</a></p><a class=\'nounderline btn btn-success\' href=\'conversation.php?User1='.$steemitUserName.'&User2='.$row[0].'\'>Conversation Record</a>">'.$row[0].'</a>';
       echo "</td><td align='right'>";
       echo '<a href="upvotelist.php?toDate='.$todate.'&date='.$newdate.'&author='.$row[0].'&voter='.$steemitUserName.'&Articlesonly='.$articlesonly.'">'.number_format(round($TWSP)).'</a>';
-      echo "</td></tr>";
-         
-    }
-    
-    } else {
-    
-    while ($row = $sth->fetch(PDO::FETCH_NUM)) {
-    
+      echo "</td></tr>";         
+    }    
+    } else {    
+    while ($row = $sth->fetch(PDO::FETCH_NUM)) {    
       echo '<tr><td class="mobile">';
       echo '<a tabindex="0" data-trigger="click" data-toggle="popover" data-content="<p><a class=\'nounderline btn btn-primary\' href=\'http://steemit.com/@'.$row[0].'/\'>Steemit Profile</p><a class=\'nounderline btn btn-info\' href=\'index.php?User='.$row[0].'\'>MSF Profile</a></p><a class=\'nounderline btn btn-success\' href=\'conversation.php?User1='.$steemitUserName.'&User2='.$row[0].'\'>Conversation Record</a>">'.$row[0].'</a>';
       echo "</td><td align='right'>";
       echo '<a href="upvotelist.php?toDate='.$todate.'&date='.$newdate.'&author='.$row[0].'&voter='.$steemitUserName.'&Articlesonly='.$articlesonly.'">'.number_format($row[1]).'</a>';
-      echo "</td></tr>";
-         
+      echo "</td></tr>";         
     }
   }
 	
-		
-
-	
- 
     echo "</tbody></table>";  
     echo '</td></tr></table>';
 	
@@ -631,31 +568,32 @@ if ($rankmethod==1) {
 		  
 		  document.getElementById("logo").src="images/magicmonkhead.png";	
 		  </script>';
-		
 
      unset($conn); unset($sth);
     }
       ?>  
     </div>  
     </div>
-    
        
   <script>  
-
-
 	  
-$(function(){
+$(function(){ 
 	
-	// function to hide other buttons while upvote button is fetching data.
-	  
+	// function to decide what happens when enter is pressed on username textbox	
+	$('#User').keypress(function(event){
+		var keycode = (event.keyCode ? event.keyCode : event.which);
+		if(keycode == '13'){
+			goToUser = document.getElementById("User").value;
+			window.location.href = 'contributors.php?author='+goToUser;			
+		}
+	});
+	
+	
+	// function to hide other buttons while upvote button is fetching data.	  
 	  $("#upvotebtn").click(
 		  function() {
-			$('#buttontable1').hide();
-			$('#buttontable2').hide();
-			$('#contributton').hide();  
-			document.getElementById("logo").src="images/mmloading.gif";
-			document.getElementById("pleasescroll").innerHTML = "Loading..";			  
-			  
+			  goToUser = document.getElementById("User").value;
+			  window.location.href = 'index.php?User='+goToUser;			  
 		  }	  
 	  );
 	
@@ -668,26 +606,19 @@ $(function(){
     }
     );
   
-  
   // code for making sure only 1 pop over is open, the others close.
   
   $("[data-toggle=popover]").on('click', function (e) {
         $("[data-toggle=popover]").not(this).popover('hide');
     });
-  
    
 });
-
-
-	
 
 // go to conversation record and load first user name
 	  
 function convBtn() {
 	goToUser = document.getElementById("User").value;
-	window.location.href = 'conversation.php?User1='+goToUser;
-	
-	
+	window.location.href = 'conversation.php?User1='+goToUser;	
 }
 
 function calcBtn() {
@@ -698,20 +629,15 @@ function calcBtn() {
 function contriBtn() {
 	goToUser = document.getElementById("User").value;
 	window.location.href = 'contributors.php?author='+goToUser;
-}	  
-	  
+}	  	  
 
 // function to retrieve follower ranking	  
-function loadRank(filename) {
-	
+function loadRank(filename) {	
   var username;
   username =  document.getElementById("User").value;
   if (username=="") {alert ('Please enter a Steemit User Name!');return;}
   username = username.replace("@","");
-
-
   rankType = filename;
-
 	
 // show loading text and animation
 	document.getElementById("pleasescroll").innerHTML = "Loading..";
@@ -722,7 +648,6 @@ function loadRank(filename) {
 	$('#buttontable2').hide();
 	$('#contributton').hide();
 	
-	
 // display of ranking block	
   	document.getElementById("ranking").style.margin="auto";
 	document.getElementById("ranking").style.marginTop="1.5rem";
@@ -731,7 +656,6 @@ function loadRank(filename) {
 	document.getElementById("ranking").style.maxWidth = "300px";
 	document.getElementById("ranking").style.padding = "1rem";	
   	document.getElementById("ranking").innerHTML = "Loading..";
-	 
   
   var xhttp = new XMLHttpRequest();
 	
@@ -747,20 +671,12 @@ function loadRank(filename) {
 		$("#buttontable1").show();
 		$("#buttontable2").show();
 		$("#contributton").show();
-		
-		
-		
     }
-
   };
 
   xhttp.open("GET", rankType+".php?SteemitUser=" + username, true);
   xhttp.send();
-
-}
-
-
-	  	  
+} 	  
     </script>
   </body>
 </html>
