@@ -3,6 +3,13 @@
   if ($_GET["author"]) { 
 	  $author = $_GET["author"];
   }
+	
+  if ($_GET["topConNum"]) { 
+	  $topConNum = $_GET["topConNum"];
+	  $topConNum = filter_var($topConNum, FILTER_SANITIZE_NUMBER_INT);
+  } else {
+	  $topConNum = 1000;
+  }
 ?>
   <head>
     <title><?if ($author) {echo $author."'s ";} ?>Top Contributors - My Steemit Friends</title>
@@ -60,9 +67,7 @@
      }	
 
    </style>
-
   </head>
-
   <body class="bg">   
 
 <nav id="mynav" class="navbar navbar-expand-lg navbar-dark">
@@ -114,37 +119,46 @@
 
 <br><br>
 
+<?
+// only show filter boxes given author name has been entered.
+	if ($author) {
+		echo '
 <div style="border:5px solid white;padding:10px;max-width:500px;margin:auto">
-
 <h3>Search for user in contributor table:</h3><br>
-
 Search for user: <input type="text" id="searchName" onkeyup="searchFunction()">
-
 <br><br>
-
 </div>
+
 <br><br>
+
+<div style="border:5px solid white;padding:10px;max-width:500px;margin:auto">
+<h3>Number of contributors</h3><br>
+<form>Only show the top <input name="topConNum" id="topConNum" type="number" min="1" max="99999" value="1000"> contributors<br>
+</form>
+<button class="btn btn-light" id="topConBtn">Refresh</button><br><br>
+<div id="sumSP"></div>
+</div>
+
+<br><br>	
+		';	
+	}
+?>
+
 </div><div class="col-lg">
 
 <?php
-
 		
-if ($author) {		
-
+if ($author) {	
 $author = filter_var($author, FILTER_SANITIZE_STRING);
+
 // connect to SteemSQL database
 include 'steemSQLconnect2.php';		
 
-	
+// output table	
 echo '<table id="bigtable" class="table table-sm table-striped" style="background-color:#0f4880;border:5px solid white">';
-
-    
-
 echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th style="text-align: center;">Name</th><th style="text-align: center;">Contribution Amount</th></tr></thead>';		
-		
 
-    $sql = "
-	
+$sql = "	
 ;With rsharequery AS 
 (
 SELECT C.created, C.author AS author, C.ID AS ID, C.total_payout_value,C.curator_payout_value, Votes.voter, Votes.rshares
@@ -182,10 +196,9 @@ payouts AS
 select ID, total_payout_value+curator_payout_value+pending_payout_value AS payout
 from Comments C
 WHERE C.author=:name AND C.parent_author=''
-
 )
 
-select voter, round(sum(contribution),2) AS contribution
+select top :topConNum voter, round(sum(contribution),2) AS contribution
 FROM
 (select voter, CAST(rshares AS float) / CAST(sumRshares AS float) * payout AS contribution
 FROM
@@ -199,10 +212,10 @@ group by voter
 order by contribution DESC
 ";
 
-
 // prepare the SQL statement, then bind value to variables, this prevents SQL injection.
     $sth = $conn->prepare($sql);
     $sth -> bindValue(':name', $author, PDO::PARAM_STR);
+	$sth -> bindValue(':topConNum', $topConNum, PDO::PARAM_INT);
     $sth->execute();
 
 // variables for printing ranking and striped rows.
@@ -225,47 +238,58 @@ order by contribution DESC
       }
   }
 	
-
 echo "</table>";
 
 // terminate connectiion
-
 unset($conn); unset($sth);
-
 }
-
 ?>  
 
-</div>
-</div>
-</div>
+</div></div></div>
+
 <script>
-// output to table from JSON string
-var ar = <? echo json_encode($rows) ?>;
-console.log(ar);
 
-for(var i=0;i<ar.length;i++) {
+	var ar = <? echo json_encode($rows) ?>;
+	
+// ondocument load complete, do this:
+$(function(){ 
 
-        var tr="<tr>";
-        var td1="<td>"+ar[i]["rank"]+"</td>";
-        var td2="<td>"+'<a href="http://steemit.com/@'+ar[i]["voter"]+'">'+ar[i]["voter"]+"</a></td>";
-        var td3="<td>"+'<a href="http://mysteemitfriends.online/contributors.php?author='+ar[i]["voter"]+'">$'+ar[i]["contribution"]+"</a></td></tr>";
+	// output to table from JSON string
 
-       $("#bigtable").append(tr+td1+td2+td3); 
+	for(var i=0;i<ar.length;i++) {
 
-}
+			var tr="<tr>";
+			var td1="<td>"+ar[i]["rank"]+"</td>";
+			var td2="<td>"+'<a href="http://steemit.com/@'+ar[i]["voter"]+'">'+ar[i]["voter"]+"</a></td>";
+			var td3="<td>"+'<a href="http://mysteemitfriends.online/contributors.php?author='+ar[i]["voter"]+'">$'+ar[i]["contribution"]+"</a></td></tr>";
+		   $("#bigtable").append(tr+td1+td2+td3); 
+	}
+<?
+	if ($author) {
+		echo "
+			$(\"#topConBtn\").click(
+			  function() {
+				  topConNum = document.getElementById(\"topConNum\").value;
+				  window.location.href = 'contributors.php?topConNum='+topConNum+'&author=$author';		  
+
+			  }	  
+	  		);
+		";
+	}
+?>
+
+});
 
 function searchFunction(){
 
 // retrieve content from textbox 
    textboxval=$("#searchName").val();
-
+console.log(textboxval);
 // remove all rows in the table (all rows except first) 
   $("#bigtable").find("tr:gt(0)").remove();
 
   for(var i=0;i<ar.length;i++) {
-        if (ar[i]["voter"].includes(textboxval)) {
-			
+        if (ar[i]["voter"].includes(textboxval)) {			
 		var tr="<tr>";
         var td1="<td>"+ar[i]["rank"]+"</td>";
         var td2="<td>"+'<a href="http://steemit.com/@'+ar[i]["voter"]+'">'+ar[i]["voter"]+"</a></td>";
