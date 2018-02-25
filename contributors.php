@@ -156,12 +156,13 @@ include 'steemSQLconnect2.php';
 
 // output table	
 echo '<table id="bigtable" class="table table-sm table-striped" style="background-color:#0f4880;border:5px solid white">';
-echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th style="text-align: center;">Name</th><th style="text-align: center;">Contribution Amount</th></tr></thead>';		
+echo '<thead class="thead-default mobile"><tr><th style="text-align: center;">Ranking</th><th style="text-align: center;">Name</th><th style="text-align: center;">Contribution Amount</th><th style="text-align: center;">Article Count</th></tr></thead>';		
 
 $sql = "	
+/* query the rshares for each individual vote */
 ;With rsharequery AS 
 (
-SELECT C.created, C.author AS author, C.ID AS ID, C.total_payout_value,C.curator_payout_value, Votes.voter, Votes.rshares
+SELECT C.created, C.author AS author, C.ID AS ID, Votes.voter, Votes.rshares
 FROM   Comments AS C  
           CROSS APPLY  
      OPENJSON (C.active_votes)  
@@ -173,11 +174,12 @@ FROM   Comments AS C
 WHERE C.author=:name AND C.parent_author=''
 ), 
 
+/* query the rshare sum of each article */
 RShareSum AS
 (
 select ID, sum(rshares) as sumRShares
 from (
-SELECT C.created, C.author AS author, C.ID, C.total_payout_value,C.curator_payout_value, Votes.voter, Votes.rshares
+SELECT C.created, C.author AS author, C.ID, Votes.voter, Votes.rshares
 FROM   Comments AS C  
           CROSS APPLY  
      OPENJSON (C.active_votes)  
@@ -191,14 +193,35 @@ WHERE C.author=:name AND C.parent_author=''
 group by ID
 ), 
 
+/* query the payout of each article */
 payouts AS
 (
 select ID, total_payout_value+curator_payout_value+pending_payout_value AS payout
 from Comments C
 WHERE C.author=:name AND C.parent_author=''
+), 
+
+/* query the number of votes for each voter */
+voteCounting AS
+(
+Select voter, count(voter) as voteCount
+from (
+SELECT C.created, C.author AS author, Votes.voter
+FROM   Comments AS C  
+          CROSS APPLY  
+     OPENJSON (C.active_votes)  
+           WITH (  
+              voter   varchar(200) '$.voter'
+           )  
+  		AS Votes
+WHERE C.author=:name AND C.parent_author=''
+) a
+group by voter
 )
 
-select top :topConNum voter, round(sum(contribution),2) AS contribution
+Select top :topConNum f.voter, contribution, voteCount
+from (
+select voter, round(sum(contribution),2) AS contribution
 FROM
 (select voter, CAST(rshares AS float) / CAST(sumRshares AS float) * payout AS contribution
 FROM
@@ -209,6 +232,8 @@ AND a.ID = c.ID
 ) d
 ) e
 group by voter
+) f, voteCounting g
+where f.voter = g.voter
 order by contribution DESC
 ";
 
@@ -261,8 +286,9 @@ $(function(){
 			var tr="<tr>";
 			var td1="<td>"+ar[i]["rank"]+"</td>";
 			var td2="<td>"+'<a href="http://steemit.com/@'+ar[i]["voter"]+'">'+ar[i]["voter"]+"</a></td>";
-			var td3="<td>"+'<a href="http://mysteemitfriends.online/contributors.php?author='+ar[i]["voter"]+'">$'+ar[i]["contribution"]+"</a></td></tr>";
-		   $("#bigtable").append(tr+td1+td2+td3); 
+			var td3="<td>"+'<a href="http://mysteemitfriends.online/contributors.php?author='+ar[i]["voter"]+'">$'+ar[i]["contribution"]+"</a></td>";
+			var td4="<td>"+'<a href="http://mysteemitfriends.online/upvotelist.php?Articlesonly=2&toDate=<? echo date("Y-m-d");?>&date=2016-03-30&author=<? echo $author; ?>&voter='+ar[i]["voter"]+'">'+ar[i]["voteCount"]+"</td></tr>";
+			$("#bigtable").append(tr+td1+td2+td3+td4); 
 	}
 <?
 	if ($author) {
@@ -293,8 +319,9 @@ console.log(textboxval);
 		var tr="<tr>";
         var td1="<td>"+ar[i]["rank"]+"</td>";
         var td2="<td>"+'<a href="http://steemit.com/@'+ar[i]["voter"]+'">'+ar[i]["voter"]+"</a></td>";
-        var td3="<td>"+'<a href="http://mysteemitfriends.online/contributors.php?author='+ar[i]["voter"]+'">$'+ar[i]["contribution"]+"</a></td></tr>";
-        $("#bigtable").append(tr+td1+td2+td3); 
+  		var td3="<td>"+'<a href="http://mysteemitfriends.online/contributors.php?author='+ar[i]["voter"]+'">$'+ar[i]["contribution"]+"</a></td>";
+		var td4="<td>"+'<a href="http://mysteemitfriends.online/upvotelist.php?Articlesonly=2&toDate=<? echo date("Y-m-d");?>&date=216-03-30&author=<? echo $author; ?>&voter='+ar[i]["voter"]+'">'+ar[i]["voteCount"]+"</td></tr>";
+		$("#bigtable").append(tr+td1+td2+td3+td4); 
      }
   }
 }

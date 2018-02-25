@@ -10,18 +10,14 @@
 <script src="bootstrap/js/bootstrap.min.js"></script>
 <link rel="stylesheet" type="text/css" href="style.css?3">
 
-<style>
-	
+<style>	
 		.navbutton {
 			width:10rem;
 			margin:1rem;
-		}
-	
+		}	
 </style>
 </head>
-
 <body>
-
 
 <nav id="mynav" class="navbar navbar-expand-md navbar-dark">
   <!-- Toggler/collapsibe Button -->
@@ -80,9 +76,14 @@ if ($_GET["toDate"]) {
 	$todate = $_GET["toDate"];
 }
 	
+// retrieve choice for whether to include articles only or to include comments as well
+if ($_GET["Articlesonly"]) {
+	$articlesonly = $_GET["Articlesonly"];
+} else {
+	$articlesonly = 1;
+}
 	?>
-
-
+	
 <form class="form-inline justify-content-center" method="get" action="upvotelist.php" style="">
 		  <div class="form-group" style="margin-top:10px;">
 			<label for="voter">Voter:&nbsp;</label>
@@ -94,24 +95,25 @@ if ($_GET["toDate"]) {
 		  </div>
 		  <div class="form-group" style="margin-top:10px;">
  		   <label for="fromDate">From Date:&nbsp;</label>  		
-    		<input class="form-control" name="date" type="date" value="<? if ($newdate) {echo $newdate;} elseif ($months=='all') {echo '2016-03-30';} else {echo $date;} ?>" id="date" min="2016-03-30" max="<?echo date("Y-m-d"); ?>">&nbsp;&nbsp;
+    		<input class="form-control" name="date" type="date" value="<? if ($newdate) {echo $newdate;} else {echo date("Y-m-d");} ?>" id="date" min="2016-03-30" max="<?echo date("Y-m-d"); ?>">&nbsp;&nbsp;
   		   </div>
   		  
   		   <div class="form-group" style="margin-top:10px;">
  		   <label for="toDate">To Date:&nbsp;</label>  		
-    		<input class="form-control" name="toDate" type="date" value="<? if ($todate) {echo $todate;} else { echo date("Y-m-d");} ?>" id="toDate" min="2016-03-30" max="<?echo date("Y-m-d"); ?>">&nbsp;&nbsp;
+    		<input class="form-control" name="toDate" type="date" value="<? if ($todate) {echo $todate;} elseif ($months=='all') {echo '2016-03-30';} else {echo $date;} ?>" id="toDate" min="2016-03-30" max="<?echo date("Y-m-d"); ?>">&nbsp;&nbsp;
   		   </div>
   		   
+  		    <div class="form-group" style="margin-top:10px;"> 		   		
+    		<input class="form-control" name="Articlesonly" type="checkbox" value="2" id="Articlesonly"<? if ($articlesonly==2) {echo " checked";} ?>>&nbsp;
+    		<label for="articlesonly">Exclude comments&nbsp;&nbsp;</label>  
+  		   </div> 		   
 		 <br>
 		 <button id="upvotebtn" class="btn btn-lg btn-primary" type="submit" style="margin-top:10px;">Calculate contribution amount</button><br>            
-		</form>
-	
+		</form>	
 
 <div id="total_con" style="padding-top:1rem;padding-left:1rem;padding-right:1rem;border: 5px solid white; max-width:400px;margin:auto;display:none;margin-bottom:1rem;"></div>
 
 <?php
-
-
 	
 // if author and voter details exist, then:
 if ($author && $voter) {
@@ -124,58 +126,48 @@ $articleList=array();
 
 // start putting addresses in the list at 0 element
 $articleIndex=0;
-
-
-// retrieve choice for whether to include articles only or to include comments as well
-if ($_GET["Articlesonly"]) {
-	$articlesonly = $_GET["Articlesonly"];
-} else {
-	$articlesonly = 1;
-}
 	
 // look up how much the author contributed to the voter	
 echo '<p><a href="upvotelist.php?toDate='.$todate.'&date='.$newdate.'&author='.$voter.'&voter='.$author.'&Months='.$months.'&Articlesonly='.$articlesonly.'"><b>Reverse Lookup</b>: how much has <b>@'.$author.'</b> contributed to <b>@'.$voter.'?</b></a></p>';	
-
 	
 // title at the top of page to state the voter and who is the author	
 echo '<p><a href="http://steemit.com/@'.$voter.'"><b>@'.$voter.'</b></a> upvoted <a href="http://steemit.com/@'.$author.'"><b>@'.$author.'</b></a> on the following:</p>';	
-			
 	
 // SQL executed if articles and comments are included
 if ($articlesonly==1) {
 	if ($months!="all") {
 		
-    	$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') AND (timestamp>=Convert(datetime, '";
-		
-		if ($newdate) {$sql.=$newdate;} else {$sql.=$date;}
-		$sql.="')) AND (timestamp<=Convert(datetime,'";
-		
-		if ($todate) {$sql.=$todate;} else {$sql.=date("Y-m-d");}
-		$sql.="')) ORDER BY timestamp DESC";
+    	$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author=:author AND voter=:voter) AND (timestamp>=Convert(datetime, :date)) AND (timestamp<=Convert(datetime,:todate)) ORDER BY timestamp DESC";
 		
     } else {
-		$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') ORDER BY timestamp DESC";
+		$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author=:author AND voter=:voter) ORDER BY timestamp DESC";
     }
-} else {
-    // if articles only, no comments
-	if ($months!="all") {
-		$newdate = date("Y-m-d", strtotime("-".$months." months"));
-		$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') AND (timestamp>=Convert(datetime, '";
-		
-		if ($newdate) {$sql.=$newdate;} else {$sql.=$date;}
-		$sql.="')) AND (timestamp<=Convert(datetime,'";
-		
-		if ($todate) {$sql.=$todate;} else {$sql.=date("Y-m-d");}
-		
-		$sql.="')) AND (permlink IN (SELECT permlink FROM Comments WHERE author='".$author."' AND depth=0)) ORDER BY timestamp DESC";
+} else {	
+	if ($months!="all") {		
+    	$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author=:author AND voter=:voter) AND (timestamp>=Convert(datetime, :date)) AND (timestamp<=Convert(datetime,:todate)) AND (permlink IN (SELECT permlink FROM Comments WHERE author=:author AND depth=0)) ORDER BY timestamp DESC";		
     } else {
-    	$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author='$author' AND voter='$voter') AND (permlink IN (SELECT permlink FROM Comments WHERE author='".$author."' AND depth=0)) ORDER BY timestamp DESC";
-    }
+		$sql = "SELECT voter,permlink,timestamp,weight FROM TxVotes WHERE (author=:author AND voter=:voter) AND (permlink IN (SELECT permlink FROM Comments WHERE author=:author AND depth=0)) ORDER BY timestamp DESC";
+    }	
 }
     
 // prepares the SQL statement to be executed.    
 $sth = $conn->prepare($sql);
+	
+// bind the FROM date to the SQL statements
+if ($newdate) {$date=$newdate;} 
+$sth -> bindValue(':date', $newdate, PDO::PARAM_STR);
 
+// bind the TO date to the SQL statements
+if ($todate) {
+$sth -> bindValue(':todate', $todate, PDO::PARAM_STR);
+} else {	
+$sth -> bindValue(':todate', date("Y-m-d"), PDO::PARAM_STR);	
+}
+
+// bind the author and voter values to the SQL statements
+$sth -> bindValue(':author', $author, PDO::PARAM_STR);	
+$sth -> bindValue(':voter', $voter, PDO::PARAM_STR);
+	
 // execute SQL statement.	
 $sth->execute();    
      echo '<table class="table table-sm"><thead class="thead-inverse"><tr><th>Timestamp</th><th>%</th><th>Link</th></tr></thead><tbody>';
@@ -199,8 +191,7 @@ $sth->execute();
       
     }
       
-  echo "</tbody></table>";
-
+  	echo "</tbody></table>";
     unset($conn); unset($sth);
 }
 ?>
@@ -246,7 +237,6 @@ const showContribution = async(x,y) => {
 // retrieve article information
 	const result = await steem.api.getContentAsync('<?=$author?>', y); 
 	
-
 // store pending payout value
 	var payout = result.pending_payout_value;
 	payout=parseFloat(payout.replace(" SBD", ""));
@@ -297,8 +287,7 @@ const showContribution = async(x,y) => {
 // round contribution by user to 2d.p.
 	var contribution = Math.round(parseFloat(activeVotes[rank-1]['rshares'])/total*payout*100)/100;
 	
-// fix NaN error in case total rshares = 0 
-	
+// fix NaN error in case total rshares = 0 	
 	if (isNaN(contribution)) {		
 		contribution = 0;
 	}
@@ -343,31 +332,22 @@ const showContribution = async(x,y) => {
 	}
 	rankTable+="</table>";
 // print the rank table
-	document.getElementById(id.toString()).innerHTML+=rankTable;
-	
+	document.getElementById(id.toString()).innerHTML+=rankTable;	
 
 };
 
-// automate contribution calculation with async await function.
-	
+// automate contribution calculation with async await function.	
 const outputData = async () => {
 	
 <?
 for ($x=0;$x<sizeof($articleList);$x++) {
 	echo "await showContribution($x, '".$articleList[$x]."');";	
-}
-	
+}	
 ?>	
-
 }
 
 // run contribution calculation function to automatically press all calculate contribution buttons.
-
 outputData();
-
 	
 </script>
-
-
-
 </html>
