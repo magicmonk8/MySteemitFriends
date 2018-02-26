@@ -10,6 +10,23 @@
   } else {
 	  $topConNum = 1000;
   }
+	
+  if ($_GET["date"]) {
+	  $date = $_GET["date"];
+	  $date = filter_var($date, FILTER_SANITIZE_STRING);
+  } else {
+	  $date = "2016-03-30";
+  }
+	
+		
+  if ($_GET["todate"]) {
+	  $todate = $_GET["todate"];
+	  $todate = filter_var($todate, FILTER_SANITIZE_STRING);
+  } else {
+	  $todate = date("Y-m-d");
+  }
+	
+	
 ?>
   <head>
     <title><?if ($author) {echo $author."'s ";} ?>Top Contributors - My Steemit Friends</title>
@@ -132,11 +149,19 @@ Search for user: <input type="text" id="searchName" onkeyup="searchFunction()">
 <br><br>
 
 <div style="border:5px solid white;padding:10px;max-width:500px;margin:auto">
-<h3>Number of contributors</h3><br>
-<form>Only show the top <input name="topConNum" id="topConNum" type="number" min="1" max="99999" value="1000"> contributors<br>
-</form>
-<button class="btn btn-light" id="topConBtn">Refresh</button><br><br>
-<div id="sumSP"></div>
+<h3>Filters</h3><br>
+<p>Only show the top <input name="topConNum" id="topConNum" type="number" min="1" max="99999" value="1000"> contributors</p>
+<p>From Date: <input name="date" type="date" value="'.$date.'" id="date" min="2016-03-30" max="';
+	echo date("Y-m-d"); 
+	echo '">&nbsp;&nbsp;</p>';		
+		
+// to date html form control
+  	echo '<p>&nbsp;&nbsp;To Date: <input name="todate" type="date" value="';
+	if ($todate) {echo $todate;} else { echo date("Y-m-d");} 
+	echo '" id="todate" min="2016-03-30" max="';
+	echo date("Y-m-d");
+	echo '"></p>';
+	echo '<button class="btn btn-light" id="filterBtn">Refresh</button><br><br>
 </div>
 
 <br><br>	
@@ -162,60 +187,32 @@ $sql = "
 /* query the rshares for each individual vote */
 ;With rsharequery AS 
 (
-SELECT C.created, C.author AS author, C.ID AS ID, Votes.voter, Votes.rshares
+SELECT C.created, C.author AS author, C.ID AS ID, total_payout_value+curator_payout_value+pending_payout_value AS payout, Votes.voter, Votes.rshares, Votes.votetime
 FROM   Comments AS C  
           CROSS APPLY  
      OPENJSON (C.active_votes)  
            WITH (  
               voter   varchar(200) '$.voter',   
-			  rshares BigInt '$.rshares'
+			  rshares BigInt '$.rshares',
+			  votetime DateTime '$.time'
            )  
   		AS Votes
-WHERE C.author=:name AND C.parent_author=''
+WHERE C.author=:name AND C.parent_author='' AND (Votes.votetime>=Convert(datetime, :date) AND Votes.votetime<=Convert(datetime, :todate))
 ), 
 
 /* query the rshare sum of each article */
 RShareSum AS
 (
 select ID, sum(rshares) as sumRShares
-from (
-SELECT C.created, C.author AS author, C.ID, Votes.voter, Votes.rshares
-FROM   Comments AS C  
-          CROSS APPLY  
-     OPENJSON (C.active_votes)  
-           WITH (  
-              voter   varchar(200) '$.voter',   
-			  rshares BigInt '$.rshares'
-           )  
-  		AS Votes
-WHERE C.author=:name AND C.parent_author=''
-) AS a
+from rsharequery a
 group by ID
-), 
-
-/* query the payout of each article */
-payouts AS
-(
-select ID, total_payout_value+curator_payout_value+pending_payout_value AS payout
-from Comments C
-WHERE C.author=:name AND C.parent_author=''
 ), 
 
 /* query the number of votes for each voter */
 voteCounting AS
 (
 Select voter, count(voter) as voteCount
-from (
-SELECT C.created, C.author AS author, Votes.voter
-FROM   Comments AS C  
-          CROSS APPLY  
-     OPENJSON (C.active_votes)  
-           WITH (  
-              voter   varchar(200) '$.voter'
-           )  
-  		AS Votes
-WHERE C.author=:name AND C.parent_author=''
-) a
+from rsharequery a
 group by voter
 )
 
@@ -225,10 +222,9 @@ select voter, round(sum(contribution),2) AS contribution
 FROM
 (select voter, CAST(rshares AS float) / CAST(sumRshares AS float) * payout AS contribution
 FROM
-(select voter, rshares, a.ID, b.sumRshares, c.payout
-from rsharequery a, RshareSum b, payouts c
+(select voter, rshares, a.ID, b.sumRshares, payout
+from rsharequery a, RshareSum b
 where a.ID = b.ID
-AND a.ID = c.ID
 ) d
 ) e
 group by voter
@@ -241,6 +237,8 @@ order by contribution DESC
     $sth = $conn->prepare($sql);
     $sth -> bindValue(':name', $author, PDO::PARAM_STR);
 	$sth -> bindValue(':topConNum', $topConNum, PDO::PARAM_INT);
+	$sth -> bindValue(':date', $date, PDO::PARAM_STR);
+	$sth -> bindValue(':todate', $todate, PDO::PARAM_STR);
     $sth->execute();
 
 // variables for printing ranking and striped rows.
@@ -287,17 +285,18 @@ $(function(){
 			var td1="<td>"+ar[i]["rank"]+"</td>";
 			var td2="<td>"+'<a href="http://steemit.com/@'+ar[i]["voter"]+'">'+ar[i]["voter"]+"</a></td>";
 			var td3="<td>"+'<a href="http://mysteemitfriends.online/contributors.php?author='+ar[i]["voter"]+'">$'+ar[i]["contribution"]+"</a></td>";
-			var td4="<td>"+'<a href="http://mysteemitfriends.online/upvotelist.php?Articlesonly=2&toDate=<? echo date("Y-m-d");?>&date=2016-03-30&author=<? echo $author; ?>&voter='+ar[i]["voter"]+'">'+ar[i]["voteCount"]+"</td></tr>";
+			var td4="<td>"+'<a href="http://mysteemitfriends.online/upvotelist.php?Articlesonly=2&toDate=<? echo $todate;?>&date=<? echo $date;?>&author=<? echo $author; ?>&voter='+ar[i]["voter"]+'">'+ar[i]["voteCount"]+"</td></tr>";
 			$("#bigtable").append(tr+td1+td2+td3+td4); 
 	}
 <?
 	if ($author) {
 		echo "
-			$(\"#topConBtn\").click(
+			$(\"#filterBtn\").click(
 			  function() {
 				  topConNum = document.getElementById(\"topConNum\").value;
-				  window.location.href = 'contributors.php?topConNum='+topConNum+'&author=$author';		  
-
+				  date = document.getElementById(\"date\").value;
+				  todate = document.getElementById(\"todate\").value;
+				  window.location.href = 'contributors.php?topConNum='+topConNum+'&author=$author&todate='+todate+'&date='+date;
 			  }	  
 	  		);
 		";
@@ -320,7 +319,7 @@ console.log(textboxval);
         var td1="<td>"+ar[i]["rank"]+"</td>";
         var td2="<td>"+'<a href="http://steemit.com/@'+ar[i]["voter"]+'">'+ar[i]["voter"]+"</a></td>";
   		var td3="<td>"+'<a href="http://mysteemitfriends.online/contributors.php?author='+ar[i]["voter"]+'">$'+ar[i]["contribution"]+"</a></td>";
-		var td4="<td>"+'<a href="http://mysteemitfriends.online/upvotelist.php?Articlesonly=2&toDate=<? echo date("Y-m-d");?>&date=216-03-30&author=<? echo $author; ?>&voter='+ar[i]["voter"]+'">'+ar[i]["voteCount"]+"</td></tr>";
+		var td4="<td>"+'<a href="http://mysteemitfriends.online/upvotelist.php?Articlesonly=2&toDate=<? echo $todate;?>&date=<? echo $date;?>&author=<? echo $author; ?>&voter='+ar[i]["voter"]+'">'+ar[i]["voteCount"]+"</td></tr>";
 		$("#bigtable").append(tr+td1+td2+td3+td4); 
      }
   }
