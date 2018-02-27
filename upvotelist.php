@@ -264,14 +264,14 @@ const showContribution = async(x,y) => {
 	for (x=0;x<length;x++) {		
 		total=total+parseFloat(activeVotes[x]['rshares']);
 	}
-
+console.log(total);
 // sort users based on amount of rshares
 	activeVotes.sort(function(a, b)
 	{
 		return b['rshares'] - a['rshares'];
 	});
 	
-	console.log(activeVotes);
+
 // print total payout to screen
     document.getElementById(id.toString()).innerHTML="<p>Article payout = $"+Math.round(payout*100)/100+"</p>";
 
@@ -285,7 +285,7 @@ const showContribution = async(x,y) => {
 
 
 // round contribution by user to 2d.p.
-	var contribution = Math.round(parseFloat(activeVotes[rank-1]['rshares'])/total*payout*100)/100;
+	var contribution = parseFloat(activeVotes[rank-1]['rshares'])/total*payout;
 	
 // fix NaN error in case total rshares = 0 	
 	if (isNaN(contribution)) {		
@@ -293,7 +293,7 @@ const showContribution = async(x,y) => {
 	}
 
 // print contribution to screen.
- 	document.getElementById(id.toString()).innerHTML+="<p><?=$voter?> has contributed $"+contribution+" and is ranked at number "+rank+".</p>";
+ 	document.getElementById(id.toString()).innerHTML+="<p><?=$voter?> has contributed $"+Math.round(contribution*100)/100+" and is ranked at number "+rank+".</p>";
 	
 // add contribution to top of screen calculator	
 	totalcon=totalcon+contribution;
