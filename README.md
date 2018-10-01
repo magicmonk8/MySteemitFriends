@@ -30,7 +30,7 @@ A tool to analyse your upvote statistics for Steemit. Go to live website at http
 
 - [**steemSQLconnect2.php**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/automate_contribution_calculation/steemSQLconnect2.php): Connection to SteemSQL database in a separate php file, to be included in other pages that required SteemSQL connection..
 
-
+- [**articlelist.php**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/master/articlelist.php): This tool will alow the user to either retrieve the list of articles voted on or written by that user between two dates.
 
 
 ## Folders
