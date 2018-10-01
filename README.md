@@ -1,4 +1,4 @@
-# MySteemitFriends
+# SteemFriends
 
 A tool to analyse your upvote statistics for Steemit. Go to live website at http://mysteemitfriends.online to see how it works. Each file in this project will be explained in detail below.
 
