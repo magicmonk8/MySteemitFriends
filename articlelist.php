@@ -4,7 +4,7 @@
 include 'steemSQLconnect2.php';	
 
 // Make your model available
-include 'models/upvotehistory.php';
+include 'models/articlelistmodel.php';
 
 
 // Get values from URL	
@@ -25,27 +25,41 @@ if ($_GET["date"]) {
 if ($_GET["toDate"]) {
 	$todate = $_GET["toDate"];
 } else { 
-	$todate = date("Y-m-d");	
+	$todate = date("Y-m-d", strtotime("+1 day"));	
 }
+
+if ($_GET["mode"]) {
+	$mode = $_GET["mode"];
+} 
+
 	
+/*
 // retrieve choice for whether to include articles only or to include comments as well
 if ($_GET["Articlesonly"]) {
 	$articlesonly = $_GET["Articlesonly"];
 } else {
 	$articlesonly = 1;
 }
+*/
 
 // create an instance
-$upvotehistory = new upvotehistory($conn);
+$articlelistmodel = new articlelistmodel($conn);
 
-if ($voter) {
+if ($voter&&$mode=="upvote") {
 // get list of results
-$results = $upvotehistory -> gethistory($date,$todate,$voter);
+$results = $articlelistmodel -> gethistory($date,$todate,$voter);
+} elseif ($voter&&$mode=="written") {
+$results = $articlelistmodel -> getwritten($date,$todate,$voter);	
 }
 
 // Show the view
-include 'views/articlelist.php';
+include 'views/articlelistview.php';
 
-$upvotehistory -> close_connection();
+$articlelistmodel -> close_connection();
 
 ?>
+
+
+
+
+
