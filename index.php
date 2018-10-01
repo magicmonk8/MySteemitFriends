@@ -1,6 +1,7 @@
 <html>
+	
   <head>
-    <title>My Steemit Friends</title>
+    <title>Steem Friends</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
@@ -8,42 +9,41 @@
     <script src="popper.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css?4">
-    <style>
-    	#bigtable {     background-color:#106288;   }    
-    	@media only screen and (max-device-width: 480px) {  
-    		#bigtable {     background-color:#106288;   } 
-    	} 
-		
-		.nopadding {
-			padding:2px;
-		}
-		
-		#convbtn {
-			width:100%;
-		}
-		
-		.navbutton {
-			width:10rem;
-			margin:1rem;
-		}
-
-    a {
-		cursor: pointer;  
-		}
-		.btn {
-			cursor: pointer;  
-		}
-
-		/* no padding or margin in table */
-		.nopadnomarg td, nopadnomarg tr {
-			margin:0px;
-			padding:0px;
-		}		
+    <style>				
+  		.nopadding {
+  			padding:2px;
+  		}
+  		
+  		#convbtn {
+  			width:100%;
+  		}
+  		
+  		.navbutton {
+  			width:10rem;
+  			margin:0.5rem;
+  		}
+  
+      a {
+  			cursor: pointer;  
+  		}
+  		
+  		.btn {
+  			cursor: pointer;  
+  		}
+        
+  		/* no padding or margin in table */
+  		.nopadnomarg td, nopadnomarg tr {
+  			margin:0px;
+  			padding:0px;
+  		}
+      		
     </style>    
   </head>
-  <body> 
-   
-<nav id="mynav" class="navbar navbar-expand-md navbar-dark">
+	
+  <body>
+	  
+	<!--navbar-->
+	<nav id="mynav" class="navbar navbar-expand-md navbar-dark">
   <!-- Toggler/collapsibe Button -->
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
     <span class="navbar-toggler-icon"></span>
@@ -66,27 +66,38 @@
    		<a class="dropdown-item" href="powerdown.php">Power Down</a> 
    		<a class="dropdown-item" href="witnessvoting.php">Witness Voting Power: All Users</a>          
    		<a class="dropdown-item" href="witnessproxies.php">Witness Voting Power: Proxies</a> 
+   		
     </div>
   </div><!-- /btn-group -->
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
+    <a class="btn btn-lg btn-secondary navbutton nounderline"  href="articlelist.php">User History</a>
   </div> 
 </nav>     
     
-                  
-<div class="container-fluid bg-1 text-center">
+	<!-- main page container -->                 
+	<div class="container-fluid bg-1 text-center">
+  <div class="alert alert-success">
+    <strong>My Steemit Friends is changing its name to Steem Friends</strong><br>
+	<a class="alert-link" href="https://steemit.com/steemdev/@magicmonk/mysteemitfriends-online-is-changing-to-steemfriends-org"><span class="alert-link nounderline" style="text-decoration:none;display: inline-block;">Announcement post here</span></a>. Please upvote <a class="alert-link" href="https://steemit.com/steemdev/@magicmonk/mysteemitfriends-online-is-changing-to-steemfriends-org"><span class="alert-link nounderline" style="text-decoration:none;display: inline-block;">this post</span></a> to support this website and comment to let us know whether you welcome the change!!
+  </div>
 	<table style="background-color:#2E456D;border-collapse:collapse;border: 5px solid black;max-width:350px">
 	  <tr>
 	   <td class="text-center" style="padding:10px;">
-		<img src="images/title.png" class="img-fluid"><br><br>
+		<img src="images/newtitle.png" class="img-fluid"><br><br>
 		  <div class="form-group">
 			<label for="User">1. Type your Steemit UserName:</label><br>
 			<input id="User" type="text" name="User" value="<? if ($_GET["User"]) { echo $_GET["User"];} ?>" autofocus>
 		  </div>
 			<p>2. Click the following buttons to see your:</p>
-		  <div id="pleasescroll"></div>
-		<a id="contributton" class="btn btn-lg btn-warning navbutton nounderline" onclick="contriBtn()" style="color:black" style="margin:0px;">Contributors</a>
-		  
-		<table id="buttontable1" class='nopadding' style='width:100%;'><tr><td class='nopadding' style="width:50%">
+		  <div id="pleasescroll"></div>		  
+		<table id="buttontable1" class='nopadding' style='width:100%;'>
+		<tr><td class='nopadding' style="width:50%">		
+			<a style='width:100%' id="contributton" class="btn btn-warning" onclick="contriBtn()">Contributors</a>	
+			</td><td class='nopadding' style="width:50%">	
+			<a style='width:100%' id="vHistBtn" class="btn btn-secondary">User History</a>	
+			</td>			
+		</tr>
+		<tr><td class='nopadding' style="width:50%">
 		 <a style='width:100%' id="upvotebtn" class="btn btn-primary" onclick="upvoteBtn()">Upvote Stats</a> 
 		 </td><td class='nopadding' style="width:50%">
 		 <a  style="color:white" id="convbtn" class="btn btn-success" onclick="convBtn()">Conversations</a>
@@ -573,8 +584,10 @@ if ($rankmethod==1) {
     }
       ?>  
     </div>  
-    </div>
-       
+
+
+  </body>
+	
   <script>  
 	  
 $(function(){ 
@@ -596,6 +609,14 @@ $(function(){
 			  window.location.href = 'index.php?User='+goToUser;			  
 		  }	  
 	  );
+	
+	
+	$("#vHistBtn").click(
+		function() {
+			  goToUser = document.getElementById("User").value;
+			  window.location.href = 'articlelist.php?voter='+goToUser;			  
+		  }
+	);
 	
 	$("#convbtn").css("width","100%");
 	
@@ -678,5 +699,5 @@ function loadRank(filename) {
   xhttp.send();
 } 	  
     </script>
-  </body>
+  
 </html>
