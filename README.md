@@ -22,7 +22,7 @@ A tool to analyse your upvote statistics for Steemit. Go to live website at http
 
 - [**reputation.php**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/show-conversation-content/reputation.php): A list of Steemit Users ranked by reputation score. 50 users per page - any page can be selected and retrieved. A search box can also be used to locate a particular user.
 
-- [**ranking.php**]: Controller for displaying ranking for SBD, own SP and Account Creation.
+- [**ranking.php**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/Account-Creation/ranking.php): Controller for displaying ranking for SBD, own SP and Account Creation.
 
 - [**get_esp_rank.php**](https://github.com/Bulletproofmonk/MySteemitFriends/blob/effective_SP_rank/get_esp_rank.php): PHP file that queries SteemSQL to find out the ranking of a paritcular user in terms of the amount of effective SP, and then allows the user to jump to that particular page on effectiveSP.php.
 
