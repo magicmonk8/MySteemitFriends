@@ -1,5 +1,4 @@
-<html>
-	
+<html>	
   <head>
     <title>Steem Friends</title>
     <meta charset="utf-8">
@@ -12,141 +11,94 @@
     <style>				
   		.nopadding {
   			padding:2px;
-  		}
-  		
+  		}  		
   		#convbtn {
   			width:100%;
-  		}
-  		
+  		}  		
   		.navbutton {
   			width:10rem;
   			margin:0.5rem;
-  		}
-  
+  		}   
       a {
   			cursor: pointer;  
-  		}
-  		
+  		}  		
   		.btn {
   			cursor: pointer;  
-  		}
-        
+  		}           
   		/* no padding or margin in table */
   		.nopadnomarg td, nopadnomarg tr {
   			margin:0px;
   			padding:0px;
-  		}
-      		
+  		}        		
     </style>    
-  </head>
-	
-  <body>
-	  
+  </head>	
+  <body> 	  
 	<!--navbar-->
-	<nav id="mynav" class="navbar navbar-expand-md navbar-dark">
-  <!-- Toggler/collapsibe Button -->
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-    <span class="navbar-toggler-icon"></span>
-  </button>  
-  <div class="collapse navbar-collapse" id="collapsibleNavbar">
-     <a class="btn btn-lg btn-warning navbutton nounderline"  href="contributors.php" style="color:black">Contributors</a>
-     <a class="btn btn-lg btn-primary navbutton nounderline"  href="index.php">Upvote Stats</a>
-    <a class="btn btn-lg btn-success navbutton nounderline"  href="conversation.php">Conversations</a>
-    <div class="btn-group navbutton" id="rankingbtn">
-    <button type="button" class="btn btn-lg btn-info dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:10rem">Rankings</button>
-    <div class="dropdown-menu">
-    	<a class="dropdown-item" href="followers.php">Followers</a>			
-		<a class="dropdown-item" href="reputation.php">Reputation</a>
-		<a class="dropdown-item" href="effectiveSP.php">Effective SP</a>
-		<a class="dropdown-item" href="ownSP.php">Own SP</a>
-		<a class="dropdown-item" href="sbd.php">SBD</a>	
-		<a class="dropdown-item" href="accountvalue.php">Estimated Account Value</a>     
-   		<a class="dropdown-item" href="pending_payout.php">Pending Payout</a>
-   		<a class="dropdown-item" href="past_payout.php">Past Payout</a>  
-   		<a class="dropdown-item" href="powerdown.php">Power Down</a> 
-   		<a class="dropdown-item" href="witnessvoting.php">Witness Voting Power: All Users</a>          
-   		<a class="dropdown-item" href="witnessproxies.php">Witness Voting Power: Proxies</a> 
-   		
-    </div>
-  </div><!-- /btn-group -->
-    <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
-    <a class="btn btn-lg btn-secondary navbutton nounderline"  href="articlelist.php">User History</a>
-  </div> 
-</nav>     
-    
+  <? include 'views/navbar.php'; ?>     
 	<!-- main page container -->                 
 	<div class="container-fluid bg-1 text-center">
-  <div class="alert alert-success">
-    <strong>My Steemit Friends is changing its name to Steem Friends</strong><br>
-	<a class="alert-link" href="https://steemit.com/steemdev/@magicmonk/mysteemitfriends-online-is-changing-to-steemfriends-org"><span class="alert-link nounderline" style="text-decoration:none;display: inline-block;">Announcement post here</span></a>. Please upvote <a class="alert-link" href="https://steemit.com/steemdev/@magicmonk/mysteemitfriends-online-is-changing-to-steemfriends-org"><span class="alert-link nounderline" style="text-decoration:none;display: inline-block;">this post</span></a> to support this website and comment to let us know whether you welcome the change!!
-  </div>
-	<table style="background-color:#2E456D;border-collapse:collapse;border: 5px solid black;max-width:350px">
+  <? include 'views/notifications.php'; ?>
+  <table style="background-color:#2E456D;border-collapse:collapse;border: 5px solid black;max-width:350px">
 	  <tr>
 	   <td class="text-center" style="padding:10px;">
-		<img src="images/newtitle.png" class="img-fluid"><br><br>
+		<img src="images/newtitle.png" class="img-fluid"><br>
 		  <div class="form-group">
 			<label for="User">1. Type your Steemit UserName:</label><br>
 			<input id="User" type="text" name="User" value="<? if ($_GET["User"]) { echo $_GET["User"];} ?>" autofocus>
 		  </div>
 			<p>2. Click the following buttons to see your:</p>
 		  <div id="pleasescroll"></div>		  
-		<table id="buttontable1" class='nopadding' style='width:100%;'>
-		<tr><td class='nopadding' style="width:50%">		
-			<a style='width:100%' id="contributton" class="btn btn-warning" onclick="contriBtn()">Contributors</a>	
-			</td><td class='nopadding' style="width:50%">	
-			<a style='width:100%' id="vHistBtn" class="btn btn-secondary">User History</a>	
-			</td>			
-		</tr>
-		<tr><td class='nopadding' style="width:50%">
-		 <a style='width:100%' id="upvotebtn" class="btn btn-primary" onclick="upvoteBtn()">Upvote Stats</a> 
-		 </td><td class='nopadding' style="width:50%">
-		 <a  style="color:white" id="convbtn" class="btn btn-success" onclick="convBtn()">Conversations</a>
-		 </td></tr></table>	
-		
-<table id="buttontable2" class='nopadding' style="margin-top:0px;width:100%;padding:0px;"><tr><td class='nopadding' style="width:50%">
+    <table id="buttontable1" class='nopadding' style='width:100%;'>
+  		<tr><td class='nopadding' style="width:50%">		
+  			<a style='width:100%' id="contributton" class="btn btn-warning" onclick="contriBtn()">Contributors</a>	
+  			</td><td class='nopadding' style="width:50%">	
+  			<a style='width:100%' id="vHistBtn" class="btn btn-secondary">User History</a>	
+  			</td>			
+  		</tr>
+  		<tr><td class='nopadding' style="width:50%">
+  		 <a style='width:100%' id="upvotebtn" class="btn btn-primary" onclick="upvoteBtn()">Upvote Stats</a> 
+  		 </td><td class='nopadding' style="width:50%">
+  		 <a  style="color:white" id="convbtn" class="btn btn-success" onclick="convBtn()">Conversations</a>
+  		 </td></tr>
+    </table>		
+    <table id="buttontable2" class='nopadding' style="margin-top:0px;width:100%;padding:0px;"><tr><td class='nopadding' style="width:50%">
    		<div class="btn-group" id="rankingbtn" style='width:100%'>
-    <button style='width:100%' type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Rankings</button>
-    <div class="dropdown-menu">
-    <table class="nopadnomarg">
-    <tr><td><a class="dropdown-item" href="#" onclick="loadRank('get_follower_rank')">Followers</a></td>
-    <td><a class="dropdown-item" href="#" onclick="loadRank('get_reputation_rank')">Reputation</a></td></tr>
-    	
-    <tr><td><a class="dropdown-item" href="#" onclick="loadRank('get_esp_rank')">Effective SP</a></td>
-    <td><a class="dropdown-item" href="#" onclick="loadRank('get_osp_rank')">Own SP</a></td></tr>	
-    
-    <tr><td><a class="dropdown-item" href="#" onclick="loadRank('get_sbd_rank')">SBD</a></td>
-    <td><a class="dropdown-item" href="#" onclick="loadRank('get_av_rank')">Estimated Account Value</a></td></tr>	
-    <tr><td><a class="dropdown-item" href="#" onclick="loadRank('get_pendpay_rank')">Pending Payout</a></td>
-    <td><a class="dropdown-item" href="#" onclick="loadRank('get_pastpay_rank')">Past Payout</a></td></tr>	
-    	
-    </table>
-       <a class="dropdown-item" href="#" onclick="loadRank('get_powerdown_rank')">Power Down</a>
+      <button style='width:100%' type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Rankings</button>
+      <div class="dropdown-menu">
+      <table class="nopadnomarg">
+        <tr><td><a class="dropdown-item" href="#" onclick="loadRank('get_follower_rank')">Followers</a></td>
+        <td><a class="dropdown-item" href="#" onclick="loadRank('get_reputation_rank')">Reputation</a></td></tr>
+        	
+        <tr><td><a class="dropdown-item" href="#" onclick="loadRank('get_esp_rank')">Effective SP</a></td>
+        <td><a class="dropdown-item" href="#" onclick="loadRank('get_osp_rank')">Own SP</a></td></tr>	
+        
+        <tr><td><a class="dropdown-item" href="#" onclick="loadRank('get_sbd_rank')">SBD</a></td>
+        <td><a class="dropdown-item" href="#" onclick="loadRank('get_av_rank')">Estimated Account Value</a></td></tr>	
+        <tr><td><a class="dropdown-item" href="#" onclick="loadRank('get_pendpay_rank')">Pending Payout</a></td>
+        <td><a class="dropdown-item" href="#" onclick="loadRank('get_pastpay_rank')">Past Payout</a></td></tr>
+        <tr><td><a class="dropdown-item" href="#" onclick="loadRank('get_powerdown_rank')">Power Down</a></td>
+        <td><a class="dropdown-item" href="#" onclick="loadRank('get_creation_rank')">Account Creation</a></td></tr>    	
+      </table>                                                                                                      
         <a class="dropdown-item" href="#" onclick="loadRank('get_voting_rank')">Witness Voting Power: All Users</a>		
        	<a class="dropdown-item" href="#" onclick="loadRank('get_proxy_rank')">Witness Voting Power: Proxies</a>	
-    </div>
-  </div><!-- /btn-group -->
- </td><td class='nopadding' style="width:50%">
-  <div class="btn-group"  style='width:100%'>
-<button style='width:100%' id="calcbtn" class="btn btn-danger" onclick="calcBtn()">$ Calculator</button>
-  </div><!-- /btn-group -->
-	</td></tr></table>	
-		<br>
-		<p>Created by <a href="http://steemit.com/@magicmonk"><img id="logo" src="images/magicmonkhead.png" width="64px">@magicmonk</a></p>
-		<p><a href="https://steemit.com/steemit/@magicmonk/mysteemitfriend-s-new-edition-has-more-features-mysteemitfriends">Instructions</a></p>
-	   </td>
+      </div>
+      </div><!-- /btn-group -->
+      </td><td class='nopadding' style="width:50%">
+      <div class="btn-group"  style='width:100%'>
+      <button style='width:100%' id="calcbtn" class="btn btn-danger" onclick="calcBtn()">$ Calculator</button>
+      </div><!-- /btn-group -->
+	    </td></tr>
+    </table>		
+     Created by <a href="http://steemit.com/@magicmonk"><img id="logo" src="images/magicmonkhead.png" width="64px">@magicmonk</a>		
+	  </td>
 	  </tr>
-	</table>
-
-<div id="ranking"></div>
-   
+  </table>
+<div id="ranking"></div>   
 <?php
-
 // if a user name was provided in the URL, do the following	
-if ($_GET["User"]) {
-	
+if ($_GET["User"]) {	
 // connect to SteemSQL database.
-include 'steemSQLconnect2.php';		
-
+include 'steemSQLconnect2.php';
 // retrieve latest total vesting fund steem and total vesting shares for steem power calculations
 $my_file = fopen("global.txt",'r');
 $total_vesting_fund_steem=fgets($my_file);
