@@ -52,7 +52,14 @@
   		<tr><td class='nopadding' style="width:50%">		
   			<a style='width:100%' id="contributton" class="btn btn-warning" onclick="contriBtn()">Contributors</a>	
   			</td><td class='nopadding' style="width:50%">	
-  			<a style='width:100%' id="vHistBtn" class="btn btn-secondary">User History</a>	
+  			<!-- <a style='width:100%' id="vHistBtn" class="btn btn-secondary">User History</a> -->        
+        <div class="btn-group" id="historybtn" style='width:100%'>
+        <button style='width:100%' type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">User History</button>
+        <div class="dropdown-menu">         
+          <a class="dropdown-item" href="#" onclick="userHistory('upvote')">Upvoted Articles</a>		
+         	<a class="dropdown-item" href="#" onclick="userHistory('written')">Written Articles</a>	
+        </div>
+        </div><!-- /btn-group -->        	
   			</td>			
   		</tr>
   		<tr><td class='nopadding' style="width:50%">
@@ -560,16 +567,8 @@ $(function(){
 			  goToUser = document.getElementById("User").value;
 			  window.location.href = 'index.php?User='+goToUser;			  
 		  }	  
-	  );
-	
-	
-	$("#vHistBtn").click(
-		function() {
-			  goToUser = document.getElementById("User").value;
-			  window.location.href = 'articlelist.php?voter='+goToUser;			  
-		  }
-	);
-	
+	  );    
+    	
 	$("#convbtn").css("width","100%");
 	
     // Enables popover with html content
@@ -587,12 +586,17 @@ $(function(){
    
 });
 
-// go to conversation record and load first user name
-	  
+// go to conversation record and load first user name	  
 function convBtn() {
 	goToUser = document.getElementById("User").value;
 	window.location.href = 'conversation.php?User1='+goToUser;	
 }
+
+function userHistory(mode) {        
+			  goToUser = document.getElementById("User").value;
+			  window.location.href = 'articlelist.php?voter='+goToUser+'&mode='+mode;			  
+		  }
+
 
 function calcBtn() {
 	goToUser = document.getElementById("User").value;
