@@ -26,6 +26,14 @@
       </div>
     </div><!-- /btn-group -->
     <a class="btn btn-lg btn-danger navbutton nounderline"  href="upvotelist.php">$ Calculator</a>
-    <a class="btn btn-lg btn-secondary navbutton nounderline"  href="articlelist.php">User History</a>
+<!--    <a class="btn btn-lg btn-secondary navbutton nounderline"  href="articlelist.php">User History</a>  -->
+    <div class="btn-group navbutton" id="historybtn">
+      <button type="button" class="btn btn-lg btn-secondary dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:10rem">User History</button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="articlelist.php?mode=upvote">Articles Upvoted</a>			
+    		<a class="dropdown-item" href="articlelist.php?mode=written">Articles Written</a>    		   
+      </div>
+    </div><!-- /btn-group -->
+    
   </div> 
 </nav>    
