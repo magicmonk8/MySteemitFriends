@@ -29,14 +29,26 @@ if (isset($_GET["Articlesonly"])) {
 	$articlesonly = $_GET["Articlesonly"];
 } else {
 	$articlesonly = 1;
-}     
+} 
+// retrieve the tag input box value.
+if (isset($_GET["tag"])) {
+  $tag = $_GET["tag"];
+} else {
+  $tag=NULL;
+}
+// retrieve the title input box value.
+if (isset($_GET["title"])) {
+  $title=$_GET["title"];
+} else {
+  $title=NULL;
+}
 // create an instance
 $articlelistmodel = new articlelistmodel($conn);
 if ($voter&&$mode=="upvote") {
-// get list of results
-$results = $articlelistmodel -> gethistory($date,$todate,$voter,$articlesonly);
+  // get list of results
+  $results = $articlelistmodel -> gethistory($date,$todate,$voter,$articlesonly,$tag,$title);
 } elseif ($voter&&$mode=="written") {
-$results = $articlelistmodel -> getwritten($date,$todate,$voter,$articlesonly);	
+  $results = $articlelistmodel -> getwritten($date,$todate,$voter,$articlesonly,$tag,$title);	
 }                                               
 // Show the view
 include 'views/articlelistview.php';            
