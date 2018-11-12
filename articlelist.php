@@ -7,6 +7,8 @@ include 'models/articlelistmodel.php';
 // voter details stripped from URL
 if (isset($_GET["voter"])) {
   $voter = rtrim($_GET["voter"]);
+} else {
+  $voter=NULL;
 }     
 // check if date has been entered (submitted via form)
 if (isset($_GET["date"])) {
@@ -32,9 +34,14 @@ if (isset($_GET["Articlesonly"])) {
 } 
 // retrieve the tag input box value.
 if (isset($_GET["tag"])) {
-  $tag = $_GET["tag"];
+  $tag =$_GET["tag"];
 } else {
   $tag=NULL;
+}
+if (isset($_GET["tag2"])) {
+  $tag2=$_GET["tag2"];
+} else {
+  $tag2=NULL;
 }
 // retrieve the title input box value.
 if (isset($_GET["title"])) {
@@ -44,11 +51,11 @@ if (isset($_GET["title"])) {
 }
 // create an instance
 $articlelistmodel = new articlelistmodel($conn);
-if ($voter&&$mode=="upvote") {
+if (isset($voter)&&$mode=="upvote") {
   // get list of results
-  $results = $articlelistmodel -> gethistory($date,$todate,$voter,$articlesonly,$tag,$title);
-} elseif ($voter&&$mode=="written") {
-  $results = $articlelistmodel -> getwritten($date,$todate,$voter,$articlesonly,$tag,$title); 
+  $results = $articlelistmodel -> gethistory($date,$todate,$voter,$articlesonly,$tag,$tag2,$title);
+} elseif ((isset($voter)&&$mode=="written") || (isset($tag)&&$mode=="written")) {
+  $results = $articlelistmodel -> getwritten($date,$todate,$voter,$articlesonly,$tag,$tag2,$title); 
 }
 // Show the view
 include 'views/articlelistview.php';
