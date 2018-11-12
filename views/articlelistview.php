@@ -1,6 +1,6 @@
 <html>
   <head>
-  <title>My Steemit Friends</title>
+  <title>Steem Friends</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
@@ -42,11 +42,15 @@
           <input class="form-control" name="toDate" id="toDate" type="date" value="<? if (isset($todate)) {echo $todate;} else {echo date(" Y-m-d ",strtotime("+1 day "));} ?>" id="toDate" min="2016-03-30" max="<?echo date(" Y-m-d ",strtotime("+1 day ")); ?>">&nbsp;&nbsp;
         </div>
         <div class="form-group" style="margin-top:10px;">
-          <label for="tag">Tags contain:&nbsp;&nbsp;</label>
+          <label for="tag">Tag 1:&nbsp;&nbsp;</label>
           <input class="form-control" name="tag" id="tag" type="text" size="5" value="<?if (isset($tag)) {echo $tag;}?>">&nbsp;&nbsp;
         </div>
         <div class="form-group" style="margin-top:10px;">
-          <label for="title">Title contains:&nbsp;&nbsp;</label>
+          <label for="tag2">Tag 2:&nbsp;&nbsp;</label>
+          <input class="form-control" name="tag2" id="tag2" type="text" size="5" value="<?if (isset($tag2)) {echo $tag2;}?>">&nbsp;&nbsp;
+        </div>
+        <div class="form-group" style="margin-top:10px;">
+          <label for="title">Title:&nbsp;&nbsp;</label>
           <input class="form-control" name="title" id="title" type="text" size="10" value="<?if (isset($title)) {echo $title;}?>">&nbsp;&nbsp;
         </div>
         <div class="form-group" style="margin-top:10px;">
@@ -71,7 +75,9 @@ if (isset($results)) {
     $headings=array("Timestamp", "%", "Author", "Link");
   } 
   if ($mode=='written') {
-    echo '<p><a href="http://steemit.com/@'.$voter.'"><b>@'.$voter.'</b></a> wrote the following:</p>';
+    if ($voter!=NULL) {
+      echo '<p><a href="http://steemit.com/@'.$voter.'"><b>@'.$voter.'</b></a> wrote the following:</p>';
+    }
     $headings=array("Timestamp", "Author","Link");
   }  
   // table begins here
@@ -95,7 +101,7 @@ foreach ($results as $row) {
     echo "</td>";
   }
   echo "<td>";
-  echo $row['author'];
+  echo '<a href="https://steemit.com/@'.$row['author'].'" target="_top">'.$row['author'].'</a>';
   echo "</td>";
   echo "<td>";
   echo '<p><a href="https://steemit.com/cn/@'.$row['author'].'/'.$row['permlink'].'" target="_top">'.$row['permlink'].'</a></p>';  
@@ -112,6 +118,7 @@ echo "</tbody></table>";
     function retrieveInput() {
       title = document.getElementById("title").value;    
       tag = document.getElementById("tag").value;
+      tag2= document.getElementById("tag2").value;
       goToUser = document.getElementById("voter").value;
       date = document.getElementById("date").value;
       toDate = document.getElementById("toDate").value;
@@ -127,11 +134,11 @@ echo "</tbody></table>";
     $(function(){
       $("#upvotebtn").click(function() {
         retrieveInput();
-      window.location.href = 'articlelist.php?mode=upvote&Articlesonly='+mycheck+'&voter='+goToUser+'&date='+date+'&toDate='+toDate+'&tag='+tag+'&title='+title;      
+      window.location.href = 'articlelist.php?mode=upvote&Articlesonly='+mycheck+'&voter='+goToUser+'&date='+date+'&toDate='+toDate+'&tag='+tag+'&tag2='+tag2+'&title='+title;
       });         
       $("#writtenbtn").click(function() { 
       retrieveInput();
-      window.location.href = 'articlelist.php?mode=written&Articlesonly='+mycheck+'&voter='+goToUser+'&date='+date+'&toDate='+toDate+'&tag='+tag+'&title='+title;       
+      window.location.href = 'articlelist.php?mode=written&Articlesonly='+mycheck+'&voter='+goToUser+'&date='+date+'&toDate='+toDate+'&tag='+tag+'&tag2='+tag2+'&title='+title;       
       });         
     });           
   </script> 
