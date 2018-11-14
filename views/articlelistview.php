@@ -42,25 +42,21 @@
           <input class="form-control" name="toDate" id="toDate" type="date" value="<? if (isset($todate)) {echo $todate;} else {echo date(" Y-m-d ",strtotime("+1 day "));} ?>" id="toDate" min="2016-03-30" max="<?echo date(" Y-m-d ",strtotime("+1 day ")); ?>">&nbsp;&nbsp;
         </div>
         <div class="form-group" style="margin-top:10px;">
-          <label for="tag">Tag 1:&nbsp;&nbsp;</label>
-          <input class="form-control" name="tag" id="tag" type="text" size="5" value="<?if (isset($tag)) {echo $tag;}?>">&nbsp;&nbsp;
-        </div>
+          <label for="tag">Must Contain Tag(s) Separated By Space:&nbsp;&nbsp;</label>		  			
+          <input class="form-control" placeholder="e.g. utopian-io development" name="tag" id="tag" type="text" size="25" value="<? if (isset($tag)) {$arrlength = count($tag);for($x = 0; $x < $arrlength; $x++) {echo $tag[$x];echo " ";}}?>" aria-describedby="tagHelp"">&nbsp;&nbsp;<br>		 
+        </div>       
         <div class="form-group" style="margin-top:10px;">
-          <label for="tag2">Tag 2:&nbsp;&nbsp;</label>
-          <input class="form-control" name="tag2" id="tag2" type="text" size="5" value="<?if (isset($tag2)) {echo $tag2;}?>">&nbsp;&nbsp;
-        </div>
-        <div class="form-group" style="margin-top:10px;">
-          <label for="title">Title:&nbsp;&nbsp;</label>
-          <input class="form-control" name="title" id="title" type="text" size="10" value="<?if (isset($title)) {echo $title;}?>">&nbsp;&nbsp;
+          <label for="title">Title Must Contain Word(s):&nbsp;&nbsp;</label>
+          <input class="form-control" name="title" id="title" type="text" size="20" value="<?if (isset($title)) {echo $title;}?>">&nbsp;&nbsp;
         </div>
         <div class="form-group" style="margin-top:10px;">
           <input class="form-control" name="Articlesonly" type="checkbox" value="2" id="Articlesonly"<? if ($articlesonly==2) {echo " checked";} ?>>&nbsp;
-          <label for="Articlesonly">Exclude comments&nbsp;&nbsp;</label>  
+          <label for="Articlesonly">Exclude Comments&nbsp;&nbsp;</label>  
         </div>
       </form>
        <?
       if ($mode=="upvote") {
-        echo '<button id="upvotebtn" class="btn btn-lg btn-primary" style="margin-top:10px;">List Articles Upvoted</button>';        
+        echo '<button id="upvotebtn" class="btn btn-lg btn-primary" style="margin-top:10px;">List Articles Voted</button>';        
       } else {
         echo '<button id="writtenbtn" class="btn btn-lg btn-primary" style="margin-top:10px;">List Articles Written</button>';
       }
@@ -115,10 +111,10 @@ echo "</tbody></table>";
   </body>   
   <!-- Javascript --> 
   <script>  
+    // Retrieve input to be submitted via Javascript
     function retrieveInput() {
       title = document.getElementById("title").value;    
       tag = document.getElementById("tag").value;
-      tag2= document.getElementById("tag2").value;
       goToUser = document.getElementById("voter").value;
       date = document.getElementById("date").value;
       toDate = document.getElementById("toDate").value;
@@ -130,15 +126,18 @@ echo "</tbody></table>";
       {
         mycheck=1;
       }
-    } 
+    }
+    
+    // Submit input from user to articlelist controller
     $(function(){
       $("#upvotebtn").click(function() {
         retrieveInput();
-      window.location.href = 'articlelist.php?mode=upvote&Articlesonly='+mycheck+'&voter='+goToUser+'&date='+date+'&toDate='+toDate+'&tag='+tag+'&tag2='+tag2+'&title='+title;
-      });         
+      window.location.href = 'articlelist.php?mode=upvote&Articlesonly='+mycheck+'&voter='+goToUser+'&date='+date+'&toDate='+toDate+'&tag='+tag+'&title='+title;
+      });
+      
       $("#writtenbtn").click(function() { 
       retrieveInput();
-      window.location.href = 'articlelist.php?mode=written&Articlesonly='+mycheck+'&voter='+goToUser+'&date='+date+'&toDate='+toDate+'&tag='+tag+'&tag2='+tag2+'&title='+title;       
+      window.location.href = 'articlelist.php?mode=written&Articlesonly='+mycheck+'&voter='+goToUser+'&date='+date+'&toDate='+toDate+'&tag='+tag+'&title='+title;       
       });         
     });           
   </script> 
